@@ -1,0 +1,38 @@
+---
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  # Basic file hygiene hooks
+  - hooks:
+    - id: trailing-whitespace
+      name: Remove trailing whitespace
+    - id: end-of-file-fixer
+      name: Ensure file ends with a newline
+    - id: mixed-line-ending
+      name: Normalize mixed line endings
+    - id: check-added-large-files
+      name: Prevent adding large files
+    - id: check-json
+      name: Validate JSON files
+    - id: check-yaml
+      name: Validate YAML files
+    repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+
+  # Python linting and formatting
+  - hooks:
+    - args: [--fix, --exit-non-zero-on-fix]
+      id: ruff
+      name: Ruff linter for Python
+    - id: ruff-format
+      name: Ruff code formatter for Python
+    repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.2
+
+  # Markdown linting
+  - hooks:
+    - id: markdownlint-cli2
+      name: Markdown Linting
+    repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.21.0
+...
