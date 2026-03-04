@@ -1,6 +1,8 @@
 ---
 # MD013/line-length : Line length
 MD013:
+  code_blocks: false
+  ignore_code_blocks: true
   tables: false
 # MD024/no-duplicate-heading
 MD024:
