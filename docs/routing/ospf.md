@@ -125,9 +125,9 @@ stateDiagram-v2
     [*] --> Down
     Down --> Init : Hello received
     Init --> TwoWay : Own Router ID seen in neighbour's Hello
-    TwoWay --> ExStart : DR/BDR elected; adjacency required
-    ExStart --> Exchange : Master/slave agreed; DBD exchange begins
-    Exchange --> Loading : DBD complete; LSR/LSU exchange
+    TwoWay --> ExStart : DR/BDR elected, adjacency required
+    ExStart --> Exchange : Master/slave agreed, DBD exchange begins
+    Exchange --> Loading : DBD complete, LSR/LSU exchange
     Loading --> Full : All LSAs received
     Full --> Down : Dead interval expired or interface down
 ```
