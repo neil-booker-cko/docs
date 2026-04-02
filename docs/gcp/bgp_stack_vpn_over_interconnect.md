@@ -10,18 +10,17 @@ latency and bandwidth advantages of the dedicated link.
 
 ### The Protocol Stack
 
-```text
-┌─────────────────────────────────────────────┐
-│  Application Traffic                        │
-├─────────────────────────────────────────────┤
-│  Overlay BGP (FortiGate ↔ Cloud Router VPN) │  ← Encrypted path control
-├─────────────────────────────────────────────┤
-│  IPsec / IKEv2 Tunnel (HA VPN)              │  ← Encryption layer
-├─────────────────────────────────────────────┤
-│  Underlay BGP (Cisco ↔ Cloud Router / IX)   │  ← Private path transport
-├─────────────────────────────────────────────┤
-│  Cloud Interconnect (Dedicated / Partner)   │  ← Dedicated circuit
-└─────────────────────────────────────────────┘
+```mermaid
+---
+title: "Protocol Stack"
+---
+flowchart TD
+    A["Application Traffic"]
+    B["Overlay BGP — FortiGate ↔ Cloud Router VPN\nEncrypted path control"]
+    C["IPsec / IKEv2 Tunnel — HA VPN\nEncryption layer"]
+    D["Underlay BGP — Cisco ↔ Cloud Router / Interconnect\nPrivate path transport"]
+    E["Cloud Interconnect — Dedicated / Partner\nDedicated circuit"]
+    A --> B --> C --> D --> E
 ```
 
 - **Underlay BGP:** Cisco IOS-XE peers with a GCP Cloud Router over the
@@ -52,20 +51,27 @@ latency and bandwidth advantages of the dedicated link.
 
 ## 2. Architecture
 
-```text
-On-Premises                          Google Cloud
-──────────                           ────────────
-Cisco IOS-XE                         Cloud Router A (Interconnect)
-  └─ BGP (AS 65000)  ◄──Interconnect──►  (AS 65001)
-       │                                      │
-       │ (VLAN attachment                   VPC
-       │  169.254.0.0/29)
-       │
-  FortiGate                          Cloud Router B (HA VPN)
-    ├─ Tunnel-1 ──► HA VPN GW IF0 ──►  (AS 65001)
-    │  169.254.1.1/30
-    └─ Tunnel-2 ──► HA VPN GW IF1 ──►
-       169.254.2.1/30
+```mermaid
+---
+title: "GCP Architecture"
+---
+graph LR
+    subgraph OnPrem["On-Premises"]
+        Cisco["Cisco IOS-XE\nAS 65000"]
+        FG["FortiGate"]
+    end
+    subgraph GCP["Google Cloud"]
+        CRA["Cloud Router A\nInterconnect\nAS 65001"]
+        HAVPN["HA VPN Gateway\nIF0 / IF1"]
+        CRB["Cloud Router B\nHA VPN\nAS 65001"]
+        VPC["VPC Network"]
+    end
+    Cisco -- "BGP over Interconnect\n169.254.0.0/29" --> CRA
+    FG -- "IPsec/IKEv2\nHA VPN" --> HAVPN
+    FG -. "Overlay BGP" .-> CRB
+    HAVPN --- CRB
+    CRA --- VPC
+    CRB --- VPC
 ```
 
 ### Address Planning

@@ -30,14 +30,19 @@ routes before the tunnel is marked down — resulting in a double reconvergence 
 
 ## 2. Active-Active VPN Gateway Architecture
 
-```text
-On-Premises FortiGate (AS 65000)
-  │
-  ├─ Tunnel-A ──► VPN GW Instance 0 (169.254.21.1 / AS 65515)
-  │
-  └─ Tunnel-B ──► VPN GW Instance 1 (169.254.22.1 / AS 65515)
-                       │
-                    Azure VNet (10.100.0.0/16)
+```mermaid
+---
+title: "Active-Active VPN Gateway"
+---
+graph LR
+    FG["FortiGate\nAS 65000"]
+    GW0["VPN GW Instance 0\nAS 65515\n169.254.21.1"]
+    GW1["VPN GW Instance 1\nAS 65515\n169.254.22.1"]
+    VNet["Azure VNet\n10.100.0.0/16"]
+    FG -- "Tunnel-A\n169.254.21.x" --> GW0
+    FG -- "Tunnel-B\n169.254.22.x" --> GW1
+    GW0 --- VNet
+    GW1 --- VNet
 ```
 
 Both tunnels traverse the ExpressRoute underlay (private IP mode on the VPN Gateway

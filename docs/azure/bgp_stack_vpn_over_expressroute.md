@@ -10,18 +10,17 @@ advantages of the dedicated link.
 
 ### The Protocol Stack
 
-```text
-┌─────────────────────────────────────────────┐
-│  Application Traffic                        │
-├─────────────────────────────────────────────┤
-│  Overlay BGP (FortiGate ↔ Azure VPN GW)     │  ← Encrypted path control
-├─────────────────────────────────────────────┤
-│  IPsec / IKEv2 Tunnel                       │  ← Encryption layer
-├─────────────────────────────────────────────┤
-│  Underlay BGP (Cisco ↔ ExpressRoute / MSEE) │  ← Private path transport
-├─────────────────────────────────────────────┤
-│  ExpressRoute Private Peering               │  ← Dedicated circuit
-└─────────────────────────────────────────────┘
+```mermaid
+---
+title: "Protocol Stack"
+---
+flowchart TD
+    A["Application Traffic"]
+    B["Overlay BGP — FortiGate ↔ Azure VPN GW\nEncrypted path control"]
+    C["IPsec / IKEv2 Tunnel\nEncryption layer"]
+    D["Underlay BGP — Cisco ↔ ExpressRoute / MSEE\nPrivate path transport"]
+    E["ExpressRoute Private Peering\nDedicated circuit"]
+    A --> B --> C --> D --> E
 ```
 
 - **Underlay BGP:** Cisco IOS-XE peers with the Microsoft Enterprise Edge (MSEE)
@@ -47,18 +46,25 @@ advantages of the dedicated link.
 
 ## 2. Architecture
 
-```text
-On-Premises                     Azure
-──────────                     ──────
-Cisco IOS-XE                   MSEE (AS 12076)
-  └─ BGP (AS 65000)  ◄──ER──►  ExpressRoute Circuit
-       │                              │
-       │ (Private peering             │
-       │  172.16.0.0/30)              │
-       │                        Azure VNet
-  FortiGate                          │
-    └─ IPsec/IKEv2   ◄──ER──►  VPN Gateway (AS 65515)
-         └─ BGP (AS 65000)      (Private IP mode)
+```mermaid
+---
+title: "Azure Architecture"
+---
+graph LR
+    subgraph OnPrem["On-Premises"]
+        Cisco["Cisco IOS-XE\nAS 65000"]
+        FG["FortiGate"]
+    end
+    subgraph AZ["Azure"]
+        MSEE["MSEE\nAS 12076"]
+        VPNGW["VPN Gateway\nAS 65515\nPrivate IP mode"]
+        VNet["Azure VNet"]
+    end
+    Cisco -- "BGP over ExpressRoute\n172.16.0.0/30" --> MSEE
+    FG -- "IPsec/IKEv2\nover ExpressRoute" --> VPNGW
+    FG -. "Overlay BGP" .-> VPNGW
+    MSEE --- VNet
+    VPNGW --- VNet
 ```
 
 ### Address Planning

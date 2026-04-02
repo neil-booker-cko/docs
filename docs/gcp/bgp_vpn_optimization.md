@@ -27,16 +27,23 @@ to drop; the other tunnel's BGP session is unaffected.
 
 ## 2. HA VPN Architecture (Active-Active)
 
-```text
-On-Premises FortiGate (AS 65000)
-  │
-  ├─ Tunnel-1 ──► HA VPN GW Interface 0 ──► Cloud Router BGP peer 169.254.1.1
-  │  (169.254.1.2/30)                         (AS 65001)
-  │
-  └─ Tunnel-2 ──► HA VPN GW Interface 1 ──► Cloud Router BGP peer 169.254.2.1
-     (169.254.2.2/30)                         (AS 65001)
-                                                   │
-                                               VPC Network (10.128.0.0/20)
+```mermaid
+---
+title: "HA VPN Active-Active"
+---
+graph LR
+    FG["FortiGate\nAS 65000"]
+    IF0["HA VPN GW\nInterface 0"]
+    IF1["HA VPN GW\nInterface 1"]
+    CR1["Cloud Router\n169.254.1.1\nAS 65001"]
+    CR2["Cloud Router\n169.254.2.1\nAS 65001"]
+    VPC["VPC Network\n10.128.0.0/20"]
+    FG -- "Tunnel-1\n169.254.1.2/30" --> IF0
+    FG -- "Tunnel-2\n169.254.2.2/30" --> IF1
+    IF0 --- CR1
+    IF1 --- CR2
+    CR1 --- VPC
+    CR2 --- VPC
 ```
 
 GCP HA VPN gateway interfaces are in different Google edge PoPs, providing
