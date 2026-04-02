@@ -78,3 +78,11 @@ nav:
       - BGP over VPN Optimization: aws/bgp_vpn_optimization.md
       - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md
       - Troubleshooting VPN & BGP Logs: aws/troubleshooting_vpn_bgp_log_analysis_guide.md
+  - Packet Headers:
+      - Ethernet II: packets/ethernet.md
+      - IPv4: packets/ip.md
+      - TCP: packets/tcp.md
+      - UDP: packets/udp.md
+
+extra_javascript:
+  - https://unpkg.com/mermaid@11/dist/mermaid.esm.min.mjs
