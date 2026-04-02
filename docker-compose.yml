@@ -4,6 +4,12 @@ services:
     restart: unless-stopped
     networks:
       - traefik
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.docs.rule=Host(`docs.example.internal`)"
