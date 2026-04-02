@@ -1,5 +1,5 @@
-site_name: Network Resilience Library
-site_description: Sub-second failover and hybrid-cloud connectivity guides for Cisco, Fortinet, and AWS environments.
+site_name: Network Engineering Reference
+site_description: Protocol packet formats, routing design, vendor implementation guides, and quick-reference cheat sheets for network engineers.
 docs_dir: docs
 
 theme:
