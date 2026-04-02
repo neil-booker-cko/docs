@@ -1,0 +1,18 @@
+services:
+  docs:
+    build: .
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.docs.rule=Host(`docs.example.internal`)"
+      - "traefik.http.routers.docs.entrypoints=websecure"
+      - "traefik.http.routers.docs.tls=true"
+      - "traefik.http.routers.docs.tls.certresolver=CERT_RESOLVER"   # <- your resolver name
+      - "traefik.http.services.docs.loadbalancer.server.port=80"
+
+networks:
+  traefik:
+    external: true
+    name: TRAEFIK_NETWORK   # <- your Traefik network name
