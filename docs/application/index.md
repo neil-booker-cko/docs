@@ -17,6 +17,7 @@ see [Routing Protocols](../routing/index.md).
 | Protocol | Port | Description |
 | --- | --- | --- |
 | [DNS](dns.md) | UDP/TCP `53` | Domain name resolution; A, AAAA, MX, TXT, DNSSEC |
+| [PTP](ptp.md) | UDP `319`/`320` / Ethernet `0x88F7` | Precision Time Protocol; sub-microsecond clock sync |
 
 ## Management & Monitoring
 

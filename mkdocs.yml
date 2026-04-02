@@ -64,6 +64,8 @@ nav:
       - BGP vs BFD: theory/bgp_bfd_comparison.md
       - OSPF vs BFD: theory/ospf_bfd_comparison.md
       - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
+      - EIGRP vs OSPF vs RIP: theory/igp_comparison.md
+      - NTP vs PTP: theory/ntp_vs_ptp.md
   - Cisco:
       - BFD Core Config: cisco/cisco_bfd_config_guide.md
       - Static BFD: cisco/cisco_static_bfd_guide.md
@@ -102,6 +104,7 @@ nav:
       - Overview: application/index.md
       - HTTP / HTTPS: application/http.md
       - DNS: application/dns.md
+      - PTP: application/ptp.md
       - SSH: application/ssh.md
       - SNMP: application/snmp.md
       - Syslog: application/syslog.md
