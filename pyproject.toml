@@ -4,6 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "mkdocs-material>=9.5",
+    "mkdocs-minify-plugin>=0.8.0",
 ]
 
 [dependency-groups]
