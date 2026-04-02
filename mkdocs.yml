@@ -83,6 +83,9 @@ nav:
       - IPv4: packets/ip.md
       - TCP: packets/tcp.md
       - UDP: packets/udp.md
+      - ICMP: packets/icmp.md
+      - ARP: packets/arp.md
+      - BFD: packets/bfd.md
 
 extra_javascript:
   - https://unpkg.com/mermaid@11/dist/mermaid.esm.min.mjs

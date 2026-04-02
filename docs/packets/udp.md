@@ -5,6 +5,16 @@ low overhead over reliability. There is no handshake, retransmission, or orderin
 delivery is best-effort. The fixed 8-byte header makes UDP well-suited to latency-
 sensitive traffic such as DNS, DHCP, SNMP, and real-time media.
 
+## Quick Reference
+
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Layer 4 — Transport |
+| **TCP/IP Layer** | Transport |
+| **RFC** | RFC 768 |
+| **Wireshark Filter** | `udp` |
+| **IP Protocol** | `17` |
+
 ## Header Structure
 
 ```mermaid

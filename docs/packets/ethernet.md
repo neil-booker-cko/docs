@@ -5,6 +5,16 @@ It carries an upper-layer payload (IPv4, IPv6, ARP, etc.) identified by the Ethe
 field. The frame is bounded by a preamble and Start Frame Delimiter at the physical
 layer (not shown) and terminated by a Frame Check Sequence.
 
+## Quick Reference
+
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Layer 2 — Data Link |
+| **TCP/IP Layer** | Network Access (Link) |
+| **Standard** | IEEE 802.3 |
+| **Wireshark Filter** | `eth` |
+| **EtherType** | N/A — this is the frame itself |
+
 ## Frame Structure
 
 ```mermaid

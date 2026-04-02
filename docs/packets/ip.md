@@ -4,6 +4,16 @@ The IPv4 header provides addressing, fragmentation, and delivery information for
 packets across Layer 3. The minimum header size is 20 bytes; the Options field can
 extend it to 60 bytes. IHL indicates the actual header length in 32-bit words.
 
+## Quick Reference
+
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Layer 3 — Network |
+| **TCP/IP Layer** | Internet |
+| **RFC** | RFC 791 |
+| **Wireshark Filter** | `ip` |
+| **EtherType** | `0x0800` |
+
 ## Header Structure
 
 ```mermaid

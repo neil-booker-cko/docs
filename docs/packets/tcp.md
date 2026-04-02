@@ -4,6 +4,16 @@ TCP provides reliable, ordered, and error-checked delivery of a byte stream betw
 applications. The minimum header is 20 bytes; the Options field can extend it to
 60 bytes. Data Offset indicates the actual header length in 32-bit words.
 
+## Quick Reference
+
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Layer 4 — Transport |
+| **TCP/IP Layer** | Transport |
+| **RFC** | RFC 9293 |
+| **Wireshark Filter** | `tcp` |
+| **IP Protocol** | `6` |
+
 ## Header Structure
 
 ```mermaid
