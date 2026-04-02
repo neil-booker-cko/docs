@@ -30,15 +30,12 @@ repos:
         name: Ruff linter for Python
         args: [--fix, --exit-non-zero-on-fix]
 
-  # 3. Dockerfile linting (uses system-installed hadolint binary)
-  - repo: local
+  # 3. Dockerfile linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
     hooks:
-      - id: hadolint
+      - id: hadolint-docker
         name: Lint Dockerfile
-        language: system
-        entry: hadolint
-        files: Dockerfile
-        types: [dockerfile]
 
   # 4. Markdown linting
   - repo: https://github.com/DavidAnson/markdownlint-cli2
