@@ -20,6 +20,10 @@ uv run mkdocs serve
 
 Then open `http://127.0.0.1:8000`.
 
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for Docker, Traefik, CI/CD, and Watchtower setup.
+
 ---
 
 *Created for Network Engineering Teams specializing in Hybrid Cloud Connectivity.*
