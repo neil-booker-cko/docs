@@ -1,0 +1,73 @@
+site_name: Network Resilience Library
+site_description: Sub-second failover and hybrid-cloud connectivity guides for Cisco, Fortinet, and AWS environments.
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - admonition
+  - pymdownx.details
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Theory:
+      - BGP vs BFD: theory/bgp_bfd_comparison.md
+      - OSPF vs BFD: theory/ospf_bfd_comparison.md
+      - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
+  - Cisco:
+      - BFD Core Config: cisco/cisco_bfd_config_guide.md
+      - Static BFD: cisco/cisco_static_bfd_guide.md
+      - Multihop BFD: cisco/cisco_multihop_bfd_guide.md
+      - Active/Passive to AWS TGW: cisco/cisco_aws_tgw_dx.md
+  - FortiGate:
+      - BFD Core Config: fortigate/fortigate_bfd_config_guide.md
+      - Multihop BFD: fortigate/fortigate_multihop_bfd_guide.md
+      - Static BFD & Health Checks: fortigate/fortigate_static_bfd_guide.md
+  - AWS Architecture:
+      - BGP Stack (Flagship): aws/bgp_stack_vpn_over_dx.md
+      - BGP over VPN Optimization: aws/bgp_vpn_optimization.md
+      - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md
+      - Troubleshooting VPN & BGP Logs: aws/troubleshooting_vpn_bgp_log_analysis_guide.md

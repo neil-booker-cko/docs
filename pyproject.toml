@@ -1,0 +1,15 @@
+[project]
+name = "network-resilience-library"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "mkdocs-material>=9.5",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.0",
+]
+
+[tool.ruff]
+line-length = 120

@@ -16,6 +16,7 @@ repos:
       name: Validate JSON files
     - id: check-yaml
       name: Validate YAML files
+      args: [--unsafe]
     repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
 
