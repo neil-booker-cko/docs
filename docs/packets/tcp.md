@@ -66,10 +66,71 @@ packet
 | **Urgent Pointer** | 16 | Offset from the sequence number to the last urgent byte. Valid only when URG is set. |
 | **Options** | 0–320 | Variable-length options padded to a 32-bit boundary. Common options: MSS, Window Scale, SACK, Timestamps. |
 
+## Connection Establishment (Three-Way Handshake)
+
+SYN and SYN-ACK exchange synchronises sequence numbers in both directions before
+any data is transferred.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: SYN (seq=x)
+    S->>C: SYN-ACK (seq=y, ack=x+1)
+    C->>S: ACK (seq=x+1, ack=y+1)
+    Note over C,S: Connection established
+    C->>S: Data (seq=x+1)
+    S->>C: ACK (ack=x+1+len)
+```
+
+## Connection Termination
+
+### Graceful close (FIN)
+
+Either side may initiate a graceful close. Because TCP is full-duplex, each direction
+is closed independently — a FIN closes only the sender's direction, allowing the
+other side to continue sending until it is ready to close.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: FIN (seq=x)
+    S->>C: ACK (ack=x+1)
+    Note over S: Server may still send data
+    S->>C: FIN (seq=y)
+    C->>S: ACK (ack=y+1)
+    Note over C,S: Connection fully closed
+```
+
+The client enters `TIME_WAIT` after sending the final ACK and holds the connection
+state for 2× MSL (Maximum Segment Lifetime, typically 60–120 seconds) to absorb any
+delayed duplicate segments.
+
+### Abortive reset (RST)
+
+RST immediately tears down the connection without a four-way exchange. Any buffered
+data is discarded. Common causes:
+
+| Scenario | Direction |
+| --- | --- |
+| Connection attempt to a closed port | Server → Client |
+| Application crash or forceful close (`SO_LINGER` with timeout 0) | Either |
+| Middlebox or firewall policy rejection | Middlebox → Either |
+| Half-open connection detected (one side rebooted) | Either |
+| Out-of-window segment received | Either |
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server
+    C->>S: SYN (seq=x)
+    S->>C: RST-ACK
+    Note over C,S: Connection refused — port closed
+```
+
 ## Notes
 
-- **Three-way handshake:** SYN → SYN-ACK → ACK establishes a connection and
-  synchronises sequence numbers in both directions.
 - **Window Scale option** (RFC 1323) shifts the Window Size field left by up to 14
   bits, allowing windows up to 1 GB — essential for high-bandwidth, high-latency paths.
 - **SACK (Selective Acknowledgment)** allows the receiver to acknowledge

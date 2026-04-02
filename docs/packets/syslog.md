@@ -13,7 +13,7 @@ and the current structured format (RFC 5424).
 | **TCP/IP Layer** | Application |
 | **RFC** | RFC 5424 (current), RFC 3164 (legacy BSD) |
 | **Wireshark Filter** | `syslog` |
-| **Transport** | UDP `514` (traditional), TCP `514` (reliable), TCP `6514` (TLS) |
+| **Transport** | UDP `514` (traditional), TCP `601` (reliable, RFC 3195), TCP `6514` (TLS) |
 
 ## Message Format (RFC 5424)
 

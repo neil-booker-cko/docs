@@ -79,17 +79,22 @@ nav:
       - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md
       - Troubleshooting VPN & BGP Logs: aws/troubleshooting_vpn_bgp_log_analysis_guide.md
   - Packet Headers:
-      - Ethernet II: packets/ethernet.md
-      - IPv4: packets/ipv4.md
-      - IPv6: packets/ipv6.md
-      - TCP: packets/tcp.md
-      - UDP: packets/udp.md
-      - ICMP: packets/icmp.md
-      - ARP: packets/arp.md
-      - BFD: packets/bfd.md
-      - Syslog: packets/syslog.md
-      - SSH: packets/ssh.md
-      - SNMP: packets/snmp.md
+      - Overview: packets/index.md
+      - Layer 2 — Data Link:
+          - Ethernet II: packets/ethernet.md
+          - ARP: packets/arp.md
+      - Layer 3 — Network:
+          - IPv4: packets/ipv4.md
+          - IPv6: packets/ipv6.md
+          - ICMP: packets/icmp.md
+      - Layer 4 — Transport:
+          - TCP: packets/tcp.md
+          - UDP: packets/udp.md
+          - BFD: packets/bfd.md
+      - Layer 7 — Application:
+          - SSH: packets/ssh.md
+          - SNMP: packets/snmp.md
+          - Syslog: packets/syslog.md
 
 extra_javascript:
   - https://unpkg.com/mermaid@11/dist/mermaid.esm.min.mjs
