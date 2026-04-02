@@ -6,6 +6,18 @@ see [Routing Protocols](../routing/index.md).
 
 ---
 
+## Web
+
+| Protocol | Port | Description |
+| --- | --- | --- |
+| [HTTP / HTTPS](http.md) | TCP `80` / `443` | Hypertext Transfer Protocol; HTTP/1.1, HTTP/2, HTTP/3 over QUIC |
+
+## Infrastructure
+
+| Protocol | Port | Description |
+| --- | --- | --- |
+| [DNS](dns.md) | UDP/TCP `53` | Domain name resolution; A, AAAA, MX, TXT, DNSSEC |
+
 ## Management & Monitoring
 
 | Protocol | Port | Description |

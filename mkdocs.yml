@@ -93,8 +93,15 @@ nav:
           - BFD: packets/bfd.md
   - Routing Protocols:
       - Overview: routing/index.md
+      - BGP: routing/bgp.md
+      - OSPF: routing/ospf.md
+      - EIGRP: routing/eigrp.md
+      - RIP: routing/rip.md
+      - IGRP: routing/igrp.md
   - Application Protocols:
       - Overview: application/index.md
+      - HTTP / HTTPS: application/http.md
+      - DNS: application/dns.md
       - SSH: application/ssh.md
       - SNMP: application/snmp.md
       - Syslog: application/syslog.md
