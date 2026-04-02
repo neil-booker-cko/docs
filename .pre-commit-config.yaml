@@ -22,7 +22,7 @@ repos:
 
   # 2. Python formatting — before linting so ruff sees clean code
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.4
+    rev: v0.15.8
     hooks:
       - id: ruff-format
         name: Ruff code formatter for Python
@@ -32,14 +32,14 @@ repos:
 
   # 3. Dockerfile linting
   - repo: https://github.com/hadolint/hadolint
-    rev: v2.12.0
+    rev: v2.14.0
     hooks:
       - id: hadolint-docker
         name: Lint Dockerfile
 
   # 4. Markdown linting
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.21.0
+    rev: v0.22.0
     hooks:
       - id: markdownlint-cli2
         name: Markdown Linting

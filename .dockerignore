@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# MkDocs build output
+site/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Editor
+.vscode/
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Deployment docs (not needed for the build)
+deployment/
