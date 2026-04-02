@@ -80,6 +80,14 @@ nav:
       - BGP over VPN Optimization: aws/bgp_vpn_optimization.md
       - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md
       - Troubleshooting VPN & BGP Logs: aws/troubleshooting_vpn_bgp_log_analysis_guide.md
+  - Azure Architecture:
+      - BGP Stack (Flagship): azure/bgp_stack_vpn_over_expressroute.md
+      - Active-Active VPN Optimization: azure/bgp_vpn_optimization.md
+      - Troubleshooting VPN & BGP Logs: azure/troubleshooting_vpn_bgp_log_analysis_guide.md
+  - GCP Architecture:
+      - BGP Stack (Flagship): gcp/bgp_stack_vpn_over_interconnect.md
+      - HA VPN Optimization: gcp/bgp_vpn_optimization.md
+      - Troubleshooting VPN & BGP Logs: gcp/troubleshooting_vpn_bgp_log_analysis_guide.md
   - Packet Headers:
       - Overview: packets/index.md
       - Layer 2 — Data Link:

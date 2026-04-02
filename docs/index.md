@@ -107,6 +107,22 @@ Protocol behaviour analysis and side-by-side comparisons to inform design decisi
 | [FortiGate to TGW (ECMP)](aws/fortigate_bgp_vpn_bfd.md) | Dual-VTI ECMP over TGW with NPU offload |
 | [Troubleshooting VPN & BGP Logs](aws/troubleshooting_vpn_bgp_log_analysis_guide.md) | DPD, hold-timer, IKE re-key log analysis |
 
+### Azure Architecture
+
+| Guide | Description |
+| --- | --- |
+| [BGP Stack (Flagship)](azure/bgp_stack_vpn_over_expressroute.md) | Encrypted VPN overlay over ExpressRoute private peering |
+| [Active-Active VPN Optimization](azure/bgp_vpn_optimization.md) | Dual-instance VPN Gateway ECMP with APIPA BGP addressing |
+| [Troubleshooting VPN & BGP Logs](azure/troubleshooting_vpn_bgp_log_analysis_guide.md) | IKEv2, DPD, BGP, and ExpressRoute log analysis |
+
+### GCP Architecture
+
+| Guide | Description |
+| --- | --- |
+| [BGP Stack (Flagship)](gcp/bgp_stack_vpn_over_interconnect.md) | Encrypted HA VPN overlay over Cloud Interconnect |
+| [HA VPN Optimization](gcp/bgp_vpn_optimization.md) | Cloud Router BGP tuning, MED path preference, ECMP |
+| [Troubleshooting VPN & BGP Logs](gcp/troubleshooting_vpn_bgp_log_analysis_guide.md) | IKEv2, DPD, BGP, and Cloud Interconnect log analysis |
+
 ---
 
 ## Reference
