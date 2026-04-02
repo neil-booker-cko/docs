@@ -91,10 +91,13 @@ nav:
           - TCP: packets/tcp.md
           - UDP: packets/udp.md
           - BFD: packets/bfd.md
-      - Layer 7 — Application:
-          - SSH: packets/ssh.md
-          - SNMP: packets/snmp.md
-          - Syslog: packets/syslog.md
+  - Routing Protocols:
+      - Overview: routing/index.md
+  - Application Protocols:
+      - Overview: application/index.md
+      - SSH: application/ssh.md
+      - SNMP: application/snmp.md
+      - Syslog: application/syslog.md
 
 extra_javascript:
   - https://unpkg.com/mermaid@11/dist/mermaid.esm.min.mjs
