@@ -105,6 +105,12 @@ nav:
       - SSH: application/ssh.md
       - SNMP: application/snmp.md
       - Syslog: application/syslog.md
+  - Reference:
+      - Overview: reference/index.md
+      - IP Network Ranges: reference/ip_networks.md
+      - TCP/UDP Ports: reference/ports.md
+      - BGP Path Selection: reference/bgp_path_selection.md
+      - Administrative Distance: reference/admin_distance.md
 
 extra_javascript:
   - https://unpkg.com/mermaid@11/dist/mermaid.esm.min.mjs
