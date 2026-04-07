@@ -1,4 +1,4 @@
-# FortiOS: Optimized BFD Configuration Guide
+# FortiGate: Optimized BFD Configuration Guide
 
 ## 1. Overview & Principles
 
@@ -10,14 +10,14 @@ CPU, even across hundreds of sessions.
 
 * **NPU Offload:** Mandatory for stability. It prevents "false positives" during
     high CPU spikes.
-* **Link-Down Failover:** In FortiOS, this command is critical for BGP to ensure
+* **Link-Down Failover:** In FortiGate, this command is critical for BGP to ensure
     the RIB is updated immediately when the physical or logical (BFD) state changes.
 
 ## 2. Detection Timelines (Heartbeat)
 
 ```mermaid
 timeline
-    title FortiOS BFD Detection (300ms x 3)
+    title FortiGate BFD Detection (300ms x 3)
     section Detection Phase
         T=0ms : Neighbor Failure
         T=300ms : 1st Heartbeat Lost
@@ -56,7 +56,7 @@ end
 
 ## 4. Comparison Summary
 
-| Metric | Default Settings | FortiOS Optimized (BFD) |
+| Metric | Default Settings | FortiGate Optimized (BFD) |
 | :--- | :--- | :--- |
 | **BGP Detection** | 180 Seconds | **< 1 Second** |
 | **OSPF Detection** | 40 Seconds | **< 1 Second** |

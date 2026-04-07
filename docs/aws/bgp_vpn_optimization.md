@@ -1,4 +1,4 @@
-# BGP over VPN: FortiOS to AWS ECMP Optimization Guide
+# BGP over VPN: FortiGate to AWS ECMP Optimization Guide
 
 ## 1. Overview & Principles
 
@@ -60,7 +60,7 @@ to the source.
 If a TCP flow is asymmetric (Outbound on VTI-1, Inbound on VTI-2), the FortiGate
 will drop return traffic as an invalid state unless they are in the same zone.
 
-## 4. Configuration Snippets (FortiOS)
+## 4. Configuration Snippets (FortiGate)
 
 ### A. Zone Configuration
 

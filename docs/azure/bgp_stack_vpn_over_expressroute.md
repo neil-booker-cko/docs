@@ -16,10 +16,10 @@ title: "Protocol Stack"
 ---
 flowchart TD
     A["Application Traffic"]
-    B["Overlay BGP — FortiGate ↔ Azure VPN GW\nEncrypted path control"]
-    C["IPsec / IKEv2 Tunnel\nEncryption layer"]
-    D["Underlay BGP — Cisco ↔ ExpressRoute / MSEE\nPrivate path transport"]
-    E["ExpressRoute Private Peering\nDedicated circuit"]
+    B["Overlay BGP — FortiGate ↔ Azure VPN GW<br/>Encrypted path control"]
+    C["IPsec / IKEv2 Tunnel<br/>Encryption layer"]
+    D["Underlay BGP — Cisco ↔ ExpressRoute / MSEE<br/>Private path transport"]
+    E["ExpressRoute Private Peering<br/>Dedicated circuit"]
     A --> B --> C --> D --> E
 ```
 
@@ -52,16 +52,16 @@ title: "Azure Architecture"
 ---
 graph LR
     subgraph OnPrem["On-Premises"]
-        Cisco["Cisco IOS-XE\nAS 65000"]
+        Cisco["Cisco IOS-XE<br/>AS 65000"]
         FG["FortiGate"]
     end
     subgraph AZ["Azure"]
-        MSEE["MSEE\nAS 12076"]
-        VPNGW["VPN Gateway\nAS 65515\nPrivate IP mode"]
+        MSEE["MSEE<br/>AS 12076"]
+        VPNGW["VPN Gateway<br/>AS 65515<br/>Private IP mode"]
         VNet["Azure VNet"]
     end
-    Cisco -- "BGP over ExpressRoute\n172.16.0.0/30" --> MSEE
-    FG -- "IPsec/IKEv2\nover ExpressRoute" --> VPNGW
+    Cisco -- "BGP over ExpressRoute<br/>172.16.0.0/30" --> MSEE
+    FG -- "IPsec/IKEv2<br/>over ExpressRoute" --> VPNGW
     FG -. "Overlay BGP" .-> VPNGW
     MSEE --- VNet
     VPNGW --- VNet
@@ -101,11 +101,11 @@ timeline
 ```mermaid
 timeline
     title Failure Scenario: VPN Path Failure
-    section Optimized Timers
+    section Optimized (DPD default 45s + link-down-failover)
         T=0s : IPsec path fails silently
-        T=15s : DPD retries exhausted (5s × 3) : VTI interface down
-        T=16s : link-down-failover triggers : BGP session killed : routes withdrawn
-        T=16s : Traffic fails over to backup path
+        T=45s : DPD timeout : VTI interface down
+        T=46s : link-down-failover triggers : BGP session killed : routes withdrawn
+        T=46s : Traffic fails over to backup path
 ```
 
 ---
@@ -124,13 +124,12 @@ router bgp 65000
  bgp router-id 10.0.0.1
  bgp log-neighbor-changes
  !
- ! Primary MSEE peer (Microsoft AS 12076)
- neighbor 172.16.0.2 remote-as 12076
- neighbor 172.16.0.2 description ER-PRIMARY-MSEE
- neighbor 172.16.0.2 fall-over bfd
- neighbor 172.16.0.2 password 7 <MD5-KEY>
- !
- address-family ipv4 unicast
+ address-family ipv4 vrf AZURE
+  ! Primary MSEE peer (Microsoft AS 12076)
+  neighbor 172.16.0.2 remote-as 12076
+  neighbor 172.16.0.2 description ER-PRIMARY-MSEE
+  neighbor 172.16.0.2 fall-over bfd
+  neighbor 172.16.0.2 password 7 <MD5-KEY>
   neighbor 172.16.0.2 activate
   neighbor 172.16.0.2 route-map RM-ER-IN in
   neighbor 172.16.0.2 route-map RM-ER-OUT out
@@ -149,6 +148,10 @@ route-map RM-ER-OUT permit 10
 ip prefix-list PFX-AZURE-VNETS permit 10.100.0.0/16 le 24
 ip prefix-list PFX-ONPREM-SUMMARY permit 10.0.0.0/8
 ```
+
+> VRF `AZURE` must be defined and the ExpressRoute interface assigned to it before this
+> config is applied. See the [VRF-Lite config guide](../cisco/cisco_vrf_config.md) for
+> VRF definitions and FortiGate subinterface requirements.
 
 ### B. FortiGate — IPsec Phase 1 (IKEv2 to Azure VPN Gateway)
 
@@ -207,8 +210,8 @@ config router bgp
             set link-down-failover enable
             set soft-reconfiguration enable
             set capability-graceful-restart enable
-            set timers-keepalive 10
-            set timers-holdtime 30
+            set timers-keepalive 60
+            set timers-holdtime 180
             set route-map-in "RM-AZURE-OVERLAY-IN"
             set route-map-out "RM-AZURE-OVERLAY-OUT"
         next
@@ -242,12 +245,20 @@ side and **local-preference** on the on-premises side.
 
 | Metric | Default | Optimized BGP Stack |
 | --- | --- | --- |
-| **Underlay detection** | 90s (BGP hold-timer) | **900ms (BFD on ER private peering)** |
-| **Overlay detection** | 90s | **15s (DPD 5s × 3 + link-down-failover)** |
-| **BGP link reaction** | Passive (hold-timer) | **Active (link-down-failover)** |
+| **Underlay detection** | 180s (BGP hold-timer, no BFD) | **900ms (BFD 300ms × 3 on ER private peering)** |
+| **Overlay detection** | 180s (BGP hold-timer) | **~45s (DPD default + link-down-failover)** |
+| **BGP link reaction** | Passive (hold-timer expiry) | **Active (link-down-failover)** |
 | **Encryption** | None (ExpressRoute unencrypted) | **AES-256-GCM / IKEv2** |
 | **NPU offload** | Disabled | **Enabled** |
 | **Graceful restart** | Disabled | **Enabled (120s)** |
+
+> **Note:** BFD detects the physical path failure in ~900ms, but Microsoft states that
+> full traffic switchover between ExpressRoute virtual network gateways and MSEEs can
+> take up to ~1 minute. BGP timers on ExpressRoute are negotiable (unlike VPN Gateway
+> which is fixed at 60s/180s) — the MSEE accepts as low as 3s keepalive / 10s hold
+> time if configured on the customer device. Microsoft recommends using BFD rather than
+> aggressive BGP timers, as low BGP timers are process-intensive and can cause session
+> instability.
 
 ---
 
@@ -256,8 +267,9 @@ side and **local-preference** on the on-premises side.
 | Command | Platform | Purpose |
 | --- | --- | --- |
 | `show bfd neighbors` | Cisco | Verify BFD on MSEE peering |
-| `show bgp neighbors 172.16.0.2` | Cisco | Confirm ER underlay BGP state |
-| `show ip route 10.100.0.0` | Cisco | Verify Azure VNet reachable via ER |
+| `show bgp vpnv4 unicast vrf AZURE summary` | Cisco | BGP neighbour state in VRF AZURE |
+| `show bgp vpnv4 unicast vrf AZURE neighbors 172.16.0.2` | Cisco | Confirm ER underlay BGP state |
+| `show ip route vrf AZURE 10.100.0.0` | Cisco | Verify Azure VNet reachable via ER |
 | `get router info bgp neighbors 169.254.21.1` | FortiGate | Overlay BGP state and timers |
 | `diagnose vpn tunnel list name azure-vpn-primary` | FortiGate | IKEv2 SA and DPD counters |
 | `diagnose sniffer packet any 'port 179' 4` | FortiGate | BGP keepalive verification |

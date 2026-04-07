@@ -13,7 +13,7 @@ GCP HA VPN DPD uses a 20-second detection floor (10s interval × 2 retries by
 default). The same safety constraint as AWS and Azure applies:
 
 ```text
-BGP Hold Timer (30s) > Total DPD detection time (10s × 2 = 20s)
+BGP Hold Timer (60s) >> Total DPD detection time (10s × 2 = 20s)
 ```
 
 ### Cloud Router BGP Behaviour
@@ -32,14 +32,14 @@ to drop; the other tunnel's BGP session is unaffected.
 title: "HA VPN Active-Active"
 ---
 graph LR
-    FG["FortiGate\nAS 65000"]
-    IF0["HA VPN GW\nInterface 0"]
-    IF1["HA VPN GW\nInterface 1"]
-    CR1["Cloud Router\n169.254.1.1\nAS 65001"]
-    CR2["Cloud Router\n169.254.2.1\nAS 65001"]
-    VPC["VPC Network\n10.128.0.0/20"]
-    FG -- "Tunnel-1\n169.254.1.2/30" --> IF0
-    FG -- "Tunnel-2\n169.254.2.2/30" --> IF1
+    FG["FortiGate<br/>AS 65000"]
+    IF0["HA VPN GW<br/>Interface 0"]
+    IF1["HA VPN GW<br/>Interface 1"]
+    CR1["Cloud Router<br/>169.254.1.1<br/>AS 65001"]
+    CR2["Cloud Router<br/>169.254.2.1<br/>AS 65001"]
+    VPC["VPC Network<br/>10.128.0.0/20"]
+    FG -- "Tunnel-1<br/>169.254.1.2/30" --> IF0
+    FG -- "Tunnel-2<br/>169.254.2.2/30" --> IF1
     IF0 --- CR1
     IF1 --- CR2
     CR1 --- VPC

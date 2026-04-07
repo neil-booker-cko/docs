@@ -51,7 +51,7 @@ timeline
         T=16s : Link-Down Failover triggers : BGP Session Killed : Routes Dropped
 ```
 
-## 3. Configuration Snippets (Optimized for EDC4-PFW-01A)
+## 3. Configuration
 
 ### A. Cisco IOS-XE (Underlay - Modern Address-Family)
 
@@ -61,22 +61,30 @@ bfd-template single-hop AWS-DX-BFD
  no bfd echo
 !
 router bgp 65000
- neighbor 169.254.x.2 remote-as 64512
- neighbor 169.254.x.2 fall-over bfd
+ bgp router-id 10.0.0.1
+ bgp log-neighbor-changes
  !
- address-family ipv4 unicast
+ address-family ipv4 vrf AWS
+  neighbor 169.254.x.2 remote-as 64512
+  neighbor 169.254.x.2 description AWS-TGW-DX
+  neighbor 169.254.x.2 fall-over bfd
   neighbor 169.254.x.2 activate
-  neighbor 169.254.x.2 send-community
+  neighbor 169.254.x.2 send-community both
   neighbor 169.254.x.2 route-map RM-DX-PRIMARY-IN in
   neighbor 169.254.x.2 route-map RM-DX-PRIMARY-OUT out
  exit-address-family
 !
 ```
 
+> VRF `AWS` must be defined and the DX interface assigned to it before this config is
+> applied. See the [VRF-Lite config guide](../cisco/cisco_vrf_config.md) for VRF
+> definitions and FortiGate subinterface requirements.
+
 ### B. FortiGate Overlay (Phase 1 & BGP Neighbors)
 
-Removed BFD (unsupported) and implemented aggressive DPD/BGP timers based on your
-`EDC4-PFW-01A` config.
+BFD is not supported on the VPN overlay. DPD with `link-down-failover` provides
+fast failure detection. AWS TGW BGP timers are fixed at **10s keepalive / 30s
+hold** — configure the FortiGate to match.
 
 ```fortios
 config vpn ipsec phase1-interface
@@ -114,17 +122,20 @@ end
 | Metric | Default Settings | Optimized BGP Stack |
 | :--- | :--- | :--- |
 | **Underlay Detection** | 180 Seconds | **900ms (BFD)** |
-| **Overlay Detection** | 180 Seconds | **15 - 30 Seconds (DPD/BGP)** |
+| **Overlay Detection** | 30 Seconds (BGP hold-timer) | **15 Seconds (DPD 5s × 3 + link-down-failover)** |
 | **BGP Link Reaction** | Passive | **Active (Link-Down Failover)** |
 | **Security Standard** | None | **AES-256 / DH-21** |
 | **NPU Offload** | Disabled | **Enabled (Encryption acceleration)** |
 
 ## 5. Verification & Troubleshooting
 
-| Command | Purpose |
-| :--- | :--- |
-| `show bfd neighbors` | Verify Cisco Underlay BFD session health. |
-| `get router info bgp neighbors 169.254.y.y` | Confirm "Holdtime: 30, Keepalive: 10" and failover status. |
-| `diagnose vpn tunnel list name vpn-071eda31a-0` | Monitor DPD retry counters. |
-| `get router info bgp neighbors` | Verify Community tagging (7224:7300) for path steering. |
-| `diagnose sniffer packet any 'port 179' 4` | Verify 10s BGP keepalives on the wire. |
+| Command | Platform | Purpose |
+| :--- | :--- | :--- |
+| `show bfd neighbors` | Cisco | Verify Cisco Underlay BFD session health. |
+| `show bgp vpnv4 unicast vrf AWS summary` | Cisco | BGP neighbour state in VRF AWS |
+| `show bgp vpnv4 unicast vrf AWS neighbors 169.254.x.2` | Cisco | Full BGP detail for TGW peer |
+| `show ip route vrf AWS` | Cisco | Routing table for VRF AWS |
+| `get router info bgp neighbors 169.254.y.y` | FortiGate | Confirm holdtime 30s, keepalive 10s, and failover status. |
+| `diagnose vpn tunnel list name <tunnel-name>` | FortiGate | Monitor DPD retry counters. |
+| `get router info bgp neighbors` | FortiGate | Verify Community tagging (7224:7300) for path steering. |
+| `diagnose sniffer packet any 'port 179' 4` | FortiGate | Verify 10s BGP keepalives on the wire. |

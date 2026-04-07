@@ -16,10 +16,10 @@ title: "Protocol Stack"
 ---
 flowchart TD
     A["Application Traffic"]
-    B["Overlay BGP — FortiGate ↔ Cloud Router VPN\nEncrypted path control"]
-    C["IPsec / IKEv2 Tunnel — HA VPN\nEncryption layer"]
-    D["Underlay BGP — Cisco ↔ Cloud Router / Interconnect\nPrivate path transport"]
-    E["Cloud Interconnect — Dedicated / Partner\nDedicated circuit"]
+    B["Overlay BGP — FortiGate ↔ Cloud Router VPN<br/>Encrypted path control"]
+    C["IPsec / IKEv2 Tunnel — HA VPN<br/>Encryption layer"]
+    D["Underlay BGP — Cisco ↔ Cloud Router / Interconnect<br/>Private path transport"]
+    E["Cloud Interconnect — Dedicated / Partner<br/>Dedicated circuit"]
     A --> B --> C --> D --> E
 ```
 
@@ -57,17 +57,17 @@ title: "GCP Architecture"
 ---
 graph LR
     subgraph OnPrem["On-Premises"]
-        Cisco["Cisco IOS-XE\nAS 65000"]
+        Cisco["Cisco IOS-XE<br/>AS 65000"]
         FG["FortiGate"]
     end
     subgraph GCP["Google Cloud"]
-        CRA["Cloud Router A\nInterconnect\nAS 65001"]
-        HAVPN["HA VPN Gateway\nIF0 / IF1"]
-        CRB["Cloud Router B\nHA VPN\nAS 65001"]
+        CRA["Cloud Router A<br/>Interconnect<br/>AS 65001"]
+        HAVPN["HA VPN Gateway<br/>IF0 / IF1"]
+        CRB["Cloud Router B<br/>HA VPN<br/>AS 65001"]
         VPC["VPC Network"]
     end
-    Cisco -- "BGP over Interconnect\n169.254.0.0/29" --> CRA
-    FG -- "IPsec/IKEv2\nHA VPN" --> HAVPN
+    Cisco -- "BGP over Interconnect<br/>169.254.0.0/29" --> CRA
+    FG -- "IPsec/IKEv2<br/>HA VPN" --> HAVPN
     FG -. "Overlay BGP" .-> CRB
     HAVPN --- CRB
     CRA --- VPC
@@ -134,12 +134,11 @@ router bgp 65000
  bgp router-id 10.0.0.1
  bgp log-neighbor-changes
  !
- ! Cloud Router A peer
- neighbor 169.254.0.2 remote-as 65001
- neighbor 169.254.0.2 description GCP-CLOUD-ROUTER-IC
- neighbor 169.254.0.2 fall-over bfd
- !
- address-family ipv4 unicast
+ address-family ipv4 vrf GCP
+  ! Cloud Router A peer
+  neighbor 169.254.0.2 remote-as 65001
+  neighbor 169.254.0.2 description GCP-CLOUD-ROUTER-IC
+  neighbor 169.254.0.2 fall-over bfd
   neighbor 169.254.0.2 activate
   neighbor 169.254.0.2 route-map RM-GCP-IC-IN in
   neighbor 169.254.0.2 route-map RM-GCP-IC-OUT out
@@ -158,6 +157,10 @@ route-map RM-GCP-IC-IN permit 10
 ip prefix-list PFX-GCP-VPCS permit 10.128.0.0/20 le 28
 ip prefix-list PFX-ONPREM-SUMMARY permit 10.0.0.0/8
 ```
+
+> VRF `GCP` must be defined and the Interconnect interface assigned to it before this
+> config is applied. See the [VRF-Lite config guide](../cisco/cisco_vrf_config.md) for
+> VRF definitions and FortiGate subinterface requirements.
 
 ### B. FortiGate — HA VPN Phase 1 (IKEv2 to Cloud VPN Gateway)
 
@@ -233,8 +236,9 @@ config router bgp
             set link-down-failover enable
             set soft-reconfiguration enable
             set capability-graceful-restart enable
-            set timers-keepalive 10
-            set timers-holdtime 30
+            # Cloud Router: keepalive 20–60s (default 20s), hold = 3×keepalive (60s)
+            set timers-keepalive 20
+            set timers-holdtime 60
             set route-map-in "RM-GCP-OVERLAY-IN"
             set route-map-out "RM-GCP-OVERLAY-OUT"
         next
@@ -244,8 +248,8 @@ config router bgp
             set link-down-failover enable
             set soft-reconfiguration enable
             set capability-graceful-restart enable
-            set timers-keepalive 10
-            set timers-holdtime 30
+            set timers-keepalive 20
+            set timers-holdtime 60
             set route-map-in "RM-GCP-OVERLAY-IN"
             set route-map-out "RM-GCP-OVERLAY-OUT"
         next
@@ -280,8 +284,8 @@ GCP side.
 
 | Metric | Default | Optimized BGP Stack |
 | --- | --- | --- |
-| **Underlay detection** | 30s (BGP hold-timer) | **900ms (BFD on Interconnect)** |
-| **Overlay detection** | 20s (DPD 10s × 2) | **Matched to BGP hold-timer (30s)** |
+| **Underlay detection** | 60s (BGP hold-timer) | **900ms (BFD on Interconnect)** |
+| **Overlay detection** | 60s (BGP hold-timer) | **20s (DPD 10s × 2 + link-down-failover)** |
 | **BGP link reaction** | Passive (hold-timer) | **Active (link-down-failover)** |
 | **Encryption** | None (Interconnect unencrypted) | **AES-256 / IKEv2** |
 | **HA VPN SLA** | N/A | **99.99% with two tunnels** |
@@ -294,8 +298,9 @@ GCP side.
 | Command | Platform | Purpose |
 | --- | --- | --- |
 | `show bfd neighbors` | Cisco | BFD on Interconnect BGP peering |
-| `show bgp neighbors 169.254.0.2` | Cisco | Underlay Cloud Router BGP state |
-| `show ip route 10.128.0.0` | Cisco | GCP VPC reachable via Interconnect |
+| `show bgp vpnv4 unicast vrf GCP summary` | Cisco | BGP neighbour state in VRF GCP |
+| `show bgp vpnv4 unicast vrf GCP neighbors 169.254.0.2` | Cisco | Underlay Cloud Router BGP state |
+| `show ip route vrf GCP 10.128.0.0` | Cisco | GCP VPC reachable via Interconnect |
 | `get router info bgp neighbors 169.254.1.1` | FortiGate | Overlay BGP state and timers |
 | `diagnose vpn tunnel list name gcp-havpn-tunnel1` | FortiGate | IKEv2 SA and DPD counters |
 | `get router info routing-table 10.128.0.0` | FortiGate | Confirm overlay route installed |

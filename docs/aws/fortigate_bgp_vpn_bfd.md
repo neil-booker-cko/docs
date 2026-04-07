@@ -27,7 +27,7 @@ timeline
 
 ---
 
-## 2. FortiOS CLI Configuration (TGW Optimized)
+## 2. FortiGate CLI Configuration (TGW Optimized)
 
 ### A. Phase 1 Interface (VTI)
 

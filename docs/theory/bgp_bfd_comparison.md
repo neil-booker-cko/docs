@@ -75,7 +75,7 @@ router bgp 65000
  neighbor 10.1.1.2 timers 60 180
 ```
 
-### FortiOS BGP with BFD
+### FortiGate BGP with BFD
 
 ```fortios
 config router bgp
@@ -104,7 +104,7 @@ end
 | :--- | :--- |
 | `show bfd neighbors` | Verify active heartbeats and intervals. |
 | `show ip bgp neighbors &#124; inc BFD` | Confirm BGP registration with the BFD process. |
-| `get router info bfd neighbor` | (FortiOS) Verify NPU offload and session state. |
+| `get router info bfd neighbor` | (FortiGate) Verify NPU offload and session state. |
 | `debug bfd event` | Monitor session transitions in real-time. |
 
 ---

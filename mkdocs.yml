@@ -66,37 +66,83 @@ nav:
       - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
       - EIGRP vs OSPF vs RIP: theory/igp_comparison.md
       - NTP vs PTP: theory/ntp_vs_ptp.md
+      - eBGP vs iBGP: theory/ebgp_vs_ibgp.md
+      - OSPF vs IS-IS: theory/ospf_vs_isis.md
+      - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
+      - Spanning Tree Design: theory/spanning_tree.md
+      - Data Centre Topologies: theory/dc_topologies.md
+      - HSRP vs VRRP: theory/hsrp_vs_vrrp.md
+      - Multicast: theory/multicast.md
+      - Quality of Service: theory/qos.md
+      - SD-WAN Design Principles: theory/sdwan.md
+      - DHCP Security: theory/dhcp_security.md
+      - VLANs & 802.1Q: theory/vlans.md
+      - NAT: theory/nat.md
+      - IPsec & IKE: theory/ipsec.md
+      - Cloud Network Design: theory/cloud_network_design.md
   - Cisco:
       - BFD Core Config: cisco/cisco_bfd_config_guide.md
       - Static BFD: cisco/cisco_static_bfd_guide.md
       - Multihop BFD: cisco/cisco_multihop_bfd_guide.md
       - Active/Passive to AWS TGW: cisco/cisco_aws_tgw_dx.md
+      - IS-IS Config: cisco/cisco_isis_config.md
+      - OSPF Config: cisco/cisco_ospf_config.md
+      - BGP & iBGP Design: cisco/cisco_bgp_ibgp.md
+      - HSRP & VRRP: cisco/cisco_hsrp_vrrp.md
+      - DHCP, Snooping & DAI: cisco/cisco_dhcp_snooping.md
+      - QoS Config: cisco/cisco_qos_config.md
+      - Multicast & PIM: cisco/cisco_multicast_pim.md
+      - VLAN Config: cisco/cisco_vlan_config.md
+      - NAT Config: cisco/cisco_nat_config.md
+      - ACL Config: cisco/cisco_acl_config.md
+      - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
   - FortiGate:
       - BFD Core Config: fortigate/fortigate_bfd_config_guide.md
       - Multihop BFD: fortigate/fortigate_multihop_bfd_guide.md
       - Static BFD & Health Checks: fortigate/fortigate_static_bfd_guide.md
+      - SD-WAN: fortigate/fortigate_sdwan.md
+      - VRRP: fortigate/fortigate_vrrp.md
+      - NAT: fortigate/fortigate_nat.md
+      - HA (FGCP): fortigate/fortigate_ha.md
   - AWS Architecture:
+      - Direct Connect Setup: aws/aws_direct_connect_setup.md
       - BGP Stack (Flagship): aws/bgp_stack_vpn_over_dx.md
       - BGP over VPN Optimization: aws/bgp_vpn_optimization.md
       - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md
       - Troubleshooting VPN & BGP Logs: aws/troubleshooting_vpn_bgp_log_analysis_guide.md
   - Azure Architecture:
+      - ExpressRoute Setup: azure/azure_expressroute_setup.md
       - BGP Stack (Flagship): azure/bgp_stack_vpn_over_expressroute.md
       - Active-Active VPN Optimization: azure/bgp_vpn_optimization.md
+      - FortiGate to VPN GW (ECMP): azure/fortigate_bgp_vpn_bfd.md
       - Troubleshooting VPN & BGP Logs: azure/troubleshooting_vpn_bgp_log_analysis_guide.md
   - GCP Architecture:
+      - Cloud Interconnect Setup: gcp/gcp_cloud_interconnect_setup.md
       - BGP Stack (Flagship): gcp/bgp_stack_vpn_over_interconnect.md
       - HA VPN Optimization: gcp/bgp_vpn_optimization.md
+      - FortiGate to HA VPN (ECMP): gcp/fortigate_bgp_vpn_bfd.md
       - Troubleshooting VPN & BGP Logs: gcp/troubleshooting_vpn_bgp_log_analysis_guide.md
+  - Operations:
+      - Cisco IOS-XE Upgrade: operations/cisco_upgrade.md
+      - FortiGate Firmware Upgrade: operations/fortigate_upgrade.md
+      - Pre/Post Change Verification: operations/change_verification.md
+      - BGP Troubleshooting: operations/bgp_troubleshooting.md
+      - OSPF Troubleshooting: operations/ospf_troubleshooting.md
+      - Config Backup & Restore: operations/config_backup.md
   - Packet Headers:
       - Overview: packets/index.md
       - Layer 2 — Data Link:
           - Ethernet II: packets/ethernet.md
           - ARP: packets/arp.md
+          - STP / RSTP: packets/stp.md
+          - LLDP: packets/lldp.md
+          - CDP: packets/cdp.md
       - Layer 3 — Network:
           - IPv4: packets/ipv4.md
           - IPv6: packets/ipv6.md
           - ICMP: packets/icmp.md
+          - GRE: packets/gre.md
+          - VXLAN: packets/vxlan.md
       - Layer 4 — Transport:
           - TCP: packets/tcp.md
           - UDP: packets/udp.md
@@ -110,18 +156,33 @@ nav:
       - IGRP: routing/igrp.md
   - Application Protocols:
       - Overview: application/index.md
-      - HTTP / HTTPS: application/http.md
-      - DNS: application/dns.md
-      - PTP: application/ptp.md
-      - SSH: application/ssh.md
-      - SNMP: application/snmp.md
-      - Syslog: application/syslog.md
+      - Web:
+          - HTTP / HTTPS: application/http.md
+      - Infrastructure:
+          - DNS: application/dns.md
+          - DHCP: application/dhcp.md
+          - NTP: application/ntp.md
+          - PTP: application/ptp.md
+      - AAA:
+          - RADIUS: application/radius.md
+          - TACACS+: application/tacacs.md
+      - Management & Monitoring:
+          - SSH: application/ssh.md
+          - SNMP: application/snmp.md
+          - Syslog: application/syslog.md
+          - NetFlow / IPFIX: application/netflow.md
+          - NETCONF / RESTCONF: application/netconf.md
+          - gNMI: application/gnmi.md
   - Reference:
       - Overview: reference/index.md
       - IP Network Ranges: reference/ip_networks.md
       - TCP/UDP Ports: reference/ports.md
+      - ICMP Types & Codes: reference/icmp_types.md
+      - MTU & Fragmentation: reference/mtu.md
       - BGP Path Selection: reference/bgp_path_selection.md
+      - BGP Communities: reference/bgp_communities.md
       - Administrative Distance: reference/admin_distance.md
+      - DSCP & QoS: reference/dscp_qos.md
 
 extra_javascript:
   - https://unpkg.com/mermaid@11/dist/mermaid.esm.min.mjs

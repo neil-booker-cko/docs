@@ -10,16 +10,17 @@ packets.
 ## 1. Failure Detection Timeline (Path Failover)
 
 Even in an Active/Passive setup, BFD is required. Without it, the router would continue
-to prefer the "Primary" path for up to 90 seconds after a failure, resulting in
-a complete outage during that window.
+to prefer the "Primary" path for up to 30 seconds after a failure, resulting in
+a complete outage during that window. AWS TGW BGP timers are fixed at 10s keepalive /
+30s hold — the Cisco session negotiates to these values regardless of local timer config.
 
 ```mermaid
 timeline
     title DX Active/Passive Failover: BFD Reaction
-    section Standard BGP (90s)
+    section Standard BGP (30s — AWS TGW hold timer)
         T=0s : Primary DX Path Fails
-        T=90s : BGP Hold Timer Expires : Primary Route Withdrawn
-        T=91s : Secondary Route Becomes Best Path : Traffic Restored
+        T=30s : BGP Hold Timer Expires : Primary Route Withdrawn
+        T=31s : Secondary Route Becomes Best Path : Traffic Restored
     section BFD Optimized (900ms)
         T=0s : Primary DX Path Fails
         T=900ms : BFD Detects Failure : Primary Session Killed
@@ -75,7 +76,7 @@ router bgp 65000
  neighbor 169.254.x.2 description AWS-TGW-PRIMARY
  neighbor 169.254.x.2 fall-over bfd
  neighbor 169.254.x.2 route-map RM-AWS-PRIMARY-IN in
- neighbor 169.254.x.2 timers 30 90
+ neighbor 169.254.x.2 timers 10 30
  neighbor 169.254.x.2 activate
  !
  neighbor 169.254.y.2 remote-as 64512

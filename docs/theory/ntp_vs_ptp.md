@@ -154,7 +154,7 @@ NTP stratum 1 servers.
 | **UDP Port** | `123` | `319` (event), `320` (general) |
 | **Multicast** | `224.0.1.1` | `224.0.1.129`, `224.0.0.107` |
 | **Wireshark Filter** | `ntp` | `ptp` |
-| **Packet docs** | NTP (page coming soon) | [PTP](../application/ptp.md) |
+| **Packet docs** | [NTP](../application/ntp.md) | [PTP](../application/ptp.md) |
 
 ---
 

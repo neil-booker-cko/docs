@@ -90,7 +90,7 @@ Protocol behaviour analysis and side-by-side comparisons to inform design decisi
 | [Multihop BFD](cisco/cisco_multihop_bfd_guide.md) | Sub-second detection for non-directly connected peers |
 | [Active/Passive to AWS TGW](cisco/cisco_aws_tgw_dx.md) | DX Transit VIFs and BGP Communities |
 
-### Fortinet FortiOS
+### Fortinet FortiGate
 
 | Guide | Description |
 | --- | --- |

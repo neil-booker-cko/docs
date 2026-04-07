@@ -16,15 +16,18 @@ standby promotion delay.
 
 ### The BGP > DPD Safety Rule
 
-Azure VPN Gateway has a fixed 30-second DPD detection floor (matching the AWS
-constraint). The same safety rule applies:
+Azure VPN Gateway uses **fixed BGP timers** — keepalive 60 seconds, hold timer 180
+seconds — and these cannot be changed on the Azure side. On-premises devices must be
+configured to match. The safety rule still applies:
 
 ```text
-BGP Hold Timer (30s) > Total local DPD detection time (5s × 3 = 15s)
+BGP Hold Timer (180s) >> DPD timeout (default 45s, tunable to 9s minimum)
 ```
 
 A BGP hold-timer lower than the DPD detection time causes BGP to expire and withdraw
 routes before the tunnel is marked down — resulting in a double reconvergence event.
+With Azure's fixed 180s hold timer and a DPD timeout of 45s or less, this is not a
+risk at default settings.
 
 ---
 
@@ -35,12 +38,12 @@ routes before the tunnel is marked down — resulting in a double reconvergence 
 title: "Active-Active VPN Gateway"
 ---
 graph LR
-    FG["FortiGate\nAS 65000"]
-    GW0["VPN GW Instance 0\nAS 65515\n169.254.21.1"]
-    GW1["VPN GW Instance 1\nAS 65515\n169.254.22.1"]
-    VNet["Azure VNet\n10.100.0.0/16"]
-    FG -- "Tunnel-A\n169.254.21.x" --> GW0
-    FG -- "Tunnel-B\n169.254.22.x" --> GW1
+    FG["FortiGate<br/>AS 65000"]
+    GW0["VPN GW Instance 0<br/>AS 65515<br/>169.254.21.1"]
+    GW1["VPN GW Instance 1<br/>AS 65515<br/>169.254.22.1"]
+    VNet["Azure VNet<br/>10.100.0.0/16"]
+    FG -- "Tunnel-A<br/>169.254.21.x" --> GW0
+    FG -- "Tunnel-B<br/>169.254.22.x" --> GW1
     GW0 --- VNet
     GW1 --- VNet
 ```
@@ -69,9 +72,9 @@ timeline
     title Active-Active VPN Gateway Failover
     section Tunnel A fails (Instance 0 failure)
         T=0s : Instance 0 path fails
-        T=15s : DPD retries exhausted : Tunnel-A VTI goes down
-        T=15s : link-down-failover kills BGP on Tunnel-A : routes withdrawn
-        T=15s : All traffic shifts to Tunnel-B : ECMP path removed
+        T=45s : DPD timeout (default 45s) : Tunnel-A VTI goes down
+        T=45s : link-down-failover kills BGP on Tunnel-A : routes withdrawn
+        T=45s : All traffic shifts to Tunnel-B : ECMP path removed
     section Instance 0 recovers
         T=X : IKEv2 re-establishes : Tunnel-A VTI up
         T=X+5s : BGP reconverges : ECMP restored
@@ -158,8 +161,8 @@ config router bgp
             set link-down-failover enable
             set soft-reconfiguration enable
             set capability-graceful-restart enable
-            set timers-keepalive 10
-            set timers-holdtime 30
+            set timers-keepalive 60
+            set timers-holdtime 180
             set route-map-in "RM-AZURE-IN"
             set route-map-out "RM-AZURE-OUT"
         next
@@ -169,8 +172,8 @@ config router bgp
             set link-down-failover enable
             set soft-reconfiguration enable
             set capability-graceful-restart enable
-            set timers-keepalive 10
-            set timers-holdtime 30
+            set timers-keepalive 60
+            set timers-holdtime 180
             set route-map-in "RM-AZURE-IN"
             set route-map-out "RM-AZURE-OUT"
         next

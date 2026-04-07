@@ -1,4 +1,4 @@
-# FortiOS: Multihop BFD Configuration
+# FortiGate: Multihop BFD Configuration
 
 ## 1. Overview & Principles
 
@@ -9,7 +9,7 @@ cloud).
 
 ### The BFD-Map Logic
 
-Unlike Cisco, which uses a template applied to an interface, FortiOS uses a `bfd-map`.
+Unlike Cisco, which uses a template applied to an interface, FortiGate uses a `bfd-map`.
 This map explicitly links a destination IP (the remote peer) to a source IP and
 sets the hardware/software timers.
 
