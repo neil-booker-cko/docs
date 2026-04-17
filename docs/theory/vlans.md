@@ -65,9 +65,12 @@ VLAN, each with its own IP address (the default gateway for that VLAN).
 
 - Simple to configure; uses one physical interface on the router
 - All inter-VLAN traffic passes through a single physical link — that link
+
   becomes a bottleneck at scale
+
 - Routing is done in router software — lower throughput than hardware switching
 - Suitable for small deployments, labs, or where policy enforcement
+
   (firewall, ACL) in the routing path is required
 
 ### 2. Layer 3 Switch with SVIs
@@ -77,10 +80,15 @@ for each VLAN. The SVI is a logical interface assigned an IP address; the switch
 routes between SVIs in hardware at line rate using its forwarding ASIC.
 
 - Routing occurs in hardware — throughput is not limited by a CPU or a single
+
   uplink
+
 - Preferred for high-throughput intra-campus routing (inter-VLAN traffic stays
+
   on the switch fabric)
+
 - SVIs exist in running-config; they become active only when at least one port
+
   in that VLAN is up and in a forwarding state
 
 ### 3. Separate Physical Interfaces per VLAN

@@ -10,6 +10,7 @@ traffic to that specific tunnel.
 
 - **ECMP Support:** BGP over TGW allows for multi-tunnel hashing (Multipath).
 - **MSS Clamping:** Essential to prevent fragmentation over IPsec/DX (Recommend
+
     1379).
 
 ## 2. Detection Timelines (Underlay Failure)
@@ -32,6 +33,7 @@ timeline
 ### A. Phase 1 Interface (VTI)
 
 ```fortios
+
 config vpn ipsec phase1-interface
     edit "AWS_TGW_VPN_01"
         set bfd enable
@@ -43,6 +45,7 @@ end
 ### B. BGP with ECMP
 
 ```fortios
+
 config router bgp
     set ebgp-multipath enable
     config neighbor

@@ -71,7 +71,8 @@ The facility installs a cross-connect between the customer's cage (or MMR) and t
 AWS cage at the patch panel port specified in the LOA-CFA.
 
 Typical timeline: **3–15 business days**. Some facilities offer expedited cross-connect
-installation for an additional fee. The AWS Console connection status remains "Requested"
+installation for an additional fee. The AWS Console connection status remains
+"Requested"
 until the facility completes the cross-connect and AWS detects a physical signal.
 
 Once the cross-connect is installed and a physical signal is present on both ends, the
@@ -91,6 +92,7 @@ Before configuring the VIF and BGP, confirm the physical layer is healthy.
 **Customer router (Cisco IOS-XE):**
 
 ```text
+
 show interfaces GigabitEthernet0/0
 show interfaces GigabitEthernet0/0 transceiver
 ```
@@ -102,6 +104,7 @@ indicates a cabling, fibre, or SFP issue — not an AWS problem.
 **Customer router (FortiGate):**
 
 ```bash
+
 get system interface
 diagnose hardware deviceinfo nic <port-name>
 ```
@@ -140,7 +143,8 @@ the DX Gateway.
 
 ## Step 5 — Configure BGP on the Customer Router
 
-AWS requires BGP for all VIF types. There is no static routing option for Direct Connect.
+AWS requires BGP for all VIF types. There is no static routing option for Direct
+Connect.
 
 The following examples use APIPA addressing, which avoids allocating routable /30
 subnets for VIF peerings. The BGP neighbour address is the AWS-assigned APIPA address
@@ -149,6 +153,7 @@ from the VIF configuration screen.
 **Cisco IOS-XE — Private or Transit VIF:**
 
 ```text
+
 ! Create the subinterface for the VIF VLAN
 interface GigabitEthernet0/0.100
  encapsulation dot1Q 100
@@ -171,6 +176,7 @@ router bgp 65001
 **FortiGate:**
 
 ```bash
+
 config system interface
  edit "dx-vif100"
   set vdom "root"
@@ -210,12 +216,17 @@ tables.
 For multi-VPC or multi-region access, use a DX Gateway:
 
 1. **Create the DX Gateway**: Direct Connect → Direct Connect Gateways → Create.
+
    Assign an Amazon-side ASN (64512–65534 recommended; must differ from the TGW ASN).
+
 2. **Associate the DX Gateway with a TGW**: in the TGW console, create an association
+
    between the TGW and the DX Gateway. Specify which VPC CIDRs the TGW should advertise
    to the DX Gateway.
+
 3. **Create a Transit VIF** pointing at the DX Gateway rather than a VGW.
 4. Configure the customer router as above — the BGP session is the same structure; only
+
    the remote-as and the prefixes advertised by AWS differ.
 
 A single DX Gateway can be associated with TGWs in multiple AWS regions, allowing one
@@ -243,12 +254,19 @@ primary/backup path design.
 ## Key BGP Behaviours
 
 - AWS advertises the VPC CIDR attached to the VGW (Private VIF) or all TGW-attached
+
   VPC CIDRs (Transit VIF)
+
 - The default prefix limit is 100 routes per BGP session on a Private VIF and 200 on a
+
   Transit VIF. Exceeding the limit causes the BGP session to be reset
+
 - AWS will not accept a default route (0.0.0.0/0) advertised by the customer over a
+
   Private or Transit VIF
+
 - APIPA addressing (169.254.x.x) on the VIF is expected and supported — do not filter
+
   this range on the customer router
 
 ---

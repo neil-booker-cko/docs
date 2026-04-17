@@ -51,6 +51,7 @@ Retrieve configuration or operational data at a specific path. Equivalent to
 NETCONF `<get-config>` or `<get>`.
 
 ```text
+
 GetRequest:
   path:     /interfaces/interface[name=GigabitEthernet0/0]/state/counters
   type:     STATE | CONFIG | OPERATIONAL | ALL
@@ -63,9 +64,13 @@ Modify configuration. Supports `Update` (merge), `Replace` (full replace), and
 `Delete` operations combined in a single atomic transaction.
 
 ```text
+
 SetRequest:
   update:
+
     - path: /interfaces/interface[name=GigabitEthernet0/0]/config/description
+      val:  "Uplink to Core"
+
       val:  "Uplink to Core"
 ```
 
@@ -90,6 +95,7 @@ Streaming telemetry — the most important gNMI RPC. The client sends a
 ### Subscribe Example (SAMPLE, every 10 seconds)
 
 ```json
+
 {
   "subscribe": {
     "subscription": [
@@ -113,6 +119,7 @@ gNMI paths correspond to YANG container and list nodes. List keys are specified
 in square brackets:
 
 ```text
+
 /interfaces/interface[name=GigabitEthernet0/0]/state/in-octets
 
 /network-instances/network-instance[name=default]
@@ -130,6 +137,7 @@ multiple paths within the same YANG subtree.
 Common open-source collection stack:
 
 ```text
+
 Device (gNMI TCP 9339)
   → gnmic / telegraf (gNMI input plugin)
     → InfluxDB / Prometheus / OpenTSDB
@@ -148,6 +156,7 @@ Device (gNMI TCP 9339)
 ## Cisco IOS-XE Configuration
 
 ```ios
+
 ! Enable gNMI with TLS
 gnxi
 gnxi secure-server
@@ -176,14 +185,24 @@ show gnxi state detail
 ## Notes
 
 - gNMI requires TLS. Self-signed certificates are acceptable for lab use; production
+
   deployments should use a PKI with device certificates.
+
 - Cisco IOS-XE gNMI support: 16.12+ for `Get` and `Subscribe`; 17.x for full `Set`
+
   support. Check `show gnxi state detail` for capability confirmation.
+
 - `ON_CHANGE` subscription is more efficient than `SAMPLE` for infrequently changing
+
   state (BGP session status, interface admin state). `SAMPLE` is correct for counters
   and gauges.
+
 - Not all paths support `ON_CHANGE` — use `Capabilities` or device documentation to
+
   confirm. Unsupported paths fall back to `TARGET_DEFINED` behaviour.
+
 - FortiGate has limited native gNMI support; FortiOS primarily exposes REST and SNMP
+
   for telemetry. FortiManager may provide limited gNMI in newer releases.
+
 - The `sample_interval` field is in nanoseconds: 10 s = `10000000000`.

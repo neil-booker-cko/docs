@@ -34,6 +34,7 @@ risk at default settings.
 ## 2. Active-Active VPN Gateway Architecture
 
 ```mermaid
+
 ---
 title: "Active-Active VPN Gateway"
 ---
@@ -68,6 +69,7 @@ and matched in the FortiGate interface configuration.
 ## 3. Detection Timelines
 
 ```mermaid
+
 timeline
     title Active-Active VPN Gateway Failover
     section Tunnel A fails (Instance 0 failure)
@@ -87,6 +89,7 @@ timeline
 ### A. FortiGate — Dual Tunnel (Active-Active)
 
 ```fortios
+
 ! Tunnel A — Instance 0
 config vpn ipsec phase1-interface
     edit "azure-aa-tunnel-a"
@@ -122,6 +125,7 @@ end
 ### B. FortiGate — Tunnel Interfaces and Zone
 
 ```fortios
+
 config system interface
     edit "azure-aa-tunnel-a"
         set ip 169.254.21.2 255.255.255.255
@@ -146,6 +150,7 @@ end
 ### C. FortiGate — BGP ECMP
 
 ```fortios
+
 config router bgp
     set as 65000
     set router-id 10.0.0.2
@@ -198,6 +203,7 @@ routing table. The BGP table still elects a single best path for advertisement, 
 both paths are active for local forwarding. Verify with:
 
 ```fortios
+
 get router info routing-table database
 ! Expect two entries for the same Azure prefix, one per tunnel
 ```
@@ -211,6 +217,7 @@ interface. Placing both VTIs in `ZONE_AZURE_VPN` resolves this.
 ### C. Loose RPF on Tunnel Interfaces
 
 ```fortios
+
 config system interface
     edit "azure-aa-tunnel-a"
         set src-check loose

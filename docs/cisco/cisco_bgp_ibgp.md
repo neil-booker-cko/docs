@@ -1,10 +1,14 @@
 # Cisco IOS-XE: BGP and iBGP Design Guide
 
-BGP (Border Gateway Protocol, RFC 4271) is the inter-domain routing protocol of the internet.
-It is a path-vector protocol that uses TCP (port 179) for session transport and exchanges
-reachability information as UPDATE messages carrying NLRI and path attributes. This guide
+BGP (Border Gateway Protocol, RFC 4271) is the inter-domain routing protocol of the
+internet.
+It is a path-vector protocol that uses TCP (port 179) for session transport and
+exchanges
+reachability information as UPDATE messages carrying NLRI and path attributes. This
+guide
 covers BGP configuration for both eBGP (external peering) and iBGP (internal peering) on
-IOS-XE, including route reflectors, next-hop-self, and the key design constraints that make
+IOS-XE, including route reflectors, next-hop-self, and the key design constraints that
+make
 iBGP different from eBGP.
 
 For the theory behind these differences see [eBGP vs iBGP](../theory/ebgp_vs_ibgp.md); for
@@ -14,27 +18,47 @@ BGP path attributes see [BGP Path Selection](../reference/bgp_path_selection.md)
 
 ## 1. Overview & Principles
 
-- **eBGP (External BGP):** Peers in different Autonomous Systems. TTL defaults to 1 (direct
-  link assumed). The AS number of the advertising router is prepended to AS_PATH on every
+- **eBGP (External BGP):** Peers in different Autonomous Systems. TTL defaults to 1
+(direct
+
+(direct
+
+link assumed). The AS number of the advertising router is prepended to AS_PATH on every
   eBGP advertisement. NEXT_HOP is set to the advertising router's interface IP.
-- **iBGP (Internal BGP):** Peers within the same AS. TTL is 255 — multihop is implicit and
+
+- **iBGP (Internal BGP):** Peers within the same AS. TTL is 255 — multihop is implicit
+and
+
+and
+
   no `ebgp-multihop` statement is needed. iBGP does **not** prepend the local AS to
   AS_PATH and does **not** modify NEXT_HOP. This means iBGP peers must be able to reach
   the eBGP next-hop via the IGP, or `next-hop-self` must be configured.
+
 - **iBGP split horizon:** A route learned from one iBGP peer is never re-advertised to
-  another iBGP peer. This rule prevents routing loops inside the AS but requires every iBGP
-  speaker to hear every route from a peer that does originate it — leading to the full-mesh
+
+another iBGP peer. This rule prevents routing loops inside the AS but requires every
+iBGP
+speaker to hear every route from a peer that does originate it — leading to the
+full-mesh
   requirement.
+
 - **iBGP full mesh:** Every iBGP speaker must have a direct session to every other iBGP
-  speaker: n(n-1)/2 sessions. At 10 routers this is 45 sessions; at 50 routers it is 1225.
+
+speaker: n(n-1)/2 sessions. At 10 routers this is 45 sessions; at 50 routers it is 1225.
   This does not scale.
+
 - **Route Reflectors (RR):** An RR relaxes split horizon for its clients — it reflects
-  routes received from a client to all other clients and to non-client iBGP peers. Clients
+
+routes received from a client to all other clients and to non-client iBGP peers. Clients
   need no special configuration and have no knowledge that they are behind an RR. This
   reduces session count to n (one session per client to the RR).
+
 - **next-hop-self:** When a PE router receives a prefix from an eBGP peer, the NEXT_HOP
-  attribute is the eBGP peer's IP. Other iBGP routers typically cannot resolve that external
-  IP via the IGP. `next-hop-self` on the PE rewrites NEXT_HOP to the PE's loopback, which
+
+attribute is the eBGP peer's IP. Other iBGP routers typically cannot resolve that
+external
+IP via the IGP. `next-hop-self` on the PE rewrites NEXT_HOP to the PE's loopback, which
   all iBGP peers can reach via OSPF/IS-IS.
 
 ---
@@ -60,6 +84,7 @@ table maintenance.
 ### Route Reflector Design — Recommended
 
 ```mermaid
+
 graph TD
     RR((Route Reflector\nRR))
     C1((Client 1)) --- RR
@@ -83,6 +108,7 @@ is low-overhead and essential for diagnosing session flaps. Always apply inbound
 route-maps on eBGP sessions — accepting or advertising without policy is a production risk.
 
 ```ios
+
 router bgp 65000
  bgp router-id 10.255.255.1
  bgp log-neighbor-changes
@@ -112,6 +138,7 @@ local loopback, allowing iBGP peers to resolve the next-hop via the IGP rather t
 requiring a route to the external peer's IP.
 
 ```ios
+
 router bgp 65000
  bgp router-id 10.255.255.2
  bgp log-neighbor-changes
@@ -137,6 +164,7 @@ that receives a route with its own RID in ORIGINATOR_ID or its own cluster-id in
 CLUSTER_LIST silently discards it.
 
 ```ios
+
 ! On the Route Reflector
 router bgp 65000
  bgp router-id 10.255.255.10
@@ -179,6 +207,7 @@ in the peering path, `ebgp-multihop` raises the TTL. Use the lowest value that c
 actual hop count.
 
 ```ios
+
 router bgp 65000
  neighbor 10.255.255.5 remote-as 65002
  neighbor 10.255.255.5 description EBGP-MULTIHOP-PEER
@@ -194,6 +223,7 @@ operational tuning. BFD is preferred for fast failure detection — see Section 
 timers override the global default.
 
 ```ios
+
 router bgp 65000
  timers bgp 10 30                                ! Global: keepalive 10s, holdtime 30s
  !
@@ -209,6 +239,7 @@ without aggressive BGP timer tuning. `fall-over bfd` instructs BGP to immediatel
 down the session when BFD declares the path down.
 
 ```ios
+
 router bgp 65000
  neighbor 10.255.255.3 fall-over bfd             ! iBGP peer with BFD
  neighbor 203.0.113.2 fall-over bfd              ! eBGP peer with BFD
@@ -218,6 +249,7 @@ bfd-template single-hop BGP-BFD
 ```
 
 ```mermaid
+
 sequenceDiagram
     participant R1 as R1 (BGP Speaker)
     participant R2 as R2 (BGP Peer)
@@ -240,6 +272,7 @@ patricia-trie lookup rather than linear matching. Always apply both inbound and 
 policy on eBGP sessions.
 
 ```ios
+
 ! Prefix list — accept only default route from eBGP peer
 ip prefix-list PFX-ISP-IN seq 5 permit 0.0.0.0/0
 ip prefix-list PFX-ISP-IN seq 10 deny 0.0.0.0/0 le 32  ! Deny everything else
@@ -261,6 +294,7 @@ during a BGP restart while signalling peers to preserve routes marked as stale. 
 prevents a traffic black-hole during planned restarts (e.g. software upgrades).
 
 ```ios
+
 router bgp 65000
  bgp graceful-restart                           ! Advertise GR capability to all peers
  bgp graceful-restart restart-time 120          ! How long peers wait before purging stale routes
@@ -275,6 +309,7 @@ is required for eBGP ECMP when paths traverse different ASes (different AS_PATH 
 would otherwise prevent equal-cost selection).
 
 ```ios
+
 router bgp 65000
  address-family ipv4 unicast
   maximum-paths 8                               ! eBGP ECMP across up to 8 equal paths

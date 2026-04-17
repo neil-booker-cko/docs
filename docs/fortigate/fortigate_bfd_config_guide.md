@@ -3,14 +3,19 @@
 ## 1. Overview & Principles
 
 On FortiGate units (SoC4+), BFD is offloaded to the Network Processor (NPU) for
-maximum performance. This allows for sub-second failover without impacting the Management
+maximum performance. This allows for sub-second failover without impacting the
+Management
 CPU, even across hundreds of sessions.
 
 ### Key Principles
 
 * **NPU Offload:** Mandatory for stability. It prevents "false positives" during
     high CPU spikes.
+    high CPU spikes.
+
 * **Link-Down Failover:** In FortiGate, this command is critical for BGP to ensure
+    the RIB is updated immediately when the physical or logical (BFD) state changes.
+
     the RIB is updated immediately when the physical or logical (BFD) state changes.
 
 ## 2. Detection Timelines (Heartbeat)
@@ -30,6 +35,7 @@ timeline
 ### A. Defining BFD Timers
 
 ```fortios
+
 config system bfd
     config neighbor
         edit "10.1.1.2"
@@ -44,6 +50,7 @@ end
 ### B. Protocol Integration (BGP)
 
 ```fortios
+
 config router bgp
     config neighbor
         edit "10.1.1.2"

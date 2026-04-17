@@ -1,9 +1,12 @@
 # OSPF vs IS-IS
 
-OSPF (RFC 2328) and IS-IS (ISO 10589, adapted for IP by RFC 1195) are both link-state IGPs
+OSPF (RFC 2328) and IS-IS (ISO 10589, adapted for IP by RFC 1195) are both link-state
+IGPs
 using Dijkstra's SPF algorithm. They are functionally similar at a high level but differ
-significantly in operation, design, and deployment context. OSPF is dominant in enterprise
-networks; IS-IS is the predominant IGP in service provider and large-scale ISP backbones,
+significantly in operation, design, and deployment context. OSPF is dominant in
+enterprise
+networks; IS-IS is the predominant IGP in service provider and large-scale ISP
+backbones,
 and has growing datacentre adoption.
 
 ---
@@ -82,10 +85,15 @@ Both protocols flood LSAs/LSPs to build an identical topology database within a 
 Key differences:
 
 - OSPF LSAs have individual sequence numbers and ages; LSAs are reflooded every MaxAge
+
   (3600 s default).
+
 - IS-IS LSPs have sequence numbers and remaining lifetime; LSPs are refreshed every
+
   15 minutes by default.
+
 - IS-IS PDUs are smaller than OSPF LSAs for equivalent topology due to more efficient
+
   encoding.
 
 ---
@@ -101,8 +109,10 @@ participate in IS-IS).
 
 ## Metric Behaviour
 
-OSPF metrics default to `reference-bandwidth / interface-bandwidth` (must raise reference
-bandwidth for GbE links). IS-IS uses a flat metric per interface (default 10 for all link
+OSPF metrics default to `reference-bandwidth / interface-bandwidth` (must raise
+reference
+bandwidth for GbE links). IS-IS uses a flat metric per interface (default 10 for all
+link
 speeds) — must be manually configured to reflect actual link costs. Wide metrics
 (RFC 3784) extend IS-IS to 24-bit per-link metrics to support traffic engineering.
 
@@ -111,7 +121,8 @@ speeds) — must be manually configured to reflect actual link costs. Wide metri
 ## Multi-Topology IS-IS (MT-ISIS, RFC 5120)
 
 A single IS-IS process can run separate topologies for IPv4 and IPv6 simultaneously —
-topology ID 0 for IPv4, topology ID 2 for IPv6 only. This avoids the need to run separate
+topology ID 0 for IPv4, topology ID 2 for IPv6 only. This avoids the need to run
+separate
 OSPFv2 and OSPFv3 processes.
 
 ---
@@ -127,7 +138,10 @@ OSPFv2 and OSPFv3 processes.
 ### Use IS-IS for
 
 - Service provider backbone (proven at scale, widely used by ISPs)
-- Large-scale datacentre fabrics (Clos/spine-leaf with BGP as overlay, IS-IS as underlay)
+- Large-scale datacentre fabrics (Clos/spine-leaf with BGP as overlay, IS-IS as
+underlay)
+underlay)
+
 - Networks requiring a single IGP process for both IPv4 and IPv6
 - Environments where IS-IS's lower flooding overhead at scale is beneficial
 
@@ -136,11 +150,18 @@ OSPFv2 and OSPFv3 processes.
 ## Notes
 
 - IS-IS does not require IP to form adjacencies — the neighbour relationship is Layer 2
+
   based. This is both an advantage (works even if IP is misconfigured) and a constraint
-  (neighbours must be on the same Layer 2 segment unless using GRE or other encapsulation).
+(neighbours must be on the same Layer 2 segment unless using GRE or other
+encapsulation).
+
 - Cisco IOS IS-IS: `router isis`, `net <NSAP>` — the NSAP (Network Service Access Point)
-  identifies the router in IS-IS. Format: `49.0001.1921.6800.0001.00`, where `49` = private
+
+identifies the router in IS-IS. Format: `49.0001.1921.6800.0001.00`, where `49` =
+private
   use AFI, `0001` = area 1, `1921.6800.0001` = router system ID (192.168.0.1 in hex).
+
 - IS-IS has no concept of passive interfaces in the same way as OSPF — interfaces not
+
   running IS-IS are simply not configured with `ip router isis`. Use `passive-interface`
   under `router isis` to advertise a prefix without forming adjacencies.

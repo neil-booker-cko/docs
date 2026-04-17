@@ -17,6 +17,7 @@ sets the hardware/software timers.
 
 - **UDP Port 4784:** Multihop BFD uses this port (Single-hop uses 3784).
 - **NPU Offload:** Multihop BFD is typically processed in software by the CPU unless
+
     specifically offloaded by newer NP7/NP8 chipsets.
 
 ## 2. Detection Timelines (Heartbeat)
@@ -38,6 +39,7 @@ timeline
 This defines the "session" for the specific multihop target.
 
 ```fortios
+
 config router bfd-map
     edit 1
         set destination 10.255.255.2
@@ -55,6 +57,7 @@ end
 The neighbor must be explicitly set for multihop.
 
 ```fortios
+
 config router bgp
     config neighbor
         edit "10.255.255.2"

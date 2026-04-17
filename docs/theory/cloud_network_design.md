@@ -22,9 +22,11 @@ the degree of isolation from shared internet infrastructure.
 | Dedicated private connection | Direct Connect | ExpressRoute | Dedicated Interconnect | 1 Gbps – 100 Gbps | Deterministic; no internet path | Production workloads; compliance; high throughput |
 
 The dedicated private connection tier eliminates the shared internet entirely. Traffic
-travels from the customer router to the cloud provider's edge over a physical cross-connect
+travels from the customer router to the cloud provider's edge over a physical
+cross-connect
 at a co-location facility. Latency is consistent hop-to-hop; the path does not traverse
-the public internet at any point. This is the recommended model for production workloads.
+the public internet at any point. This is the recommended model for production
+workloads.
 
 See the connection setup guides for each provider:
 [AWS Direct Connect](../aws/aws_direct_connect_setup.md) ·
@@ -70,7 +72,8 @@ further constrains large flat mesh designs.
 
 AWS Transit Gateway (TGW), Azure Virtual WAN, and GCP Network Connectivity Center (NCC)
 address the core limitation of hub-and-spoke without requiring a customer-managed hub
-VPC. The transit service is a managed routing construct in the cloud provider's backbone.
+VPC. The transit service is a managed routing construct in the cloud provider's
+backbone.
 VPCs attach to it; routing between attachments is handled natively without traffic
 passing through a customer-managed device.
 
@@ -176,11 +179,16 @@ expected behaviour, not a configuration error. All three providers use link-loca
 addresses for BGP peering on certain connection types:
 
 - **AWS Direct Connect**: the customer may choose APIPA addressing (169.254.0.0/16
+
   range) for the BGP session on a Private VIF or Transit VIF, eliminating the need to
   allocate routable /30 subnets for each VIF
+
 - **Azure VPN Gateway** (active-active mode): uses 169.254.21.x and 169.254.22.x for
+
   the internal BGP peering between gateway instances
+
 - **GCP HA VPN**: uses link-local addresses in the 169.254.0.0/16 range for BGP
+
   sessions over HA VPN tunnels
 
 Do not apply access control lists or firewall rules that block 169.254.0.0/16 on
@@ -217,7 +225,8 @@ will be forwarded back to the on-premises network — a potential route hijackin
 
 Cloud providers advertise the CIDR blocks of attached VPCs or VNets. With transit
 services (TGW, Virtual WAN, NCC), the cloud provider may advertise all attached VPC
-CIDRs as a summarised or per-prefix set depending on configuration. Each provider imposes
+CIDRs as a summarised or per-prefix set depending on configuration. Each provider
+imposes
 a maximum prefix limit per BGP session:
 
 | Provider &#124; Session type | Default prefix limit |
@@ -237,10 +246,15 @@ All three providers support BGP communities or similar mechanisms for traffic
 engineering:
 
 - **AWS**: BGP communities on Direct Connect to influence Local Preference for inbound
+
   traffic. See [BGP Communities](../reference/bgp_communities.md)
+
 - **Azure**: BGP communities to tag routes by Azure region; used with route filters on
+
   Microsoft Peering to control which services are reachable
+
 - **GCP**: MED (Multi-Exit Discriminator) to influence path preference between multiple
+
   VLAN attachments or between Interconnect and HA VPN backup
 
 Path selection behaviour across providers is documented in
@@ -263,11 +277,14 @@ arriving from the on-premises direction before it reaches workload VPCs.
 Traffic between cloud resources (east-west) uses two layers of control:
 
 1. **Security Groups (AWS/GCP) and Network Security Groups (Azure)**: stateful
+
    per-resource or per-subnet packet filters. These are the first and lowest-latency
    layer of control. Apply least-privilege rules at this layer.
+
 2. **Centralised firewall inspection**: for deep packet inspection, IDS/IPS, or policy
+
    that cannot be expressed in Security Groups, route east-west traffic through a
-   firewall appliance in the hub VPC. This introduces latency and throughput constraints;
+firewall appliance in the hub VPC. This introduces latency and throughput constraints;
    apply it selectively to traffic flows that require application-layer inspection.
 
 ### Management Access
@@ -277,8 +294,11 @@ resources with public IPs and open management ports are a primary attack surface
 credential-stuffing and exploitation of unpatched vulnerabilities. Use one of:
 
 - **Jump host / bastion** in the management subnet of the shared services VPC, reachable
+
   only from on-premises via the dedicated connection
+
 - **VPN** back to on-premises for management access, with the VPN terminating inside the
+
   cloud environment rather than on a public interface
 
 ---

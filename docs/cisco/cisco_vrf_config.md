@@ -13,7 +13,10 @@ each other:
 
 Each VRF holds:
 
-- The WAN interface toward the cloud provider (Direct Connect / ExpressRoute / Interconnect)
+- The WAN interface toward the cloud provider (Direct Connect / ExpressRoute /
+Interconnect)
+Interconnect)
+
 - A subinterface toward the FortiGate for that cloud's IPsec transport
 
 The FortiGate requires a **dedicated VLAN subinterface per cloud provider** — a single
@@ -59,6 +62,7 @@ graph LR
 ## 3. VRF Definitions
 
 ```ios
+
 vrf definition AWS
  rd 65000:100
  !
@@ -89,6 +93,7 @@ vrf definition GCP
 ### WAN Interfaces (Cloud Provider Side)
 
 ```ios
+
 ! AWS Direct Connect
 interface GigabitEthernet0/2
  vrf forwarding AWS
@@ -115,6 +120,7 @@ interface GigabitEthernet0/4
 ### FortiGate-Facing Subinterfaces (VLAN Trunked)
 
 ```ios
+
 interface GigabitEthernet0/1
  no ip address
  no shutdown
@@ -143,6 +149,7 @@ interface GigabitEthernet0/1.300
 One BFD template applies to all three VRFs — BFD is per-interface regardless of VRF.
 
 ```ios
+
 bfd-template single-hop CLOUD-BFD
  interval min-tx 300 min-rx 300 multiplier 3
  no bfd echo
@@ -152,6 +159,7 @@ bfd-template single-hop CLOUD-BFD
 Apply per-interface:
 
 ```ios
+
 interface GigabitEthernet0/2
  bfd template CLOUD-BFD
 !
@@ -170,6 +178,7 @@ interface GigabitEthernet0/4
 All three VRFs run as address families under a single BGP process.
 
 ```ios
+
 router bgp 65000
  bgp router-id 10.0.0.1
  bgp log-neighbor-changes
@@ -250,6 +259,7 @@ inside the FortiGate overlay BGP session (encrypted). The underlay only needs to
 exchange the IPsec tunnel endpoint reachability.
 
 ```ios
+
 ! AWS VRF: advertise only the DX link subnet to FortiGate
 ip prefix-list PFX-AWS-TRANSPORT permit 169.254.x.0/30
 route-map RM-FG-AWS-OUT permit 10

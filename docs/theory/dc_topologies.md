@@ -98,6 +98,7 @@ The spine-leaf model is a two-tier Clos network. Every leaf connects to every sp
 no leaf connects directly to another leaf; no spine connects to another spine.
 
 ```mermaid
+
 graph TD
     subgraph Spine["Spine Layer"]
         S1["Spine 1"]
@@ -150,11 +151,15 @@ spine is an eBGP router; each leaf-spine link is an eBGP peering. This provides:
 - **Simple ECMP:** BGP ECMP across all spine uplinks
 - **Fast convergence:** BFD on every leaf-spine link; sub-second failure detection
 - **Clear failure domain:** A spine failure withdraws its BGP routes; leaves immediately
+
   re-hash traffic to remaining spines
+
 - **Operational simplicity:** Each leaf has the same config template; adding a leaf
+
   requires only adding eBGP sessions to all spines
 
 ```mermaid
+
 graph LR
     subgraph ASN["ASN per device (eBGP everywhere)"]
         S1["Spine 1<br/>AS 65100"]
@@ -171,8 +176,11 @@ graph LR
 ASN assignment options:
 
 - **Unique ASN per device:** Each spine and leaf has its own private ASN. Clean loop
+
   prevention; recommended by RFC 7938.
+
 - **Shared ASN per tier:** All spines share one ASN; all leaves share another. Simpler
+
   but requires `allowas-in` or `as-path relax` to allow prefixes to traverse the fabric
   (since the leaf's own ASN appears in the path learned from spine).
 
@@ -184,6 +192,7 @@ L3 underlay; **BGP EVPN** (RFC 7432) distributes MAC/IP reachability information
 between leaves, replacing flood-and-learn with a control-plane-driven model.
 
 ```mermaid
+
 graph TD
     A["Application — L2 frame"]
     B["EVPN control plane — MAC/IP distribution via BGP"]
@@ -236,7 +245,8 @@ or upgrading uplinks directly reduces oversubscription without redesigning the f
 | Leaf-spine link | Traffic re-hashes to other spines | BFD + link-down-failover; sub-second |
 | Border leaf | WAN/external traffic fails over to redundant border leaf | BGP reconvergence |
 
-The key difference: a spine failure in a spine-leaf fabric affects **bandwidth** (traffic
+The key difference: a spine failure in a spine-leaf fabric affects **bandwidth**
+(traffic
 re-hashes to fewer spines) but not **reachability** for any server. In three-tier, a
 distribution switch failure cuts off all access switches below it.
 
@@ -247,6 +257,7 @@ distribution switch failure cuts off all access switches below it.
 Most datacentres migrate from three-tier to spine-leaf incrementally:
 
 ```mermaid
+
 timeline
     title Three-Tier to Spine-Leaf Migration
     section Phase 1
@@ -285,14 +296,26 @@ timeline
 ## Notes
 
 - The terms "Clos network" and "spine-leaf" are used interchangeably. Charles Clos
-  described the mathematical properties of this topology in 1953 for telephone switching.
+
+described the mathematical properties of this topology in 1953 for telephone switching.
+
 - **BGP Unnumbered** (RFC 5549) simplifies spine-leaf underlay configuration further by
+
   using IPv6 link-local addresses for peering, eliminating the need to assign IPv4
   addresses to every point-to-point link.
-- **Anycast gateway** on leaf switches allows multiple leaves to present the same virtual
-  MAC/IP as the default gateway for a VLAN, enabling VMs to migrate between leaves without
+
+- **Anycast gateway** on leaf switches allows multiple leaves to present the same
+virtual
+
+virtual
+
+MAC/IP as the default gateway for a VLAN, enabling VMs to migrate between leaves without
   changing their gateway.
+
 - See [Spanning Tree: Design and Convergence](spanning_tree.md) for STP design principles
+
   relevant to the three-tier access layer.
+
 - See [VXLAN](../packets/vxlan.md) and [BGP](../routing/bgp.md) for the underlying
+
   protocol references used in spine-leaf overlays.

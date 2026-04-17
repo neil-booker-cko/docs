@@ -69,6 +69,7 @@ Inbound traffic from the internet or customer sites must not be trusted — a ho
 set arbitrary DSCP values. Re-mark on ingress:
 
 ```ios
+
 policy-map UNTRUSTED-INGRESS
  class class-default
   set dscp default    ! Reset all external markings to BE
@@ -93,6 +94,7 @@ A simple four-class marking scheme:
 Cisco IOS marking in a policy-map:
 
 ```ios
+
 class-map match-any VOIP
  match protocol rtp audio
  match dscp ef                  ! Trust if already marked EF
@@ -126,6 +128,7 @@ information rate (CIR) — particularly on WAN interfaces where exceeding the CI
 causes the provider to drop traffic anyway.
 
 ```ios
+
 ! Police EF to 1 Mbps; re-mark excess to AF31 (not drop)
 policy-map POLICE-VOIP
  class VOIP
@@ -164,6 +167,7 @@ Explicitly allocates bandwidth to named traffic classes. Each class gets at mini
 its configured share; unused bandwidth is distributed to other classes.
 
 ```ios
+
 policy-map WAN-CBWFQ
  class CRITICAL
   bandwidth percent 40     ! Minimum 40% of link bandwidth
@@ -180,6 +184,7 @@ before any other class, providing guaranteed low latency and jitter for real-tim
 traffic. All other classes use CBWFQ for their share of remaining bandwidth.
 
 ```ios
+
 policy-map WAN-LLQ
  class VOIP
   priority 512             ! Strict priority, 512 Kbps guaranteed; never waits
@@ -237,6 +242,7 @@ is full, preventing global synchronisation (where all flows reduce simultaneousl
 after a queue-full drop event).
 
 ```mermaid
+
 graph LR
     A["Queue 0% full"] -->|"Drop prob 0%"| B["Queue at min threshold"]
     B -->|"Drop prob increases linearly"| C["Queue at max threshold"]
@@ -263,6 +269,7 @@ QoS is only effective if consistently applied at every node in the path. A packe
 marked EF at ingress is useless if the WAN router has no LLQ for EF traffic.
 
 ```mermaid
+
 flowchart LR
     H["Host"] -->|untagged| AS["Access Switch<br/>CoS trust / mark"]
     AS -->|CoS tagged| DS["Distribution Switch<br/>CoS → DSCP map"]
@@ -273,18 +280,29 @@ flowchart LR
 **Design rules:**
 
 1. **Mark early, mark once.** Classify at the first device that can reliably identify
+
    the traffic. All downstream devices trust the mark.
+
 1. **Enforce at the bottleneck.** QoS only matters where congestion occurs. Apply
+
    LLQ/CBWFQ at WAN interfaces, uplinks, and any link that can become congested.
    High-speed core links rarely need queuing.
+
 1. **Police the priority queue.** Rate-limit EF/priority traffic to a fraction of link
+
    capacity (typically ≤ 33%). Unconstrained priority queues starve everything else.
+
 1. **Use at most 4–8 classes.** More classes increase operational complexity without
+
    meaningfully improving outcomes. Network control (CS6), real-time (EF), critical
    business (AF3x), standard (AF1x), best effort (CS0) covers most enterprise needs.
+
 1. **Never trust external markings.** Re-mark all inbound traffic from untrusted
+
    sources (internet, customer sites, unmanaged devices).
+
 1. **Verify end-to-end.** `show policy-map interface` on every hop in the path. Queue
+
    drops in the wrong class indicate misconfiguration or under-provisioning.
 
 ---
@@ -295,6 +313,7 @@ The Modular QoS CLI (MQC) separates classification (`class-map`), policy
 (`policy-map`), and application (`service-policy`):
 
 ```ios
+
 ! 1. Classify
 class-map match-any VOIP
  match dscp ef
@@ -325,11 +344,18 @@ interface GigabitEthernet0/0
 ## Notes
 
 - QoS does not create bandwidth — it only prioritises how existing bandwidth is used.
+
   If a link is consistently at 100% utilisation, the only real fix is more bandwidth.
+
 - `show policy-map interface <int>` shows per-class packet/byte counts, queue depths,
+
   and drop counts. Non-zero drops in the wrong class indicate a policy problem.
+
 - FortiGate traffic shaping uses DSCP matching under `config firewall shaper` and
+
   `config firewall shaping-policy`. FortiGate SD-WAN SLA thresholds are a complementary
   mechanism — see [FortiGate SD-WAN](../fortigate/fortigate_sdwan.md).
+
 - DSCP is preserved across MPLS networks via EXP/TC bits (3-bit field; maps to the top
+
   3 bits of DSCP). Verify with your provider that DSCP is honoured end-to-end.

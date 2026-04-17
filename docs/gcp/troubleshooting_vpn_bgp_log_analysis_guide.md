@@ -39,6 +39,7 @@ or create a custom policy in GCP that matches your FortiGate configuration.
 **FortiGate log signature:**
 
 ```text
+
 ike 0:gcp-havpn-tunnel1: AUTH verification failed
 ike 0:gcp-havpn-tunnel1: sending AUTHENTICATION_FAILED notify
 ike 0:gcp-havpn-tunnel1: established failed
@@ -55,6 +56,7 @@ Tunnel 2 of an HA VPN gateway have independent PSKs).
 **FortiGate log signature:**
 
 ```text
+
 ike 0:gcp-havpn-tunnel1: DPD timeout
 ike 0:gcp-havpn-tunnel1: connection expiring due to phase1 down
 ike 0:gcp-havpn-tunnel1: sending delete for IKEv2 SA
@@ -69,6 +71,7 @@ circuit metrics or Cisco interface errors if both tunnels DPD simultaneously.
 **GCP Cloud Logging query for tunnel events:**
 
 ```bash
+
 gcloud logging read \
   'resource.type="vpn_tunnel" AND
    (jsonPayload.message:"DPD" OR jsonPayload.message:"tunnel down")' \
@@ -84,6 +87,7 @@ gcloud logging read \
 **FortiGate log signature:**
 
 ```text
+
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.1.1 Down BGP Notification sent
 BGP: %BGP-3-NOTIFICATION: sent to neighbor 169.254.1.1 4/0 (hold time expired)
 ```
@@ -100,6 +104,7 @@ with the BGP drop timestamp.
 **FortiGate log signature:**
 
 ```text
+
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.1.1 -> OpenConfirm
 BGP: %BGP-3-NOTIFICATION: received from neighbor 169.254.1.1 2/6 (Unsupported Capability)
 ```
@@ -116,6 +121,7 @@ BGP — no additional capability flags needed.
 **FortiGate diagnostic:**
 
 ```fortios
+
 get router info bgp neighbors 169.254.1.1
 ! Check: BGP state = Established
 ! Check: "Updates received" counter is non-zero
@@ -127,6 +133,7 @@ get router info bgp network
 **GCP diagnostic:**
 
 ```bash
+
 # Confirm Cloud Router sees the on-premises prefix
 gcloud compute routers get-status gcp-vpn-router \
   --region=europe-west2 \
@@ -151,6 +158,7 @@ the Cloud Router's region.
 **Cisco log signature:**
 
 ```text
+
 %BFD-6-BFD_SESS_DOWN: BFD session ld:4097 handle:1 is going down Reason: DETECT_TIMER_EXPIRED
 %BGP-5-ADJCHANGE: neighbor 169.254.0.2 Down BFD adjacency down
 ```
@@ -163,6 +171,7 @@ For Partner Interconnect, contact the service provider.
 **Cisco diagnostics:**
 
 ```ios
+
 show bfd neighbors detail
 ! Check "Last packet received" timestamp — staleness indicates physical loss
 show interfaces <IC-subinterface>
@@ -173,6 +182,7 @@ show bgp neighbors 169.254.0.2 | include BGP state|Hold|keepalive
 **GCP diagnostics:**
 
 ```bash
+
 # Check VLAN attachment operational state
 gcloud compute interconnects attachments describe <ATTACHMENT-NAME> \
   --region=europe-west2 \
@@ -195,6 +205,7 @@ FortiGate's state table rejects the asymmetric return packets.
 **Resolution:**
 
 ```fortios
+
 ! Confirm both tunnel interfaces are in the same zone
 config system zone
     edit "ZONE_GCP_VPN"
@@ -230,6 +241,7 @@ end
 ### Useful Cloud Logging Query — BGP and VPN Events
 
 ```bash
+
 gcloud logging read \
   'resource.type=("vpn_tunnel" OR "gce_router") AND
    (jsonPayload.message:"BGP" OR
@@ -244,6 +256,7 @@ gcloud logging read \
 ## 6. Quick Fault Isolation Checklist
 
 ```text
+
 HA VPN tunnel not establishing?
   └─ Check Phase 1 proposal: dhgrp must match (GCP default: 14)
   └─ Verify PSK matches per tunnel (Tunnel 1 and 2 have independent PSKs)

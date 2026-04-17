@@ -36,6 +36,7 @@ timeline
 ### A. BFD Template Setup
 
 ```ios
+
 bfd-template single-hop STATIC-BFD-TIMER
  interval min-tx 300 min-rx 300 multiplier 3
 ```
@@ -45,6 +46,7 @@ bfd-template single-hop STATIC-BFD-TIMER
 BFD must be enabled on the interface connecting to the static next-hop.
 
 ```ios
+
 interface GigabitEthernet1
  description TO-ISP-GATEWAY
  ip address 192.168.1.2 255.255.255.0
@@ -56,6 +58,7 @@ interface GigabitEthernet1
 Link the static route to the BFD session.
 
 ```ios
+
 ! Direct BFD peering for static route
 ip route 0.0.0.0 0.0.0.0 192.168.1.1 name DEFAULT-GW bfd
 !
@@ -71,6 +74,7 @@ If the next-hop is not directly connected (Multiple hops), you must use a Multi-
 BFD session combined with a track object.
 
 ```ios
+
 ! 1. Define Multi-hop BFD
 bfd-template multi-hop MH-BFD
  interval min-tx 500 min-rx 500 multiplier 3

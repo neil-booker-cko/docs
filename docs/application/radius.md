@@ -66,6 +66,7 @@ packet-beta
 ## Attribute Format (TLV)
 
 ```mermaid
+
 ---
 title: "RADIUS Attribute TLV"
 ---
@@ -107,6 +108,7 @@ Length includes the Type and Length bytes themselves (minimum value: 2).
 ## Authentication Exchange
 
 ```mermaid
+
 sequenceDiagram
     participant Client
     participant NAS
@@ -135,6 +137,7 @@ sequenceDiagram
 ## Accounting Flow
 
 ```mermaid
+
 sequenceDiagram
     participant NAS
     participant RADIUS as RADIUS Server
@@ -165,13 +168,25 @@ waiting for re-authentication. The NAS listens on UDP port 3799.
 ## Notes
 
 - Password obfuscation uses MD5 XOR — not proper encryption. RADIUS traffic should
+
   be protected by IPsec or confined to a dedicated out-of-band management network.
+
 - RADIUS+TLS (RadSec, RFC 6614) wraps RADIUS in TLS over TCP port 2083 for encrypted
+
   transport and mutual authentication.
-- VSAs (Type 26) carry vendor-specific attributes. Cisco uses Vendor-ID 9 (`cisco-av-pair`
+
+- VSAs (Type 26) carry vendor-specific attributes. Cisco uses Vendor-ID 9
+(`cisco-av-pair`
+
+(`cisco-av-pair`
+
   for privilege level, ACL assignment, etc.); Fortinet uses Vendor-ID 12356.
+
 - 802.1X network access uses RADIUS with EAP tunnelled inside the RADIUS exchange
+
   (EAP-TLS, PEAP, EAP-TTLS). The NAS acts as the EAP authenticator; the RADIUS
   server is the EAP authentication server.
+
 - Cisco IOS-XE basic RADIUS config: `aaa new-model` then
+
   `aaa authentication login default group radius local`.

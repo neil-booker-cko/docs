@@ -1,7 +1,9 @@
 # Cisco IOS-XE: HSRP and VRRP Configuration
 
-HSRP (Hot Standby Router Protocol, Cisco proprietary) and VRRP (Virtual Router Redundancy
-Protocol, RFC 5798) provide default gateway redundancy by presenting a virtual IP address
+HSRP (Hot Standby Router Protocol, Cisco proprietary) and VRRP (Virtual Router
+Redundancy
+Protocol, RFC 5798) provide default gateway redundancy by presenting a virtual IP
+address
 shared between two or more routers. One router is Active/Master and forwards traffic;
 standby routers monitor the active router and take over on failure. HSRP is Cisco-only;
 VRRP is vendor-neutral and the recommended choice for multi-vendor environments.
@@ -10,8 +12,10 @@ VRRP is vendor-neutral and the recommended choice for multi-vendor environments.
 
 ## 1. Overview & Principles
 
-Both protocols present a virtual IP (VIP) and virtual MAC address to hosts as their default
-gateway, use hello messages to detect peer failure, and elect an Active/Master router based
+Both protocols present a virtual IP (VIP) and virtual MAC address to hosts as their
+default
+gateway, use hello messages to detect peer failure, and elect an Active/Master router
+based
 on priority (higher wins; IP address as tiebreaker).
 
 Preemption behaviour differs: in HSRP it is disabled by default (a recovered
@@ -61,6 +65,7 @@ timeline
 ### A. HSRP v2
 
 ```ios
+
 interface GigabitEthernet0/1
  ip address 10.0.1.2 255.255.255.0
  standby version 2
@@ -83,6 +88,7 @@ track 10 ip sla 10 reachability
 ### B. VRRP v3
 
 ```ios
+
 interface GigabitEthernet0/1
  ip address 10.0.1.2 255.255.255.0
  vrrp 1 address-family ipv4
@@ -97,6 +103,7 @@ interface GigabitEthernet0/1
 ### C. BFD Integration (HSRP)
 
 ```ios
+
 interface GigabitEthernet0/1
  standby 1 bfd
 !
@@ -110,6 +117,7 @@ Track the upstream interface: if it goes down, reduce the HSRP priority so the s
 router (which still has a healthy uplink) takes over.
 
 ```ios
+
 track 1 interface GigabitEthernet0/0 line-protocol
 !
 interface GigabitEthernet0/1
@@ -119,6 +127,7 @@ interface GigabitEthernet0/1
 ### E. HSRP for IPv6 (HSRPv2)
 
 ```ios
+
 interface GigabitEthernet0/1
  ipv6 address 2001:db8:1::2/64
  standby version 2

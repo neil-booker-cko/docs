@@ -93,6 +93,7 @@ which groups have active receivers on each interface.
 ### IGMPv2 Exchange
 
 ```mermaid
+
 sequenceDiagram
     participant Host
     participant Router
@@ -131,6 +132,7 @@ messages and build a per-port group membership table, restricting multicast forw
 to only ports with active receivers.
 
 ```mermaid
+
 graph LR
     Router -->|multicast stream| Switch
     Switch -->|flood without snooping| P1["Port 1 — no receiver"]
@@ -145,6 +147,7 @@ IGMP snooping is enabled by default on most managed switches. The switch must ha
 as an IGMP snooping querier:
 
 ```ios
+
 ip igmp snooping querier address 10.0.1.1 vlan 10
 ```
 
@@ -163,6 +166,7 @@ packet on the interface that the unicast routing table says is the best path *ba
 the source*. Packets arriving on any other interface are discarded.
 
 ```mermaid
+
 graph LR
     Source["Source 10.1.1.1"] --> R1 --> R2 --> R3 --> Receiver
     R1 --> R4 --> R3
@@ -179,17 +183,25 @@ PIM Sparse Mode (RFC 7761) is the standard mode for most networks. It uses a
 **Rendezvous Point (RP)** as a meeting point for sources and receivers:
 
 1. **Receivers join the shared tree:** A receiver's IGMP Report triggers the local
+
    router to send a PIM Join toward the RP, building a Shared Tree (RPT) from RP to receivers.
+
 2. **Source registers with the RP:** The first-hop router (DR) encapsulates multicast
+
    packets in PIM Register messages and unicasts them to the RP.
+
 3. **RP joins the source tree:** The RP sends a PIM Join toward the source, building a
+
    Shortest Path Tree (SPT) from source to RP.
+
 4. **Last-hop switchover to SPT:** Once traffic begins flowing, the last-hop router can
+
    send a PIM Join directly toward the source, bypassing the RP. This is the **SPT
    switchover** — the default behaviour on Cisco IOS (controlled by
    `ip pim spt-threshold`).
 
 ```mermaid
+
 sequenceDiagram
     participant S as Source
     participant FHR as First-Hop Router
@@ -246,8 +258,11 @@ in the domain. RP discovery methods:
 PIM routers maintain state entries for each active multicast flow:
 
 - **(*, G)** — shared tree entry: any source sending to group G. Used on the path
+
   from RP to receivers.
+
 - **(S, G)** — source tree entry: traffic specifically from source S to group G.
+
   Created after SPT switchover.
 
 `show ip mroute` displays both types. The `(*, G)` entry shows the RP and the shared
@@ -279,7 +294,10 @@ broadcast (ARP). Far simpler to operate — no PIM configuration on the fabric.
 - `show ip mroute` — multicast routing table; `(*, G)` and `(S, G)` entries with OIL
 - `show ip pim rp mapping` — RP address and discovery method per group range
 - Multicast TTL scoping: set TTL on the source to limit propagation across RP/domain
+
   boundaries. TTL-scoped multicast (TTL < 16 = site-local by convention) is an
   alternative to administratively scoped addresses (239.0.0.0/8).
+
 - IGMPv3 is required for SSM. Verify all hosts and routers support it before deploying
+
   SSM — legacy hosts may not send IGMPv3 Membership Reports.

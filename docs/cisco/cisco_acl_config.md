@@ -1,7 +1,9 @@
 # Cisco IOS-XE: Access Control List (ACL) Configuration
 
-ACLs are ordered lists of permit and deny statements evaluated top-to-bottom against packet
-header fields. They are used for traffic filtering on interfaces, VTY access control, NAT
+ACLs are ordered lists of permit and deny statements evaluated top-to-bottom against
+packet
+header fields. They are used for traffic filtering on interfaces, VTY access control,
+NAT
 source matching, route-map classification, QoS marking, and VPN interesting-traffic
 definitions. Every ACL has an implicit `deny any` at the end — traffic that matches no
 explicit statement is dropped silently.
@@ -14,19 +16,32 @@ Related guides: [Cisco NAT Configuration](cisco_nat_config.md) and
 ## 1. Overview & Principles
 
 - **Evaluation order:** IOS-XE evaluates ACE (access control entries) from the lowest
+
   sequence number to the highest and stops at the first match. Entry order is critical —
   a broad permit before a specific deny will render the deny unreachable.
+
 - **Implicit deny:** All ACLs end with an invisible `deny any` (or `deny ip any any` for
+
   extended). Traffic that does not match any explicit entry is dropped. Add an explicit
   `deny any log` as the last entry to generate log messages for dropped traffic.
-- **Standard vs extended:** Standard ACLs match source IP only and are evaluated quickly.
+
+- **Standard vs extended:** Standard ACLs match source IP only and are evaluated
+quickly.
+
+quickly.
+
   Extended ACLs match source/destination IP, protocol, and source/destination ports.
+
 - **Placement:** Place standard ACLs close to the destination (they cannot specify the
-  destination, so applying them near the source may block traffic that should be permitted
+
+destination, so applying them near the source may block traffic that should be permitted
   elsewhere). Place extended ACLs as close to the source as possible to drop unwanted
-  traffic early — inbound ACLs are more efficient than outbound because packets are dropped
+traffic early — inbound ACLs are more efficient than outbound because packets are
+dropped
   before a routing decision is made.
+
 - **Stateless:** ACLs are stateless. Return traffic must be explicitly permitted unless
+
   reflexive ACLs or Zone-Based Firewall is used.
 
 ---
@@ -62,6 +77,7 @@ sequence-number editing.
 Typical uses: VTY access control, NAT source matching, OSPF route filtering.
 
 ```ios
+
 ip access-list standard ACL-MGMT-ACCESS
  10 permit 10.0.0.0 0.0.0.255        ! Management subnet
  20 permit 10.255.255.0 0.0.0.255    ! NOC subnet
@@ -80,6 +96,7 @@ source or destination port numbers. Numbered extended ACLs use ranges 100–199 
 2000–2699.
 
 ```ios
+
 ip access-list extended ACL-INTERNET-IN
  10 permit tcp any host 203.0.113.10 eq 443    ! HTTPS to published web server
  20 permit tcp any host 203.0.113.10 eq 80     ! HTTP to published web server
@@ -105,6 +122,7 @@ individual lines to be removed and inserted by sequence number without deleting 
 re-entering the entire ACL.
 
 ```ios
+
 ! Named standard ACL
 ip access-list standard ACL-VPN-SOURCES
  10 permit 10.10.0.0 0.0.255.255
@@ -123,6 +141,7 @@ Named ACLs support in-place editing using sequence numbers. Entries can be remov
 sequence number and new entries inserted between existing ones without rewriting the ACL.
 
 ```ios
+
 ! View current ACL with sequence numbers
 ! show ip access-lists ACL-INTERNET-IN
 
@@ -149,6 +168,7 @@ Inbound ACLs are more efficient because packets are dropped before a routing loo
 performed. Apply inbound ACLs on the interface closest to the traffic source.
 
 ```ios
+
 interface GigabitEthernet0/0
  description ISP uplink
  ip access-group ACL-INTERNET-IN in   ! Filter inbound traffic from internet
@@ -170,6 +190,7 @@ The `access-class` command applies a standard ACL to VTY lines — only traffic 
 the permit entries can establish a management session.
 
 ```ios
+
 ip access-list standard ACL-VTY
  10 permit 10.0.0.0 0.0.255.255      ! Management and NOC subnets
  20 permit 10.255.255.0 0.0.0.255
@@ -191,6 +212,7 @@ accurate NTP synchronisation on the device — incorrect clock state will cause 
 to apply at the wrong time.
 
 ```ios
+
 ! Define a time range
 time-range BUSINESS-HOURS
  periodic weekdays 08:00 to 18:00    ! Monday–Friday 08:00–18:00
@@ -219,6 +241,7 @@ Firewall (ZBF) or CBAC is preferred — reflexive ACLs do not handle complex pro
 as FTP or SIP that embed address information in the payload.
 
 ```ios
+
 ! Outbound ACL — initiates reflexive entries for outbound sessions
 ip access-list extended ACL-OUT-REFLECT
  10 permit tcp 10.0.0.0 0.0.255.255 any reflect REFLECT-TCP
@@ -248,6 +271,7 @@ referenced in multiple ACL entries. This significantly reduces ACL line count in
 with many hosts or services that share the same policy.
 
 ```ios
+
 ! Network object group — list of hosts or subnets
 object-group network OBJ-WEB-SERVERS
  host 10.0.50.10

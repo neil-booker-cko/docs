@@ -54,10 +54,15 @@ and operational differences between them matter for design and troubleshooting.
 
 - **No IHL** — header length field removed; header is always exactly 40 bytes
 - **No header checksum** — upper-layer protocols (TCP/UDP) cover integrity; eliminates
+
   per-hop recalculation overhead
+
 - **No fragmentation fields** — moved to the Fragment Extension Header; only the source
+
   may fragment
+
 - **No inline options** — replaced by chained Extension Headers referenced via the
+
   Next Header field
 
 ---
@@ -144,21 +149,33 @@ randomised IIDs that rotate periodically to prevent tracking.
 
 ## Dual-Stack Operation
 
-Both protocols run simultaneously. Each interface carries an IPv4 address and one or more
+Both protocols run simultaneously. Each interface carries an IPv4 address and one or
+more
 IPv6 addresses (at minimum a link-local). Applications connect via whichever protocol
-resolves successfully. RFC 6555 (Happy Eyeballs) defines the mechanism: attempt both IPv4
+resolves successfully. RFC 6555 (Happy Eyeballs) defines the mechanism: attempt both
+IPv4
 and IPv6 connections concurrently; use whichever completes first.
 
 ---
 
 ## Notes
 
-- IPv6 link-local addresses (`fe80::/10`) are mandatory and used as next-hops for routing
+- IPv6 link-local addresses (`fe80::/10`) are mandatory and used as next-hops for
+routing
+
+routing
+
   protocol adjacencies. OSPFv3, IS-IS, and MP-BGP neighbours typically peer over
   link-local addresses when running IPv6.
+
 - Cisco IOS-XE: `ipv6 unicast-routing` enables IPv6 forwarding globally.
+
   `ipv6 address <prefix/len> eui-64` auto-generates the IID from the interface MAC.
+
 - FortiGate supports dual-stack natively; IPv6 firewall policies are maintained in a
+
   separate policy table from IPv4 (`config firewall policy6`).
+
 - Never route `fe80::/10` — link-local addresses are non-routable by design. Use global
+
   unicast or ULA for any routed IPv6 traffic.

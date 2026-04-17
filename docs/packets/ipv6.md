@@ -76,11 +76,16 @@ Each extension header contains its own Next Header field pointing to the next on
 ## Notes
 
 - **No header checksum** — upper-layer protocols (TCP, UDP, ICMPv6) provide
+
   checksums that include a pseudo-header with the source and destination addresses.
   Removing the per-hop checksum recalculation speeds up forwarding.
+
 - **Fragmentation** is performed only by the originating host. Routers that receive
+
   a packet too large for the next link send back an ICMPv6 Packet Too Big message
   (Type 2), enabling Path MTU Discovery.
+
 - **Link-local addresses** (`fe80::/10`) are automatically assigned to every
+
   interface and are used for Neighbour Discovery and router communications on the
   local segment.

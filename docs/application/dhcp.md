@@ -82,6 +82,7 @@ packet-beta
 ## DORA Exchange (Normal Lease Acquisition)
 
 ```mermaid
+
 sequenceDiagram
     participant Client
     participant Server as DHCP Server
@@ -101,6 +102,7 @@ the chosen server's IP in Option 54.
 ## Lease Renewal Timeline
 
 ```mermaid
+
 sequenceDiagram
     participant Client
     participant Server as DHCP Server
@@ -153,6 +155,7 @@ allocate from.
 **Cisco IOS-XE** — applied to the client-facing interface:
 
 ```ios
+
 interface GigabitEthernet0/1
  ip helper-address 10.0.1.50
 ```
@@ -164,13 +167,20 @@ Multiple `ip helper-address` statements forward to multiple DHCP servers.
 ## Notes
 
 - DHCP starvation: an attacker requests leases using spoofed MAC addresses to exhaust
+
   the pool. Mitigate with DHCP snooping (`ip dhcp snooping`) on access switches,
   which rate-limits requests and validates bindings on untrusted ports.
+
 - DHCP snooping builds a binding table (MAC → IP → VLAN → port) consumed by Dynamic
+
   ARP Inspection (DAI) and IP Source Guard.
+
 - DHCPv6 modes are controlled by RA flags: **M** (Managed) — stateful DHCPv6 assigns
+
   address and options; **O** (Other) — stateless DHCPv6 provides options only; SLAAC
   assigns the address. Neither flag set means SLAAC only.
+
 - Option 82 (Relay Agent Information) is stripped by the DHCP server before the reply
+
   reaches the client. It allows servers to apply per-circuit policies (e.g. assign
   addresses from a specific pool based on Circuit-ID).

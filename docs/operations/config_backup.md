@@ -28,6 +28,7 @@ The `archive` feature writes a copy of the configuration to a remote server on a
 configurable interval and on every `copy running-config startup-config`.
 
 ```ios
+
 archive
  path tftp://10.0.0.100/configs/$h-$t    ! $h = hostname, $t = timestamp
  maximum 10
@@ -48,6 +49,7 @@ For environments where the archive feature is not available or a syslog-based tr
 is preferred:
 
 ```ios
+
 event manager applet BACKUP-ON-CHANGE
  event syslog pattern "SYS-5-CONFIG_I"
  action 1.0 cli command "enable"
@@ -70,6 +72,7 @@ On platforms running IOS-XE 16.6 or later with RESTCONF enabled, the full device
 configuration can be retrieved programmatically:
 
 ```text
+
 GET /restconf/data/Cisco-IOS-XE-native:native
 ```
 
@@ -84,6 +87,7 @@ storage in version control or a network management system. See
 ### Restore from TFTP
 
 ```ios
+
 copy tftp: running-config
 copy tftp: startup-config
 ```
@@ -95,6 +99,7 @@ copy tftp: startup-config
 device for a clean apply.
 
 ```ios
+
 reload
 ```
 
@@ -107,6 +112,7 @@ reload
 ### Restore from Flash
 
 ```ios
+
 copy flash:backup-2026-04-07.cfg running-config
 copy flash:backup-2026-04-07.cfg startup-config
 ```
@@ -118,6 +124,7 @@ copy flash:backup-2026-04-07.cfg startup-config
 ### CLI Backup
 
 ```fortios
+
 execute backup config tftp <filename> <server-ip>
 ```
 
@@ -127,6 +134,7 @@ This produces a full configuration file in FortiOS `.conf` format.
 recoverable form):
 
 ```fortios
+
 execute backup config tftp <filename> <server-ip> <encryption-password>
 ```
 
@@ -144,6 +152,7 @@ FortiOS automation stitches can trigger a configuration backup on a schedule wit
 relying on external tools:
 
 ```fortios
+
 config system automation-trigger
     edit "daily-backup-trigger"
         set trigger-type scheduled
@@ -175,6 +184,7 @@ backup file per run.
 ### CLI Restore
 
 ```fortios
+
 execute restore config tftp <filename> <server-ip>
 ```
 
@@ -223,10 +233,15 @@ A backup stored only on the device provides no protection against hardware failu
 Backups must be stored off the device on at least one of the following:
 
 - **TFTP or SCP server** — simple and widely supported; suitable for automated
+
   archive destinations
+
 - **Network management system** — Cisco DNA Center and FortiManager both include
+
   configuration backup and compliance features with version history
+
 - **Version control** — IOS-XE and FortiGate configurations are text files; storing
+
   them in git provides a full change history with diffs and commit messages, making
   auditing straightforward
 

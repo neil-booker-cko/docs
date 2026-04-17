@@ -15,13 +15,16 @@ Gigabits of dropped data**.
 ### Tuned Timers vs. Fast Hellos
 
 - **Tuned Timers (2s/8s):** A safe compromise for legacy hardware. Reduces detection
+
     from 40s to 8s without significantly stressing the CPU.
 
 - **Fast Hellos (Sub-second):** Setting OSPF to sub-second hellos (e.g., `minimal
+
     hello-multiplier`) forces the CPU to process hellos constantly. Risks "False
     Positives" if the CPU hits 100% due to an unrelated task.
 
 - **BFD (The Watchdog):** Sub-second detection offloaded to the forwarding plane.
+
     Allows OSPF to bypass the Dead Timer and run SPF immediately.
 
 ## 2. Failure Detection & Restoration Timelines
@@ -49,6 +52,7 @@ timeline
 ### Restoration Timeline (Adjacency)
 
 ```mermaid
+
 timeline
     title OSPF Restoration (Adjacency)
     section Standard OSPF
@@ -70,6 +74,7 @@ timeline
 ### Cisco IOS-XE OSPF with BFD
 
 ```ios
+
 router ospf 1
  router-id 1.1.1.1
  bfd all-interfaces
@@ -100,11 +105,21 @@ router ospf 1
 
 ### Engineering Guidance
 
-- **Use BFD** whenever the hardware supports it. It is the only way to achieve sub-second
+- **Use BFD** whenever the hardware supports it. It is the only way to achieve
+sub-second
+
+sub-second
+
     convergence safely.
+
 - **Tuned Timers (2s/8s)** are a safe compromise for networks where BFD is not available
+
     and 8 seconds of downtime is acceptable.
+
 - **Fast Hellos** should be a last resort for links where BFD is not available and
+
     convergence must be under 5 seconds.
+
 - **LSA Throttling:** Pair BFD with tuned LSA generation timers (throttle SPF) for
+
     true "carrier-grade" convergence.

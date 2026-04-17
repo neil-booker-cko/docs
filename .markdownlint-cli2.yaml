@@ -1,10 +1,11 @@
 ---
 config:
-  # MD013/line-length: Set to 88 to match Python PEP 8 standard.
+  # MD013/line-length: Set to 100 for better readability with long descriptions.
+  # Code blocks and tables have no line length limit.
   MD013:
-    line_length: 88
-    heading_line_length: 88
-    code_block_line_length: 120
+    line_length: 100
+    heading_line_length: 100
+    code_block_line_length: 200
     tables: false
 
   # MD024/no-duplicate-heading: Allow duplicate headings as long as they
@@ -21,4 +22,7 @@ config:
 
   # MD041/first-line-h1: Ensure every file starts with a top-level heading.
   MD041: true
+
+  # MD046/code-block-style: Allow both fenced and indented code blocks.
+  MD046: false
 ...

@@ -52,6 +52,7 @@ A VTEP can be a physical switch (hardware VTEP), a hypervisor vSwitch, or a soft
 implementation.
 
 ```mermaid
+
 sequenceDiagram
     participant VM_A as VM A (VNI 1000)
     participant VTEP_A as VTEP A
@@ -68,24 +69,37 @@ sequenceDiagram
 ## Notes
 
 - **Flood-and-learn vs. BGP EVPN control plane:** RFC 7348 defines a flood-and-learn
+
   model where BUM (Broadcast, Unknown Unicast, Multicast) traffic is flooded to all
   VTEPs. Production deployments use a BGP EVPN control plane (RFC 7432 + RFC 8365) to
   distribute MAC/IP reachability as BGP routes, eliminating flooding entirely.
+
 - **BUM handling without BGP EVPN:** Either multicast underlay groups (one multicast
+
   group per VNI) or ingress replication (head-end replication — the sending VTEP
   unicasts a copy to every known VTEP) must be configured for BUM traffic.
+
 - **ECMP and flow hashing:** The UDP source port is typically set to a hash of the
+
   inner frame's L2–L4 headers. This allows underlay ECMP paths to load-balance
   individual VXLAN flows across multiple links.
+
 - **MTU:** Total encapsulation overhead is 50 bytes. On a 1500-byte underlay MTU,
+
   inner frames are limited to 1450 bytes. Jumbo frames (MTU 9000+) on all underlay
   interfaces are strongly recommended to accommodate full-size inner frames without
   fragmentation.
+
 - **Cloud overlays:** AWS VPC uses VXLAN internally for VPC segment isolation. Azure
+
   and GCP use similar proprietary overlay technologies built on the same principles.
+
 - **Security:** VXLAN provides no encryption or authentication. Underlay network
+
   access controls (ACLs restricting UDP 4789) or IPsec encryption of the underlay are
   required if the underlay traverses untrusted segments.
+
 - **VXLAN GPE:** VXLAN Generic Protocol Extension (draft-ietf-nvo3-vxlan-gpe)
+
   introduces a next-protocol field to the VXLAN header, enabling transport of non-
   Ethernet payloads (IP, NSH for service function chaining).

@@ -55,6 +55,7 @@ jitter. Intermediate Transparent Clocks update the `correctionField` to account 
 switch residence time, so delay accumulation across hops is precisely tracked.
 
 ```mermaid
+
 sequenceDiagram
     participant Master
     participant Switch (TC)
@@ -133,7 +134,9 @@ Grandmaster fan-out.
 ### Use PTP
 
 - Sub-microsecond accuracy is required (mobile fronthaul, trading systems, broadcast
+
   video, industrial control).
+
 - Complying with telecom standards: ITU-T G.8273 / G.8275.
 - Phase alignment is required, not just frequency synchronisation.
 - SMPTE ST 2059-2 (broadcast) or AES67 (audio) profiles mandate PTP.
@@ -161,12 +164,19 @@ NTP stratum 1 servers.
 ## Notes
 
 - **NTPsec** is a hardened NTP implementation for Linux that replaces the reference
+
   ntpd. It supports NTS (RFC 8915) for authenticated, encrypted NTP over TLS/QUIC.
+
 - **chrony** (`chronyd`) is the recommended NTP implementation on modern Linux
+
   (RHEL/Debian default). It converges faster than ntpd after long gaps and handles
   intermittent connectivity well.
+
 - **PTP on Linux**: `ptp4l` handles the PTP protocol; `phc2sys` synchronises the
+
   system clock from the PTP hardware clock (PHC) on the NIC.
+
 - **GPS disciplining**: a GPS receiver with a 1PPS output connected to a stratum 1
+
   NTP server or PTP Grandmaster is the most common reference clock in enterprise
   networks.

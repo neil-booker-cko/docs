@@ -28,6 +28,7 @@ to drop; the other tunnel's BGP session is unaffected.
 ## 2. HA VPN Architecture (Active-Active)
 
 ```mermaid
+
 ---
 title: "HA VPN Active-Active"
 ---
@@ -54,6 +55,7 @@ redundancy against a single PoP failure as well as tunnel-level redundancy.
 ## 3. Detection Timelines
 
 ```mermaid
+
 timeline
     title HA VPN Tunnel Failover
     section Tunnel 1 fails
@@ -74,6 +76,7 @@ Cloud Router BGP is configured via the Google Cloud Console, `gcloud` CLI, or
 Terraform. Key parameters for the HA VPN BGP sessions:
 
 ```bash
+
 # Create Cloud Router for HA VPN
 gcloud compute routers create gcp-vpn-router \
   --network=prod-vpc \
@@ -125,6 +128,7 @@ Cloud Router expresses path preference to on-premises peers via MED
 per BGP session to make one tunnel preferred for inbound GCP-to-on-premises traffic.
 
 ```bash
+
 # Make Tunnel 1 preferred inbound from GCP
 gcloud compute routers update-bgp-peer gcp-vpn-router \
   --peer-name=peer-tunnel1-fortigate \
@@ -143,6 +147,7 @@ To prefer one tunnel for outbound on-premises-to-GCP traffic, set
 `local-preference` in the FortiGate route-map applied inbound on each BGP session:
 
 ```fortios
+
 config router route-map
     edit "RM-GCP-TUNNEL1-IN"
         config rule
@@ -179,6 +184,7 @@ By default, Cloud Router advertises all VPC subnet routes. For large VPCs, use
 **custom route advertisements** to control what is sent to on-premises peers:
 
 ```bash
+
 gcloud compute routers update gcp-vpn-router \
   --advertisement-mode=custom \
   --set-advertisement-groups="" \
@@ -198,6 +204,7 @@ GCP may return traffic asymmetrically via either tunnel. Group both VTIs in a zo
 and enable loose RPF as with the Azure active-active design:
 
 ```fortios
+
 config system zone
     edit "ZONE_GCP_VPN"
         set interface "gcp-havpn-tunnel1" "gcp-havpn-tunnel2"

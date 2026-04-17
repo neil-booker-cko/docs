@@ -64,6 +64,7 @@ packet-beta
 ## Session State Machine
 
 ```mermaid
+
 stateDiagram-v2
     [*] --> Down
     Down --> Init : Rx packet Sta=Down or Sta=Init
@@ -80,6 +81,7 @@ stateDiagram-v2
 Detection time is negotiated between peers:
 
 ```text
+
 Detection Time = Detect Mult × max(Desired Min TX Interval, Required Min RX Interval)
 ```
 
@@ -88,14 +90,21 @@ Detection Time = Detect Mult × max(Desired Min TX Interval, Required Min RX Int
 ## Notes
 
 - **Hardware offload** (`C` flag) is critical for reliability. When BFD runs in the
+
   control plane, a CPU spike can cause false positives. NPU-offloaded BFD (FortiGate)
   and ASIC-offloaded BFD (Cisco) set the `C` flag to indicate the forwarding plane
   maintains the session independently.
+
 - **Discriminators** solve the demultiplexing problem when multiple BFD sessions exist
+
   between the same pair of IP addresses (e.g. multiple VRFs). Each session has a
   unique `My Discriminator` value.
+
 - **Async mode** (default) — peers send periodic hellos. **Demand mode** — no periodic
+
   packets; a Poll/Final exchange is used to verify connectivity on demand.
+
 - **Echo mode** — packets are looped back by the remote system without processing,
+
   allowing the local system to test the data path at high rates without burdening the
   remote CPU.

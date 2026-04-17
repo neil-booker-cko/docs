@@ -32,6 +32,7 @@ timeline
 ### A. Phase 1 Interface (VTI)
 
 ```fortios
+
 config vpn ipsec phase1-interface
     edit "AWS_TGW_VPN_01"
         set interface "port1"  # DX Port/VLAN
@@ -49,6 +50,7 @@ TGW usually requires a private ASN (e.g., 64512). Enable `ebgp-multipath` to tak
 advantage of TGW ECMP.
 
 ```fortios
+
 config router bgp
     set as 65000
     set ebgp-multipath enable
@@ -69,6 +71,7 @@ end
 ### C. System BFD Settings
 
 ```fortios
+
 config system bfd
     config neighbor
         edit "169.254.x.x"

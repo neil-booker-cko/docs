@@ -39,9 +39,13 @@ inside global address. The mapping exists regardless of whether traffic is
 flowing.
 
 - Used for servers that must be reachable from outside (mail servers, web servers,
+
   VPN endpoints)
+
 - Bidirectional: external hosts can initiate connections to the inside global
+
   address and the NAT device forwards them to the inside local address
+
 - Does not conserve public IPs — each internal host requires one public IP
 
 ### Dynamic NAT
@@ -51,9 +55,12 @@ initiates an outbound connection, it is assigned an available public IP from the
 pool for the duration of the session.
 
 - Still one-to-one (no port translation); each active session consumes one public
+
   IP
+
 - If the pool is exhausted, new connections are dropped
 - Rarely used in modern deployments — PAT achieves the same goal with far fewer
+
   public IPs
 
 ### PAT (Port Address Translation) / NAT Overload
@@ -64,8 +71,11 @@ sessions by translating the source port as well as the source IP, creating a uni
 
 - Standard mechanism for internet breakout from enterprise and home networks
 - A single public IP can support tens of thousands of simultaneous sessions
+
   (limited by the 16-bit port space and platform capacity)
+
 - The NAT device maintains a translation table mapping each internal
+
   (IP, port) pair to an external (IP, port) pair
 
 ### DNAT (Destination NAT)
@@ -75,7 +85,9 @@ inbound packets. Used for port forwarding, load balancer VIPs, and cloud
 endpoint mapping.
 
 - Packets arriving at the public IP on a specific port are forwarded to an
+
   internal host and port
+
 - SNAT (source NAT) is applied to return traffic to maintain session symmetry
 - In FortiGate terminology, inbound VIPs are implemented as DNAT policies
 
@@ -173,6 +185,7 @@ out the same interface it arrived on.
 - Not supported on all platforms; behaviour is vendor-specific
 - Adds load to the NAT device for what is otherwise local traffic
 - The preferred solution is **split-horizon DNS** (split-brain DNS): an internal
+
   DNS server returns the private IP for internal clients, and the public DNS
   returns the public IP for external clients. No NAT loopback required.
 

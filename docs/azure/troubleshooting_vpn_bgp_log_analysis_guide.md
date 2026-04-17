@@ -40,6 +40,7 @@ Connection → IKE Policy. Default Azure policy accepts `aes256-sha256-dh2`.
 **FortiGate log signature:**
 
 ```text
+
 ike 0:azure-vpn-primary:azure-vpn-primary-p2: failed to get a proposal chosen
 ike 0:azure-vpn-primary: IPsec SA connect 500 x.x.x.x->y.y.y.y:500 failed
 ```
@@ -55,6 +56,7 @@ selectors — FortiGate Phase 2 must also use `0.0.0.0/0` (not specific subnets)
 **FortiGate log signature:**
 
 ```text
+
 ike 0:azure-vpn-primary: DPD timeout
 ike 0:azure-vpn-primary: connection expiring due to phase1 down
 ike 0:azure-vpn-primary: sending delete for IKEv2 SA
@@ -64,6 +66,7 @@ iked[500]: azure-vpn-primary goes DOWN
 **Followed by BGP withdrawal (link-down-failover):**
 
 ```text
+
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.21.1 Down Interface flap
 ```
 
@@ -80,6 +83,7 @@ packet loss, or Cisco `show interfaces` for physical errors on the ER port.
 **FortiGate log signature:**
 
 ```text
+
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.21.1 Down BGP Notification sent
 BGP: %BGP-3-NOTIFICATION: sent to neighbor 169.254.21.1 4/0 (hold time expired)
 ```
@@ -99,6 +103,7 @@ events overlapping with the BGP failure timestamp.
 **FortiGate log signature:**
 
 ```text
+
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.21.1 -> OpenConfirm
 BGP: %BGP-3-NOTIFICATION: received from neighbor 169.254.21.1 2/2 (peer in wrong state)
 ```
@@ -115,6 +120,7 @@ or APIPA BGP address not matching the Azure connection custom BGP IP setting.
 **FortiGate diagnostic:**
 
 ```fortios
+
 get router info bgp neighbors 169.254.21.1
 ! Check: "BGP state = Established"
 ! Check: "Updates received" counter is non-zero
@@ -127,6 +133,7 @@ get router info bgp network
 **Cisco diagnostic — underlay reachability:**
 
 ```ios
+
 show ip route 172.16.0.2
 ! Must be reachable via ExpressRoute (not internet) for private IP mode to work
 show bgp neighbors 172.16.0.2 advertised-routes
@@ -142,6 +149,7 @@ show bgp neighbors 172.16.0.2 advertised-routes
 **Cisco log signature:**
 
 ```text
+
 %BFD-6-BFD_SESS_DOWN: BFD session ld:4097 handle:1 is going down Reason: DETECT_TIMER_EXPIRED
 %BGP-5-ADJCHANGE: neighbor 172.16.0.2 Down BFD adjacency down
 ```
@@ -153,6 +161,7 @@ for traffic anomalies. Contact provider if physical layer is clean but BGP is fl
 **Cisco diagnostics:**
 
 ```ios
+
 show bfd neighbors detail
 ! Check "Last packet transmitted" and "Last packet received" timestamps
 show interfaces <ER-interface>
@@ -175,6 +184,7 @@ Azure-to-on-prem traffic to the preferred circuit, and `local-preference` on the
 Cisco side to steer on-prem-to-Azure traffic symmetrically.
 
 ```ios
+
 route-map RM-ER-PRIMARY-IN permit 10
  match ip address prefix-list PFX-AZURE-VNETS
  set local-preference 200
@@ -202,6 +212,7 @@ Use the following Azure tools:
 ### Useful Azure Monitor Query
 
 ```kusto
+
 AzureDiagnostics
 | where ResourceType == "VIRTUALNETWORKGATEWAYS"
 | where Category == "GatewayDiagnosticLog"
@@ -215,6 +226,7 @@ AzureDiagnostics
 ## 6. Quick Fault Isolation Checklist
 
 ```text
+
 VPN tunnel not up?
   └─ Check Phase 1: diagnose vpn ike log-filter dst-addr4 <azure-gw-ip>
   └─ Check proposal: aes256-sha256, dhgrp 2 (or match Azure custom policy)

@@ -40,6 +40,7 @@ Google edge PoPs. Each FortiGate tunnel connects to one interface. GCP requires
 separate pre-shared keys per tunnel.
 
 ```fortios
+
 config vpn ipsec phase1-interface
     edit "gcp-havpn-tunnel1"
         set interface "port1"
@@ -80,6 +81,7 @@ Cloud Router ASN is customer-configured. Enable `ebgp-multipath` to install
 both tunnel paths as ECMP forwarding entries.
 
 ```fortios
+
 config router bgp
     set as 65000
     set ebgp-multipath enable
@@ -129,6 +131,7 @@ GCP may return traffic via either tunnel. Zone grouping and loose RPF prevent
 the FortiGate state table from dropping asymmetric return traffic.
 
 ```fortios
+
 config system interface
     edit "gcp-havpn-tunnel1"
         set ip 169.254.1.2 255.255.255.252

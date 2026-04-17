@@ -12,7 +12,8 @@ packets.
 Even in an Active/Passive setup, BFD is required. Without it, the router would continue
 to prefer the "Primary" path for up to 30 seconds after a failure, resulting in
 a complete outage during that window. AWS TGW BGP timers are fixed at 10s keepalive /
-30s hold — the Cisco session negotiates to these values regardless of local timer config.
+30s hold — the Cisco session negotiates to these values regardless of local timer
+config.
 
 ```mermaid
 timeline
@@ -34,6 +35,7 @@ timeline
 ### A. BFD Template (Same as ECMP)
 
 ```ios
+
 bfd-template single-hop AWS-DX-BFD
  interval min-tx 300 min-rx 300 multiplier 3
 !
@@ -44,6 +46,7 @@ bfd-template single-hop AWS-DX-BFD
 We set a higher Local Preference for routes received on the Primary DX.
 
 ```ios
+
 route-map RM-AWS-PRIMARY-IN permit 10
  set local-preference 200
 !
@@ -58,6 +61,7 @@ We prepend our own AS multiple times when advertising to the Secondary DX to mak
 it less attractive to AWS.
 
 ```ios
+
 route-map RM-AWS-SECONDARY-OUT permit 10
  set as-path prepend 65000 65000 65000
 !
@@ -69,6 +73,7 @@ Note the removal of `maximum-paths` to ensure only one route is installed in the
 RIB.
 
 ```ios
+
 router bgp 65000
  bgp log-neighbor-changes
  !

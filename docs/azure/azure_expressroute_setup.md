@@ -1,7 +1,8 @@
 # Azure ExpressRoute — Circuit Setup
 
 Azure ExpressRoute establishes a private connection between an on-premises network and
-Azure through a connectivity provider or a direct physical port at an ExpressRoute Direct
+Azure through a connectivity provider or a direct physical port at an ExpressRoute
+Direct
 location. Traffic does not traverse the public internet. This guide covers the circuit
 from creation through to an established BGP session with the Microsoft Enterprise Edge.
 BGP design over an established circuit is in [BGP Stack (Flagship)](bgp_stack_vpn_over_expressroute.md).
@@ -138,6 +139,7 @@ ensure path independence.
 **Cisco IOS-XE:**
 
 ```text
+
 ! Primary path — VLAN 100
 interface GigabitEthernet0/0.100
  encapsulation dot1Q 100
@@ -174,6 +176,7 @@ router bgp 65001
 **FortiGate:**
 
 ```bash
+
 config system interface
  edit "er-primary"
   set vdom "root"
@@ -225,10 +228,14 @@ The ExpressRoute circuit does not connect to a VNet automatically. A dedicated
 **ExpressRoute Gateway** must be deployed in each VNet that requires access.
 
 1. In the target VNet, create a Gateway Subnet (a dedicated /27 or /28 named
+
    "GatewaySubnet" exactly — Azure requires this name)
+
 2. Deploy an ExpressRoute Gateway resource in the GatewaySubnet. Choose the SKU
+
    (Standard, HighPerformance, UltraPerformance, ErGw1Az/2Az/3Az) based on
    required throughput and availability zone support
+
 3. Create a Connection resource linking the Gateway to the ExpressRoute circuit
 
 Multiple VNets can connect to a single ExpressRoute circuit through separate Gateway

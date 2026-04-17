@@ -47,6 +47,7 @@ Sent by each peer immediately after the TCP connection is established. Negotiate
 session parameters.
 
 ```mermaid
+
 ---
 title: "BGP OPEN Message"
 ---
@@ -87,6 +88,7 @@ Advertises new routes or withdraws previously advertised routes. A single UPDATE
 may carry both withdrawals and new NLRIs.
 
 ```mermaid
+
 ---
 title: "BGP UPDATE Message"
 ---
@@ -131,6 +133,7 @@ packet-beta
 Sent when an error is detected. The TCP connection is closed immediately after.
 
 ```mermaid
+
 ---
 title: "BGP NOTIFICATION Message"
 ---
@@ -165,6 +168,7 @@ packet-beta
 ## Session State Machine
 
 ```mermaid
+
 stateDiagram-v2
     [*] --> Idle
     Idle --> Connect : Start
@@ -181,13 +185,20 @@ stateDiagram-v2
 ## Notes
 
 - **eBGP vs iBGP:** eBGP peers are in different AS numbers (TTL=1 by default);
+
   iBGP peers are within the same AS. iBGP requires full mesh or route reflectors —
   it does not modify AS_PATH, so loop prevention relies on not re-advertising
   iBGP-learned routes to other iBGP peers.
+
 - **4-byte ASNs** (RFC 6793) extend the AS space to 32 bits. The AS_PATH attribute
+
   uses the AS4_PATH attribute for compatibility with 2-byte-only speakers.
+
 - **Graceful Restart** (RFC 4724) allows a restarting router to retain forwarding
+
   state while BGP reconverges. Peers advertise GR capability in OPEN Optional
   Parameters.
+
 - **BFD** integration triggers faster session failure detection than the BGP hold
+
   timer alone — see the [BGP vs BFD comparison](../theory/bgp_bfd_comparison.md).

@@ -57,6 +57,7 @@ The legacy end-of-message delimiter `]]>]]>` is used for NETCONF 1.0 only.
 On connect, both peers exchange `<hello>` messages advertising capabilities:
 
 ```xml
+
 <!-- Server hello -->
 <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <capabilities>
@@ -71,6 +72,7 @@ On connect, both peers exchange `<hello>` messages advertising capabilities:
 ### get-config
 
 ```xml
+
 <rpc message-id="1" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <get-config>
     <source><running/></source>
@@ -84,6 +86,7 @@ On connect, both peers exchange `<hello>` messages advertising capabilities:
 ### edit-config and commit
 
 ```xml
+
 <!-- 1. Edit the candidate datastore -->
 <rpc message-id="2" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <edit-config>
@@ -143,12 +146,14 @@ RESTCONF runs over HTTPS. The root resource is discovered via
 ### URL Structure
 
 ```text
+
 https://<device>/restconf/data/<module>:<container>/<list>=<key>
 ```
 
 Retrieve interface configuration:
 
 ```text
+
 GET https://router/restconf/data/ietf-interfaces:interfaces/interface=GigabitEthernet0%2F0
 Accept: application/yang-data+json
 ```
@@ -156,6 +161,7 @@ Accept: application/yang-data+json
 Update description via PATCH:
 
 ```http
+
 PATCH /restconf/data/ietf-interfaces:interfaces/interface=GigabitEthernet0%2F0
 Content-Type: application/yang-data+json
 
@@ -183,6 +189,7 @@ operational data. Key model sources:
 Supported models and revisions are discoverable via NETCONF:
 
 ```xml
+
 <rpc message-id="4" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
   <get>
     <filter type="subtree">
@@ -195,6 +202,7 @@ Supported models and revisions are discoverable via NETCONF:
 ### Cisco IOS-XE — Enable NETCONF
 
 ```ios
+
 netconf-yang
 netconf-yang feature candidate-datastore
 ```
@@ -204,12 +212,19 @@ netconf-yang feature candidate-datastore
 ## Notes
 
 - NETCONF authentication uses SSH keys or certificates. Password authentication is
+
   supported by the SSH layer but should be avoided in production.
+
 - `ncclient` (Python) is the standard NETCONF client library for automation scripts.
 - RESTCONF is more approachable for scripting — standard HTTPS, JSON or XML payloads,
+
   curl-compatible — but lacks NETCONF's full transactional commit model.
+
 - RESTCONF does not support `lock`, `discard-changes`, or confirmed commit.
 - Cisco YANG Suite and `pyang` are useful tools for exploring, validating, and
+
   converting YANG models.
+
 - The `edit-config` `operation` attribute defaults to `merge` if not specified.
+
   Use `replace` to overwrite a list entry entirely, or `delete` to remove it.

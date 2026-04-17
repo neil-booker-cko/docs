@@ -1,10 +1,14 @@
 # eBGP vs iBGP
 
 External BGP (eBGP) and Internal BGP (iBGP) are the same protocol (RFC 4271) running in
-two distinct contexts. eBGP peers connect routers in different Autonomous Systems — it is
-the protocol of inter-domain routing. iBGP peers connect routers within the same AS, carrying
-externally learned routes across the AS interior. The rules each must follow are different,
-and the design constraints of iBGP in particular have significant architectural implications.
+two distinct contexts. eBGP peers connect routers in different Autonomous Systems — it
+is
+the protocol of inter-domain routing. iBGP peers connect routers within the same AS,
+carrying
+externally learned routes across the AS interior. The rules each must follow are
+different,
+and the design constraints of iBGP in particular have significant architectural
+implications.
 
 ---
 
@@ -30,7 +34,8 @@ eBGP sets NEXT_HOP to the advertising router's interface IP. iBGP does **not** c
 NEXT_HOP — the NEXT_HOP remains the eBGP peer's address. This means iBGP speakers must
 be able to resolve the eBGP NEXT_HOP via the IGP.
 
-Workaround: `neighbor <x> next-hop-self` forces the iBGP speaker to replace NEXT_HOP with
+Workaround: `neighbor <x> next-hop-self` forces the iBGP speaker to replace NEXT_HOP
+with
 its own address.
 
 ```mermaid
@@ -56,6 +61,7 @@ a full mesh of iBGP sessions among all routers in the AS. For n routers: **n(n-1
 sessions**. This scales poorly.
 
 ```mermaid
+
 graph TD
     subgraph "Full Mesh (4 routers = 6 sessions)"
         A1["R1"] --- A2["R2"]
@@ -80,10 +86,12 @@ graph TD
 ### Solutions to iBGP full mesh
 
 1. **Route Reflectors (RFC 4456):** One or more RR servers re-advertise iBGP-learned routes
+
    to their clients. Clients need only peer with RRs, not with each other. Clusters prevent
    loops via `ORIGINATOR_ID` and `CLUSTER_LIST` attributes.
 
 2. **Confederations (RFC 5065):** The AS is split into sub-ASes (confederation sub-ASes).
+
    eBGP runs between sub-ASes using private ASNs; the confederation appears as a single
    AS to the outside world. Rarely used in new designs; Route Reflectors are preferred.
 
@@ -128,11 +136,21 @@ improves resilience (session survives failure of one path if multiple exist).
 
 ## Notes
 
-- The iBGP AD of 200 is intentionally high — iBGP routes should be last resort within the
+- The iBGP AD of 200 is intentionally high — iBGP routes should be last resort within
+the
+
+the
+
   AS; IGP routes are preferred for intra-AS reachability.
+
 - Route Reflectors do not change the path attributes of reflected routes except adding
+
   `ORIGINATOR_ID` and `CLUSTER_LIST`.
+
 - Confederation eBGP sessions use the real peer AS number for loop detection but strip
+
   confederation sub-ASes from AS_PATH before advertising externally.
+
 - `show ip bgp summary` distinguishes iBGP and eBGP by whether the remote-as matches the
+
   local AS.

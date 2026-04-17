@@ -61,6 +61,7 @@ plugins:
 nav:
   - Home: index.md
   - Theory:
+      - Interface & Routing Fundamentals: theory/interface_routing_fundamentals.md
       - BGP vs BFD: theory/bgp_bfd_comparison.md
       - OSPF vs BFD: theory/ospf_bfd_comparison.md
       - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
@@ -70,10 +71,18 @@ nav:
       - OSPF vs IS-IS: theory/ospf_vs_isis.md
       - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
       - Spanning Tree Design: theory/spanning_tree.md
+      - STP/RSTP Configuration: theory/stp_rstp_configuration.md
+      - Port Aggregation (LAG): theory/port_aggregation.md
+      - IP Addressing & Subnetting Design: theory/ip_addressing_design.md
+      - Firewall Rule Processing: theory/firewall_rule_processing.md
+      - Policy-Based Routing: theory/policy_based_routing.md
+      - OSPF Advanced: theory/ospf_advanced.md
+      - Route Redistribution: theory/route_redistribution.md
       - Data Centre Topologies: theory/dc_topologies.md
       - HSRP vs VRRP: theory/hsrp_vs_vrrp.md
       - Multicast: theory/multicast.md
       - Quality of Service: theory/qos.md
+      - MPLS Fundamentals: theory/mpls.md
       - SD-WAN Design Principles: theory/sdwan.md
       - DHCP Security: theory/dhcp_security.md
       - VLANs & 802.1Q: theory/vlans.md
@@ -81,14 +90,22 @@ nav:
       - IPsec & IKE: theory/ipsec.md
       - Cloud Network Design: theory/cloud_network_design.md
   - Cisco:
+      - Interface & Routing Basics: cisco/cisco_interface_routing_basics.md
+      - EIGRP Config: cisco/cisco_eigrp_config.md
       - BFD Core Config: cisco/cisco_bfd_config_guide.md
       - Static BFD: cisco/cisco_static_bfd_guide.md
       - Multihop BFD: cisco/cisco_multihop_bfd_guide.md
       - Active/Passive to AWS TGW: cisco/cisco_aws_tgw_dx.md
       - IS-IS Config: cisco/cisco_isis_config.md
       - OSPF Config: cisco/cisco_ospf_config.md
+      - Route Redistribution: cisco/cisco_route_redistribution.md
       - BGP & iBGP Design: cisco/cisco_bgp_ibgp.md
+      - BGP Route Reflectors: cisco/cisco_bgp_route_reflectors.md
+      - BGP Route Aggregation: cisco/cisco_bgp_aggregation.md
+      - Policy-Based Routing: cisco/cisco_pbr_config.md
       - HSRP & VRRP: cisco/cisco_hsrp_vrrp.md
+      - STP/RSTP Config: cisco/cisco_stp_rstp_config.md
+      - EtherChannel (LAG) Config: cisco/cisco_etherchannel_config.md
       - DHCP, Snooping & DAI: cisco/cisco_dhcp_snooping.md
       - QoS Config: cisco/cisco_qos_config.md
       - Multicast & PIM: cisco/cisco_multicast_pim.md
@@ -97,9 +114,19 @@ nav:
       - ACL Config: cisco/cisco_acl_config.md
       - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
   - FortiGate:
+      - Interface & Routing Basics: fortigate/fortigate_interface_routing_basics.md
+      - BGP Config: fortigate/fortigate_bgp_config.md
+      - BGP Route Aggregation: fortigate/fortigate_bgp_aggregation.md
+      - Policy-Based Routing: fortigate/fortigate_pbr_config.md
+      - OSPF Config: fortigate/fortigate_ospf_config.md
+      - Route Redistribution: fortigate/fortigate_route_redistribution.md
+      - Firewall Policies & Access Control: fortigate/fortigate_firewall_policies.md
+      - LAG (Link Aggregation) Config: fortigate/fortigate_lag_config.md
+      - QoS Configuration: fortigate/fortigate_qos_config.md
       - BFD Core Config: fortigate/fortigate_bfd_config_guide.md
       - Multihop BFD: fortigate/fortigate_multihop_bfd_guide.md
       - Static BFD & Health Checks: fortigate/fortigate_static_bfd_guide.md
+      - STP/RSTP Config: fortigate/fortigate_stp_rstp_config.md
       - SD-WAN: fortigate/fortigate_sdwan.md
       - VRRP: fortigate/fortigate_vrrp.md
       - NAT: fortigate/fortigate_nat.md

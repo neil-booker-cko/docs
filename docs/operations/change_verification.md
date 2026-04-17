@@ -26,7 +26,8 @@ Capture state across these five categories before and after every change.
 
 ## Cisco IOS-XE Baseline Commands
 
-Run and save all output before starting the change. Paste into the change record or redirect
+Run and save all output before starting the change. Paste into the change record or
+redirect
 to a log file.
 
 | Command | What to record |
@@ -44,8 +45,8 @@ to a log file.
 | `show platform resources` | Memory and CPU utilisation summary |
 
 !!! note
-    For BGP, record the prefix count per peer individually. A peer that re-establishes but
-    advertises fewer prefixes than before may indicate a routing policy issue that aggregate
+For BGP, record the prefix count per peer individually. A peer that re-establishes but
+advertises fewer prefixes than before may indicate a routing policy issue that aggregate
     counts will not reveal.
 
 ---
@@ -65,29 +66,48 @@ to a log file.
 | `diagnose sys top` | Top processes by CPU at time of snapshot |
 
 !!! note
-    For HA clusters, run the baseline on both members separately using each unit's management
+For HA clusters, run the baseline on both members separately using each unit's
+management
     IP. HA sync state and session counts can differ between units.
 
 ---
 
 ## Change Window Procedure
 
-1. Run all baseline commands from the Cisco IOS-XE and/or FortiGate tables above. Save the
+1. Run all baseline commands from the Cisco IOS-XE and/or FortiGate tables above. Save
+the
+
+the
+
     full output to the change record.
+
 1. Note the exact start time of the change.
 1. Implement the change.
 1. Note the exact end time of the change.
 1. Run the same baseline commands again in the same order.
 1. Compare pre- and post-change output:
-    - Route counts should match, or differ only as expected (e.g., a new static route was
-        added intentionally)
-    - No new interface errors or err-disabled ports
-    - All BGP and OSPF neighbours re-established with matching prefix counts
-    - CPU and memory have returned to baseline levels
-    - Session/NAT counts are in the expected range
-1. Perform an application or service test relevant to the change (ping, traceroute, application
+
+- Route counts should match, or differ only as expected (e.g., a new static route was
+  added intentionally)
+  added intentionally)
+
+  - No new interface errors or err-disabled ports
+  - All BGP and OSPF neighbours re-established with matching prefix counts
+  - CPU and memory have returned to baseline levels
+  - Session/NAT counts are in the expected range
+
+1. Perform an application or service test relevant to the change (ping, traceroute,
+application
+
+application
+
     login, traffic flow test).
-1. If all checks pass, close the change. If issues are found, follow the rollback triggers
+
+1. If all checks pass, close the change. If issues are found, follow the rollback
+triggers
+
+triggers
+
     table below.
 
 ---

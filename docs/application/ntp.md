@@ -84,6 +84,7 @@ NTP uses a 64-bit fixed-point timestamp: 32 bits of seconds since **1 January 19
 00:00:00 UTC** and 32 bits of sub-second fraction.
 
 ```text
+
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -149,14 +150,22 @@ authenticated and replay-protected NTP without a pre-shared key.
 ## Notes
 
 - **Kiss-o'-Death (KoD):** A packet with Stratum `0` is a KoD packet. The Reference
+
   ID contains a 4-character ASCII code (e.g. `RATE`, `DENY`, `RSTR`) instructing the
   client to stop polling or reduce its rate.
+
 - **Poll interval back-off:** NTP clients increase the poll interval exponentially
+
   (up to the server-configured maximum) when the clock is stable and the server is
   reliable. This reduces server load on large networks.
+
 - **chrony** (`chronyd`) is the recommended NTP implementation on modern Linux
+
   (default on RHEL/Debian). It converges faster than `ntpd` after gaps and handles
   intermittent connectivity well.
+
 - **NTPsec** is a hardened fork of the reference `ntpd` with NTS support and reduced
+
   attack surface.
+
 - **Comparison with PTP**: see [NTP vs PTP](../theory/ntp_vs_ptp.md).

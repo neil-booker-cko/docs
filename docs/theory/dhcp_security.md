@@ -59,7 +59,8 @@ independently after the victim already has a legitimate DHCP lease.
 
 ## DHCP Snooping
 
-DHCP Snooping addresses rogue DHCP servers and starvation by imposing a trusted/untrusted
+DHCP Snooping addresses rogue DHCP servers and starvation by imposing a
+trusted/untrusted
 model on switch ports.
 
 **Trusted ports** are permitted to send and receive all DHCP message types, including
@@ -73,7 +74,8 @@ be dropped at the ingress port of the switch.
 
 **Rate limiting on untrusted ports** mitigates starvation attacks. A per-port DHCP
 packet rate limit (e.g. 15 packets per second) prevents a single attacker from flooding
-the network with Discover messages. When the rate is exceeded, the port is error-disabled.
+the network with Discover messages. When the rate is exceeded, the port is
+error-disabled.
 
 **The binding table** is built automatically from DHCP exchanges observed on untrusted
 ports. When a client receives a DHCP Ack, the switch records:
@@ -157,8 +159,11 @@ populated before the dependent features can function.
 The boundary between trusted and untrusted must be drawn carefully. The rule is:
 
 - **Trusted:** Uplinks to aggregation or distribution switches, ports connected to DHCP
+
   servers, ports connected to routers or firewalls acting as DHCP relay agents.
+
 - **Untrusted:** All access ports facing end-user devices, printers, IP phones, and
+
   IoT devices.
 
 If an uplink is accidentally left as untrusted, DHCP Acks from the legitimate server
@@ -178,9 +183,12 @@ Static IP devices do not go through a DHCP exchange, so they generate no binding
 entry. This creates a problem for DAI and IP Source Guard:
 
 - **DAI:** A static IP device's ARP will fail validation because there is no binding
+
   entry. The ARP will be dropped. The fix is to create an ARP ACL mapping the device's
   static IP to its MAC and apply it to the VLAN as a DAI override.
+
 - **IP Source Guard:** All traffic from the static IP device will be dropped. The fix
+
   is to add a static binding entry to the snooping table manually.
 
 Every static IP device on a protected VLAN must be explicitly accounted for before
@@ -202,6 +210,7 @@ If the DHCP server does not support or process Option 82, disable Option 82 inse
 on the access switch:
 
 ```ios
+
 no ip dhcp snooping information option
 ```
 
@@ -220,6 +229,7 @@ The binding table should be persisted to flash storage or a TFTP server so it ca
 restored on reload:
 
 ```ios
+
 ip dhcp snooping database flash:/dhcp-snooping.db
 ```
 
@@ -233,16 +243,19 @@ step. Jumping directly to IP Source Guard without a validated binding table will
 widespread connectivity loss:
 
 1. **Enable DHCP Snooping.** Configure trusted ports and enable on the target VLANs.
+
    Verify that DHCP exchanges are completing normally and that the binding table is
    populating with correct entries.
 
 2. **Enable DAI.** Enable on the target VLANs. Monitor for dropped ARPs. Verify that
+
    static IP devices have ARP ACL entries and that the binding table entries match
    what devices are actually using.
 
 3. **Enable IP Source Guard.** Apply to access ports. This is the most disruptive step.
+
    Any device without a binding table entry will lose IP connectivity immediately.
-   Verify that all devices — especially static IP devices — have entries before enabling.
+Verify that all devices — especially static IP devices — have entries before enabling.
 
 > **Tip:** DAI dropped ARPs and IP Source Guard drops appear in switch logs. Enable
 > logging for both features and review the log before declaring the deployment stable.
@@ -254,13 +267,18 @@ widespread connectivity loss:
 ## Notes
 
 - DHCP Snooping, DAI, and IP Source Guard operate at the access layer switch level.
+
   They provide no protection for routed interfaces or Layer 3 paths — an attacker with
   Layer 3 access bypasses all three mechanisms.
+
 - In environments using 802.1X for port authentication, the DHCP exchange occurs after
+
   the port is authorised. DHCP Snooping and DAI function normally in this model. IP
   Source Guard should be evaluated carefully if 802.1X assigns dynamic VLANs — the
   binding table entry must reflect the post-authentication VLAN.
+
 - These features consume TCAM resources on the switch. IP Source Guard in particular
+
   installs a per-host ACL entry in hardware for each binding table entry. On switches
   with limited TCAM, this limits the number of devices that can be protected
   simultaneously. Verify platform-specific limits before large-scale deployment.

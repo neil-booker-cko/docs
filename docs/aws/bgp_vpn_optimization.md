@@ -15,8 +15,11 @@ the interface is even marked down.
 ### Graceful Restart Timers
 
 - **graceful-restart-time (120s):** How long to wait for the peer to re-establish
+
     the TCP session.
+
 - **graceful-stalepath-time (120s):** How long to keep "stale" routes in the FIB
+
     while waiting for resync.
 
 ## 2. Detection Timelines
@@ -50,9 +53,12 @@ The firewall checks if the inbound interface matches the routing table's path ba
 to the source.
 
 - **The "Zone" Advantage:** By placing both VTIs in the same **Zone**, the FortiGate
+
     considers a packet "valid" regardless of which tunnel it arrives on, provided
     both are members of the same logical zone.
+
 - **Loose RPF:** Even with Zones, `set src-check loose` is recommended in the VTI
+
     interface settings to ensure maximum compatibility with AWS hashing variations.
 
 ### B. TCP Asymmetry (The "Stateful" Trap)
@@ -65,6 +71,7 @@ will drop return traffic as an invalid state unless they are in the same zone.
 ### A. Zone Configuration
 
 ```fortios
+
 config system zone
     edit "ZONE_AWS_VPN"
         set interface "vpn-071eda31a-0" "vpn-071eda31a-1"
@@ -75,6 +82,7 @@ end
 ### B. Defining Routing Objects (Prefix & AS-Path Lists)
 
 ```fortios
+
 config router prefix-list
     edit "DEFAULT-ROUTE"
         config rule
@@ -112,6 +120,7 @@ end
 ### C. BGP: Multipath & Neighbor Configuration
 
 ```fortios
+
 config router bgp
     set as 65100
     set router-id 10.201.0.1

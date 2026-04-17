@@ -2,8 +2,10 @@
 
 IS-IS (Intermediate System to Intermediate System, ISO 10589 / RFC 1195) is a link-state
 IGP that runs directly over Layer 2, not over IP. It uses a hierarchical two-level
-structure: Level 1 (intra-area) and Level 2 (inter-area backbone). IS-IS is the preferred
-IGP for service provider backbones and large-scale datacentre underlay networks. This guide
+structure: Level 1 (intra-area) and Level 2 (inter-area backbone). IS-IS is the
+preferred
+IGP for service provider backbones and large-scale datacentre underlay networks. This
+guide
 covers IOS-XE configuration for IS-IS with IPv4 and IPv6, including BFD integration.
 
 ---
@@ -11,16 +13,26 @@ covers IOS-XE configuration for IS-IS with IPv4 and IPv6, including BFD integrat
 ## 1. Overview & Principles
 
 - IS-IS adjacencies form at Layer 2 — `ip router isis` on an interface enables IS-IS; a
-  NET (Network Entity Title / NSAP) identifies the router globally within the IS-IS domain.
+
+NET (Network Entity Title / NSAP) identifies the router globally within the IS-IS
+domain.
+
 - **NET format:** `<AFI>.<Area-ID>.<System-ID>.<SEL>` — e.g.,
+
   `49.0001.1921.6800.0001.00` where `49` = private-use AFI, `0001` = area 1,
   `1921.6800.0001` = router system ID (192.168.0.1 encoded as 6 hex bytes), `00` = SEL
   (always 00 for routers).
+
 - L1 adjacencies form only with same-area routers; L2 adjacencies form between any
+
   L2-capable routers regardless of area.
+
 - IS-IS for IPv6 (RFC 5308) adds IPv6 TLVs to the same process; Multi-Topology IS-IS
-  (MT-ISIS, RFC 5120) runs separate topologies for IPv4 and IPv6 within the same instance.
+
+(MT-ISIS, RFC 5120) runs separate topologies for IPv4 and IPv6 within the same instance.
+
 - BFD integrates natively with IS-IS (`bfd all-interfaces` or per-interface) for
+
   sub-second failure detection.
 
 ---
@@ -54,6 +66,7 @@ timeline
 ### A. Basic IS-IS Configuration (IPv4 + IPv6)
 
 ```ios
+
 router isis UNDERLAY
  net 49.0001.1921.6800.0001.00
  is-type level-2-only              ! Backbone router — only L2 adjacencies
@@ -85,6 +98,7 @@ router isis UNDERLAY
 ### B. BFD Integration
 
 ```ios
+
 router isis UNDERLAY
  bfd all-interfaces                 ! Enable BFD on all IS-IS interfaces
 !
@@ -100,6 +114,7 @@ bfd-template single-hop ISIS-BFD
 ### C. Authentication (HMAC-MD5)
 
 ```ios
+
 key chain ISIS-AUTH
  key 1
   key-string <password>
@@ -113,6 +128,7 @@ router isis UNDERLAY
 ### D. Fast Hellos (P2P Links, No BFD)
 
 ```ios
+
 interface GigabitEthernet0/0
  isis hello-interval 1 level-2
  isis hello-multiplier 3 level-2    ! Hold time = 1s × 3 = 3s
@@ -121,6 +137,7 @@ interface GigabitEthernet0/0
 ### E. Route Redistribution
 
 ```ios
+
 ! Redistribute IS-IS into OSPF (hybrid network)
 router ospf 1
  redistribute isis UNDERLAY level-2 subnets route-map RM-ISIS-TO-OSPF
@@ -136,6 +153,7 @@ By default, L2 routes are not leaked into L1 areas. Use redistribution to inject
 prefixes downward:
 
 ```ios
+
 router isis UNDERLAY
  redistribute isis ip level-2 into level-1 route-map RM-L2-TO-L1
 ```

@@ -97,6 +97,7 @@ Each question entry has three fields.
 **Label encoding example** — `api.example.com`:
 
 ```text
+
 \x03 a p i \x07 e x a m p l e \x03 c o m \x00
 ```
 
@@ -107,6 +108,7 @@ Each question entry has three fields.
 Answer, Authority, and Additional section entries are Resource Records (RRs).
 
 ```mermaid
+
 ---
 title: "DNS Resource Record"
 ---
@@ -135,6 +137,7 @@ the top two bits are `11`, and the remaining 14 bits are the byte offset within 
 message where the remainder of the name can be found.
 
 ```text
+
 Pointer: 1 1 x x x x x x  x x x x x x x x
          ↑                 ↑
          Indicates pointer  14-bit offset
@@ -168,6 +171,7 @@ Pointer: 1 1 x x x x x x  x x x x x x x x
 ## Resolution Process
 
 ```mermaid
+
 sequenceDiagram
     participant Client
     participant Recursive Resolver
@@ -204,15 +208,24 @@ An OPT pseudo-RR is added to the Additional section.
 ## Notes
 
 - **Negative caching** (RFC 2308): `NXDOMAIN` and `NODATA` responses are cached for
+
   the duration specified in the SOA `minimum` field. Avoids repeated queries for
   non-existent names.
+
 - **DNS over TLS (DoT)** (RFC 7858) encrypts DNS traffic over TCP/853.
+
   **DNS over HTTPS (DoH)** (RFC 8484) carries DNS messages as HTTP/2 POST or GET
   requests to a well-known URI over TCP/443.
+
 - **Split-horizon DNS**: Different responses served to internal vs external clients,
+
   typically using view configuration in BIND.
+
 - **TTL 0** effectively bypasses caching; used for records that must always reflect
+
   the current state (e.g. health-checked load balancers). Overuse causes excessive
   resolver load.
+
 - **Zone transfers**: AXFR (full) and IXFR (incremental, RFC 1995) use TCP/53. Should
+
   be restricted to authorised secondary name servers.

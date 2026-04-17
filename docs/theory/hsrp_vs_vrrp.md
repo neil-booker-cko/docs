@@ -50,8 +50,11 @@ stateDiagram-v2
 
 - **Active router:** Responds to ARP requests for the VIP, forwards traffic.
 - **Standby router:** Monitors the Active. If the Active's hello messages stop arriving
+
   within the hold time, the Standby immediately becomes Active.
+
 - **Listen state:** Other routers in the group that are neither Active nor Standby.
+
   They monitor but do not participate in the election unless both Active and Standby fail.
 
 Only two routers play Active/Standby at any time — the rest sit in Listen. HSRP
@@ -62,6 +65,7 @@ groups can have many members, but only one active and one standby exist per grou
 VRRP has three states and a simpler model:
 
 ```mermaid
+
 stateDiagram-v2
     [*] --> Initialize
     Initialize --> Backup : Lower priority than master
@@ -72,9 +76,12 @@ stateDiagram-v2
 
 - **Master:** Forwards traffic and sends VRRP Advertisements.
 - **Backup:** Listens for Advertisements from the Master. On expiry of
+
   `Master_Down_Interval` (3 × Advertisement_Interval + Skew_Time), a Backup
   transitions to Master.
+
 - **Owner:** A router whose real IP address *is* the VIP. The owner always has
+
   priority 255 and is always preferred as Master. HSRP has no equivalent — the VIP
   must be distinct from any real interface address.
 
@@ -99,6 +106,7 @@ it does not reclaim the Active role — the lower-priority router that took over
 Always enable preemption with a delay:
 
 ```ios
+
 standby 1 preempt delay minimum 30
 ```
 
@@ -110,6 +118,7 @@ black-hole even though HSRP has converged.
 No delay is configured by default — add one in production:
 
 ```ios
+
 vrrp 1 address-family ipv4
  preempt delay minimum 30
 ```
@@ -121,8 +130,11 @@ vrrp 1 address-family ipv4
 Default failover time is determined by the hold/dead interval:
 
 ```mermaid
+
 timeline
-    title Default Failover Comparison
+---
+title Default Failover Comparison
+---
     section HSRP (default: 3s hello / 10s hold)
         T=0s : Active router fails
         T=10s : Hold timer expires on Standby
@@ -175,6 +187,7 @@ upstream fails — forcing a failover to the standby router even if the gateway 
 is still up.
 
 ```mermaid
+
 graph LR
     subgraph Normal["Normal — R1 Active (priority 110)"]
         R1a["R1<br/>Priority 110<br/>Uplink UP"] -->|Active| VIP["VIP 10.0.1.1"]
@@ -210,31 +223,40 @@ address families with consistent behaviour.
 ### Use HSRP when
 
 - The environment is Cisco-only and the additional Cisco-specific features matter
+
   (e.g., per-VLAN HSRP load balancing with PVST+ alignment is well-understood
   operationally in Cisco shops)
+
 - Existing network is already using HSRP and migration cost outweighs benefits
 
 ### Use VRRP when
 
 - The network includes non-Cisco devices (firewalls, load balancers, non-Cisco
+
   switches acting as gateways)
+
 - IPv6 redundancy is required — VRRPv3 handles both address families cleanly
 - Faster default failover time matters and tuning hsrp timers feels like unnecessary
+
   configuration overhead
+
 - Greenfield deployment — VRRP is the vendor-neutral standard
 
 ### Practical Differences That Matter Most
 
 1. **Preemption defaults are opposite.** HSRP requires explicit `preempt` to reclaim
+
    Active after a recovery; VRRP preempts by default. This catches engineers who
    configure HSRP without preempt and then wonder why the preferred router never
    reclaims Active after a reboot.
 
 2. **VRRP allows the VIP to be a real interface address.** The VRRP owner (the router
+
    whose real IP is the VIP) has an implicit priority of 255. HSRP always requires the
    VIP to be separate from any real interface address.
 
 3. **HSRP has more Cisco-specific integration.** IP SLA tracking, NHRP, and some
+
    Cisco SD-WAN integrations tie into HSRP more naturally in Cisco-only environments.
 
 ---
@@ -242,14 +264,21 @@ address families with consistent behaviour.
 ## Notes
 
 - Both HSRP and VRRP are **gateway redundancy only** — they do not load-balance traffic
+
   across routers in their basic form. ECMP or per-VLAN load balancing (multiple groups
   with different active routers) are the standard approaches.
+
 - VRRP advertisements are sent to `224.0.0.18` (IP protocol 112). Some firewalls drop
+
   IP protocol 112 — ensure VRRP multicast is permitted between gateway interfaces.
+
 - In a spine-leaf datacentre fabric, HSRP/VRRP is largely replaced by **anycast
+
   gateway** on leaf switches — every leaf presents the same gateway MAC/IP, eliminating
   the need for a separate redundancy protocol. See
   [Data Centre Topologies](dc_topologies.md).
+
 - `show standby brief` / `show vrrp brief` — quick state overview for all groups.
+
   The Active/Master router is shown with its real IP; confirm it is the intended
   primary before making changes.

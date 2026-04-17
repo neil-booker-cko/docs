@@ -43,6 +43,7 @@ sequenceDiagram
 All SSH data after the version string exchange is sent as binary packets:
 
 ```mermaid
+
 ---
 title: "SSH Binary Packet"
 ---
@@ -88,15 +89,24 @@ The first byte of each payload identifies the message type:
 ## Notes
 
 - **Host key verification** is the SSH equivalent of certificate validation. On first
+
   connection the client stores the server's public key fingerprint (TOFU — Trust On
   First Use). Subsequent connections fail if the key changes, preventing MITM attacks.
+
 - **Public key authentication** is preferred over passwords. The server holds the
+
   user's public key; the client proves possession of the private key by signing a
   challenge. The private key never leaves the client.
+
 - **Agent forwarding** (`-A`) allows a remote session to use the client's local SSH
+
   agent for onward authentication — useful for jump hosts but increases attack surface.
+
 - **Port forwarding** (local `-L`, remote `-R`, dynamic `-D`) creates encrypted
+
   tunnels through the SSH connection. Dynamic forwarding creates a SOCKS proxy.
+
 - **OpenSSH** is the de-facto implementation. Key exchange algorithms in modern use:
+
   `curve25519-sha256`, `ecdh-sha2-nistp256`. Cipher: `chacha20-poly1305`,
   `aes256-gcm`. MAC: `hmac-sha2-256` or implicit with AEAD ciphers.

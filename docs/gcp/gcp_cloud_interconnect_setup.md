@@ -51,10 +51,15 @@ Cloud Router is Google's managed BGP routing service. Key characteristics:
 - One Cloud Router per region per VPC network
 - Supports multiple BGP sessions, one per VLAN attachment
 - Cloud Router ASN is configurable at creation time (default 64512); it cannot be
+
   changed after the router is created without deleting and recreating it
+
 - Advertises VPC subnets to on-premises; learns on-premises prefixes and programs them
+
   into the VPC's dynamic route table
+
 - Regional — a Cloud Router in us-central1 does not automatically route traffic for
+
   VPCs in europe-west1. For multi-region access, either deploy Cloud Routers per region
   or enable Global Routing mode on the Cloud Router (which allows it to propagate routes
   across regions)
@@ -64,7 +69,9 @@ Cloud Router is Google's managed BGP routing service. Key characteristics:
 ## Step 1 — Dedicated Interconnect: Order and Physical Setup
 
 1. In the GCP Console, navigate to **Hybrid Connectivity → Interconnect → Create
+
    Dedicated Interconnect**
+
 2. Choose the colocation facility and capacity (10 Gbps or 100 Gbps)
 3. GCP generates a **Letter of Authorization (LOA)** — download it from the Console
 
@@ -81,12 +88,19 @@ of the physical interconnect.
 ## Step 1 — Partner Interconnect: Contact Provider
 
 1. Select a Partner Interconnect provider from Google's list and agree on capacity
+
    (50 Mbps to 50 Gbps)
+
 2. The provider creates a VLAN attachment on their infrastructure and shares a
+
    **pairing key** with the customer
+
 3. In the GCP Console, navigate to **Hybrid Connectivity → Interconnect → Create
+
    Partner Interconnect** and enter the pairing key to associate the attachment
+
 4. Once the provider confirms provisioning is complete, **activate the attachment** in
+
    the GCP Console — the attachment will not pass traffic until activated
 
 ---
@@ -123,6 +137,7 @@ router for the VLAN, then bring up the BGP session.
 **Cisco IOS-XE:**
 
 ```text
+
 ! VLAN attachment subinterface
 interface GigabitEthernet0/0.100
  encapsulation dot1Q 100
@@ -145,6 +160,7 @@ router bgp 65001
 **FortiGate:**
 
 ```bash
+
 config system interface
  edit "ic-vlan100"
   set vdom "root"
@@ -192,10 +208,15 @@ A single attachment has no redundancy against facility-level failure. The 99.99%
 topology requires:
 
 - Two VLAN attachments on two separate physical interconnects (or two separate Partner
+
   connections)
+
 - The two interconnects must be in different metropolitan areas — different cities or
+
   different Google colocation facilities that Google classifies as separate MAs
+
 - Two Cloud Routers, one per region (or one Cloud Router with two BGP sessions if both
+
   attachments terminate in the same region)
 
 Google does not consider two attachments in the same metropolitan area as qualifying

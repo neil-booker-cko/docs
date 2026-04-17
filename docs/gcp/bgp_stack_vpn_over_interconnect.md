@@ -24,15 +24,22 @@ flowchart TD
 ```
 
 - **Underlay BGP:** Cisco IOS-XE peers with a GCP Cloud Router over the
+
   Cloud Interconnect VLAN attachment. Cloud Router BGP ASN is configurable;
   GCP does not use a fixed ASN like Azure's `12076`.
+
 - **HA VPN Tunnels:** FortiGate terminates IKEv2 tunnels to a Cloud VPN Gateway.
+
   GCP HA VPN requires two tunnels for the 99.99% SLA. Tunnel endpoints are the
   public IPs of the HA VPN gateway interfaces.
+
 - **Overlay BGP:** FortiGate and a second Cloud Router (VPN-attached) peer BGP
+
   inside the IPsec tunnels, exchanging VPC and on-premises prefixes with
   encryption end-to-end.
+
 - **BFD on Interconnect:** Unlike AWS and Azure, GCP Cloud Router supports BFD
+
   over Dedicated Interconnect VLAN attachments, enabling sub-second underlay
   failure detection.
 
@@ -52,6 +59,7 @@ flowchart TD
 ## 2. Architecture
 
 ```mermaid
+
 ---
 title: "GCP Architecture"
 ---
@@ -91,6 +99,7 @@ graph LR
 ### Underlay Failure (Interconnect Circuit Down)
 
 ```mermaid
+
 timeline
     title Failure Scenario: Interconnect Underlay Failover
     section Underlay (Cisco / Cloud Interconnect)
@@ -105,6 +114,7 @@ timeline
 ### Overlay Failure (Silent VPN Path Loss)
 
 ```mermaid
+
 timeline
     title Failure Scenario: HA VPN Path Failure
     section Optimized Timers
@@ -125,6 +135,7 @@ timeline
 ### A. Cisco IOS-XE — Interconnect Underlay BGP
 
 ```ios
+
 ! BFD template for Cloud Interconnect VLAN attachment
 bfd-template single-hop GCP-IC-BFD
  interval min-tx 300 min-rx 300 multiplier 3
@@ -165,6 +176,7 @@ ip prefix-list PFX-ONPREM-SUMMARY permit 10.0.0.0/8
 ### B. FortiGate — HA VPN Phase 1 (IKEv2 to Cloud VPN Gateway)
 
 ```fortios
+
 config vpn ipsec phase1-interface
     edit "gcp-havpn-tunnel1"
         set interface "port1"
@@ -202,6 +214,7 @@ end
 ### C. FortiGate — Overlay BGP to Cloud Router B (HA VPN)
 
 ```fortios
+
 config system interface
     edit "gcp-havpn-tunnel1"
         set ip 169.254.1.2 255.255.255.252

@@ -1,10 +1,14 @@
 # FortiGate: HA Configuration
 
-FortiGate High Availability uses FGCP (FortiGate Clustering Protocol), a Fortinet-proprietary
-protocol that synchronises configuration, session tables, and routing tables between cluster
-members. FGCP supports two operational modes: Active-Passive (one unit forwards all traffic,
+FortiGate High Availability uses FGCP (FortiGate Clustering Protocol), a
+Fortinet-proprietary
+protocol that synchronises configuration, session tables, and routing tables between
+cluster
+members. FGCP supports two operational modes: Active-Passive (one unit forwards all
+traffic,
 one is a hot standby) and Active-Active (primary distributes sessions to secondary via
-load-balancing). Heartbeat traffic flows over dedicated HA interfaces; failover is stateful
+load-balancing). Heartbeat traffic flows over dedicated HA interfaces; failover is
+stateful
 when session synchronisation is enabled.
 
 For gateway redundancy protocol background see [HSRP vs VRRP](../theory/hsrp_vs_vrrp.md).
@@ -14,24 +18,41 @@ For gateway redundancy protocol background see [HSRP vs VRRP](../theory/hsrp_vs_
 ## 1. Overview & Principles
 
 - **FGCP heartbeat:** Cluster members exchange heartbeat packets at sub-second intervals
+
   over designated HA interfaces. Loss of heartbeat for the duration of the dead interval
   triggers a failover election.
+
 - **Primary election:** The unit with the highest priority value becomes primary. Ties
+
   are broken by managed device count, then interface link state, then serial number.
   Priority is configurable (0–255; default 128); higher values win.
+
 - **Configuration synchronisation:** The primary pushes its full configuration to all
-  secondaries. Changes made directly on a secondary are overwritten. Always make configuration
+
+secondaries. Changes made directly on a secondary are overwritten. Always make
+configuration
   changes on the primary or via FortiManager.
+
 - **Session synchronisation:** TCP sessions are synced to the secondary by default. With
-  session sync enabled, TCP sessions survive failover without client reconnection. UDP and
+
+session sync enabled, TCP sessions survive failover without client reconnection. UDP and
   ICMP sessions are not synced by default (additional overhead required).
-- **Active-Passive (A-P):** One unit handles all forwarding; the secondary monitors heartbeat
+
+- **Active-Passive (A-P):** One unit handles all forwarding; the secondary monitors
+heartbeat
+
+heartbeat
+
   and is ready to take over. Simpler to operate; recommended for most deployments.
+
 - **Active-Active (A-A):** The primary distributes sessions to the secondary using a
+
   load-balancing hash. Both units forward traffic. A-A does not double throughput in all
   scenarios — asymmetric traffic paths and UTM inspection requirements can limit gains.
   A-P is preferred unless specific throughput scaling has been validated.
+
 - **HA management interface:** Each cluster member can be assigned a dedicated
+
   management IP independent of cluster state, allowing direct access to a secondary unit
   for diagnostics and upgrade operations.
 
@@ -69,6 +90,7 @@ The same HA configuration block is applied to both units before connecting the h
 cable. The unit with the higher priority value becomes primary.
 
 ```fortios
+
 config system ha
     set mode a-p
     set group-id 1
@@ -93,10 +115,15 @@ means HA traffic competes with production data, and a congested link can cause f
 failover events.
 
 - Connect heartbeat interfaces directly between units with a crossover cable (or dedicated
+
   VLAN on a switch not carrying production traffic).
+
 - If only one HA interface is available, heartbeat and session sync will share the same
+
   link; this is acceptable but increases risk of split-brain on high-utilisation links.
+
 - HA interfaces do not participate in the production forwarding table and should not be
+
   configured with IP addresses in normal deployments (FGCP manages addressing internally).
 
 ### C. Management Access to Secondary Unit
@@ -106,6 +133,7 @@ A dedicated HA management interface allows direct access to the secondary regard
 cluster state — essential for upgrades and out-of-band diagnostics.
 
 ```fortios
+
 config system ha
     set ha-mgmt-status enable
     config ha-mgmt-interfaces
@@ -134,6 +162,7 @@ not synced unless `session-pickup-connectionless enable` is set — this trades 
 transparency for additional CPU and bandwidth overhead on the heartbeat link.
 
 ```fortios
+
 config system ha
     set session-pickup enable              ! TCP session sync — enabled by default
     set session-pickup-connectionless enable   ! UDP/ICMP session sync — higher overhead
@@ -151,6 +180,7 @@ peer (with higher effective priority) to win the election and become primary. Th
 failover occurs when a production interface fails even if the unit itself is healthy.
 
 ```fortios
+
 config system ha
     set monitor "port1" "port2"        ! Trigger failover if either interface goes down
 end
@@ -168,6 +198,7 @@ provides an uninterruptible upgrade option that automates the sequence.
 **Automated (recommended):**
 
 ```fortios
+
 config system ha
     set uninterruptible-upgrade enable     ! FortiOS coordinates upgrade order automatically
 end
@@ -180,6 +211,7 @@ then upgrade the primary with a controlled failover.
 **Manual procedure:**
 
 ```fortios
+
 ! From primary CLI — access secondary and initiate upgrade
 execute ha manage 1                        ! Connect to secondary (ID 1)
 
@@ -200,6 +232,7 @@ load-balances new sessions to the secondary using a hash of source IP, destinati
 and protocol.
 
 ```fortios
+
 config system ha
     set mode a-a
     set load-balance-all enable            ! Load-balance all traffic types (not just UTM)
@@ -215,18 +248,26 @@ end
 A-A caveats to consider before deployment:
 
 - Sessions forwarded to the secondary traverse the HA link twice (in and out), consuming
+
   heartbeat bandwidth. Dedicated HA links with sufficient capacity are critical.
+
 - Asymmetric routing on the WAN side can cause the return traffic to arrive at the secondary
+
   while the session was established on the primary — FortiGate handles this internally via
   the session sync table, but it adds latency.
+
 - UTM inspection (IPS, AV, SSL inspection) sessions are load-balanced; sessions requiring
+
   NP (network processor) offload may not benefit from A-A distribution.
+
 - A-P is recommended for most deployments. Use A-A only after validating throughput gains
+
   in the specific traffic profile.
 
 ### H. Cluster Verification and Forced Failover
 
 ```fortios
+
 ! Force failover to secondary (for maintenance or testing)
 execute ha failover set 1              ! Force unit with ID 1 to become primary
 

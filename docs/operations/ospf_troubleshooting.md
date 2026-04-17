@@ -1,7 +1,9 @@
 # OSPF Troubleshooting
 
-OSPF issues fall into three categories: neighbour formation failures, database synchronisation
-issues, and route installation failures. The neighbour state machine makes it straightforward
+OSPF issues fall into three categories: neighbour formation failures, database
+synchronisation
+issues, and route installation failures. The neighbour state machine makes it
+straightforward
 to locate which category applies — identify the stuck state first, then work through the
 specific failure points for that state.
 
@@ -24,15 +26,24 @@ stateDiagram-v2
 **What each transition requires:**
 
 - **Down → Init**: A Hello packet is received. Requires Layer 2 adjacency, matching subnet,
+
     and no ACL blocking IP protocol 89 or multicast 224.0.0.5.
+
 - **Init → 2-Way**: The receiving router sees its own Router ID listed in the neighbour's
+
     Hello. Requires matching Hello/dead intervals, matching area ID, and matching authentication.
+
 - **2-Way → ExStart**: On broadcast networks, DR/BDR election must complete first. On point-to-point,
+
     this transition is immediate. Requires matching MTU (or `ip ospf mtu-ignore`).
+
 - **ExStart → Exchange**: Master/slave relationship established via DBD sequence numbers.
+
     Duplicate Router IDs prevent this.
+
 - **Exchange → Loading**: Full DBD exchange complete. Router sends LSR for any LSAs it needs.
 - **Loading → Full**: All LSAs received and installed in the LSDB. Large databases or packet
+
     loss can delay this transition.
 
 ---
@@ -52,14 +63,17 @@ stateDiagram-v2
 
 ## Area Type Mismatches
 
-Stub, totally stubby, and NSSA area types must match on every router in the area. A mismatch
-prevents neighbour formation — the area type is carried in the Hello packet options field.
+Stub, totally stubby, and NSSA area types must match on every router in the area. A
+mismatch
+prevents neighbour formation — the area type is carried in the Hello packet options
+field.
 
 **Symptom:** Neighbour stays in Init or 2-Way; no ExStart transition.
 
 **Diagnostic:**
 
 ```ios
+
 show ip ospf
 show ip ospf interface <interface>
 ```
@@ -78,6 +92,7 @@ Hello packets to be silently dropped — the neighbour stays in Init or Down.
 **Diagnostic:**
 
 ```ios
+
 show ip ospf interface <interface>
 debug ip ospf adj
 ```
@@ -103,6 +118,7 @@ appears in the LSDB.
 **Diagnostic:**
 
 ```ios
+
 show ip ospf interface <interface>
 ```
 
@@ -121,6 +137,7 @@ these checks in order.
 **Is the LSA in the database?**
 
 ```ios
+
 show ip ospf database
 show ip ospf database router <router-id>
 show ip ospf database network <dr-ip>
@@ -132,6 +149,7 @@ interface has OSPF enabled and is not passive.
 **Is the route installed?**
 
 ```ios
+
 show ip route ospf
 show ip route <prefix>
 ```
@@ -139,13 +157,16 @@ show ip route <prefix>
 An LSA present in the database but absent from the routing table usually indicates:
 
 - A summary route is suppressing the more-specific prefix (`area <x> range` with `not-advertise`,
+
     or `summary-address` on an ASBR)
+
 - The route is being filtered by a `distribute-list` under `router ospf`
 - A more preferred route from another protocol is installed
 
 **Default route:**
 
 ```ios
+
 show ip route 0.0.0.0
 show running-config | section router ospf
 ```
@@ -156,6 +177,7 @@ the originating router has a default route in its own table (unless `always` is 
 **ABR summaries:**
 
 ```ios
+
 show ip ospf border-routers
 ```
 
@@ -169,6 +191,7 @@ interface or a routing loop causing LSA flooding.
 **Diagnostic:**
 
 ```ios
+
 show ip ospf statistics
 show ip ospf database
 show processes cpu | include ospf
@@ -181,6 +204,7 @@ point to the originating router with the unstable interface.
 **Fix:**
 
 ```ios
+
 router ospf <pid>
  timers throttle spf 50 100 5000    ! Initial, hold, max (ms)
  timers lsa arrival 100
@@ -210,7 +234,7 @@ SPF recalculations. The underlying instability still needs to be resolved.
 | `debug ip ospf events` | General OSPF event log |
 
 !!! warning
-    OSPF debug on a large network generates significant output. Always specify an interface
+OSPF debug on a large network generates significant output. Always specify an interface
     or neighbour scope where possible, and disable debug immediately after capture: `no
     debug ip ospf`.
 
@@ -219,6 +243,7 @@ SPF recalculations. The underlying instability still needs to be resolved.
 ## FortiGate OSPF Diagnostics
 
 ```fortios
+
 get router info ospf neighbor
 get router info ospf interface
 get router info ospf database
@@ -228,6 +253,7 @@ get router info routing-table ospf
 **Enable debug logging:**
 
 ```fortios
+
 diagnose ip router ospf all enable
 diagnose ip router ospf level info
 diagnose debug enable
@@ -236,6 +262,7 @@ diagnose debug enable
 Disable after capture:
 
 ```fortios
+
 diagnose debug disable
 diagnose ip router ospf all disable
 ```

@@ -1,9 +1,12 @@
 # FortiGate: SD-WAN Configuration Guide
 
-FortiGate SD-WAN aggregates multiple WAN interfaces (broadband, MPLS, LTE, direct connect)
-into a logical overlay with policy-based forwarding, per-application routing, and SLA-based
+FortiGate SD-WAN aggregates multiple WAN interfaces (broadband, MPLS, LTE, direct
+connect)
+into a logical overlay with policy-based forwarding, per-application routing, and
+SLA-based
 health monitoring. Traffic is steered to the best path based on measured link quality
-(latency, jitter, packet loss) or per-application rules. SD-WAN replaces traditional policy
+(latency, jitter, packet loss) or per-application rules. SD-WAN replaces traditional
+policy
 routing in FortiOS and is configured entirely under `config system sdwan`.
 
 ---
@@ -11,14 +14,22 @@ routing in FortiOS and is configured entirely under `config system sdwan`.
 ## 1. Overview & Principles
 
 - **SD-WAN Zone:** Logical grouping of SD-WAN member interfaces. Zone-based policies
-  control inter-zone traffic and are referenced in firewall policies as a single interface
+
+control inter-zone traffic and are referenced in firewall policies as a single interface
   object.
+
 - **SD-WAN Member:** A WAN interface (physical or IPsec/GRE tunnel) participating in
+
   SD-WAN load-balancing or path selection. Each member is assigned to a zone.
+
 - **Performance SLA:** Continuous probes (ping, HTTP, DNS) measure latency, jitter, and
-  packet loss per member. SLA thresholds determine whether a member is considered healthy.
+
+packet loss per member. SLA thresholds determine whether a member is considered healthy.
+
 - **SD-WAN Rule (Service):** Matches traffic by source/destination address, application,
+
   or DSCP, then steers it to a preferred member or zone using a selected algorithm.
+
 - **Load-balancing algorithms:**
 
 | Algorithm | Behaviour |
@@ -61,6 +72,7 @@ graph LR
 ### A. Define SD-WAN Members and Zone
 
 ```fortios
+
 config system sdwan
     set status enable
     config zone
@@ -87,6 +99,7 @@ end
 ### B. Performance SLA (Health Check)
 
 ```fortios
+
 config system sdwan
     config health-check
         edit "SLA-CHECK-PRIMARY"
@@ -115,6 +128,7 @@ end
 ### C. SD-WAN Traffic Steering Rules
 
 ```fortios
+
 config system sdwan
     config service
         edit 1
@@ -156,6 +170,7 @@ SD-WAN traffic must be permitted by a firewall policy that references the SD-WAN
 the source interface. The zone name is used the same way as a physical interface.
 
 ```fortios
+
 config firewall policy
     edit 100
         set srcintf "SDWAN-ZONE"
@@ -176,6 +191,7 @@ When members use different public IPs, configure IP pools tied to each member's 
 interface to ensure return traffic routes correctly:
 
 ```fortios
+
 config firewall ippool
     edit "POOL-MPLS"
         set startip 10.10.10.2
@@ -197,10 +213,15 @@ end
 SLA states control which members are eligible for traffic steering:
 
 - When a member's measured latency, jitter, or packet loss exceeds configured thresholds,
+
   its SLA status changes to **out-of-SLA**.
+
 - Rules set to `mode priority` skip members with failed SLA and move to the next member
+
   in the priority list.
+
 - Rules set to `mode best-quality` continuously re-evaluate the best member even when all
+
   members are within SLA.
 
 | Steering Mode | Behaviour When Primary Fails SLA | Re-evaluation |

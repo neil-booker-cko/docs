@@ -40,6 +40,7 @@ and destination for the unicast heartbeats.
 Note the use of `multi-hop` instead of `single-hop`.
 
 ```ios
+
 bfd-template multi-hop MH-BFD-TEMPLATE
  interval min-tx 500 min-rx 500 multiplier 3
 ```
@@ -50,6 +51,7 @@ The BFD Map binds the template to the specific source and destination IPs used f
 the BGP peering.
 
 ```ios
+
 ! Syntax: bfd-map   template
 bfd-map 10.255.255.2 10.255.255.1 template MH-BFD-TEMPLATE
 ```
@@ -59,6 +61,7 @@ bfd-map 10.255.255.2 10.255.255.1 template MH-BFD-TEMPLATE
 Enable BFD on the multihop neighbor.
 
 ```ios
+
 router bgp 65000
  neighbor 10.255.255.2 remote-as 65001
  neighbor 10.255.255.2 update-source Loopback0
@@ -99,6 +102,7 @@ If there is a firewall between the neighbors, you must permit the following:
 - **Protocol:** UDP
 - **Port:** 4784 (Control) and 4785 (Echo - if used)
 - **Note:** Many firewalls inspect BFD; ensure they are not dropping these low-latency
+
     packets.
 
 ---

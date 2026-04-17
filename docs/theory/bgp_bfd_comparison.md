@@ -48,6 +48,7 @@ timeline
 ### Restoration Timeline (Session Re-established)
 
 ```mermaid
+
 timeline
     title BGP Restoration Timeline
     section Standard BGP (Physical Recovery)
@@ -68,6 +69,7 @@ timeline
 ### Cisco IOS-XE BGP with BFD
 
 ```ios
+
 router bgp 65000
  neighbor 10.1.1.2 remote-as 65001
  neighbor 10.1.1.2 fall-over bfd
@@ -78,6 +80,7 @@ router bgp 65000
 ### FortiGate BGP with BFD
 
 ```fortios
+
 config router bgp
     config neighbor
         edit "10.1.1.2"
@@ -112,12 +115,19 @@ end
 ### Engineering Guidance
 
 - **Keep BGP Timers Conservative:** When using BFD, keep your BGP hold-timers at
+
     60s or higher. This prevents the BGP process from constantly checking the TCP
     stack, as BFD handles the "heavy lifting" of health checks.
+
 - **BFD Multihop:** If peering over a firewall or load-balancer, ensure you use
+
     `fall-over bfd multihop` to allow for TTL variation.
+
 - **Graceful Restart:** Pair BFD with BGP Graceful Restart to ensure the data plane
+
     continues to forward traffic even if the control plane BGP process restarts.
+
 - **Dampening Awareness:** Be aware that BFD does not bypass BGP Dampening. If BFD
+
     triggers a session drop multiple times, the prefix may be suppressed for up
     to 60 minutes.

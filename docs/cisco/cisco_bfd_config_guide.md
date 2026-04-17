@@ -29,6 +29,7 @@ timeline
 ### A. Global BFD Template
 
 ```ios
+
 bfd-template single-hop OPTIMIZED-BFD
  interval min-tx 300 min-rx 300 multiplier 3
 ```
@@ -36,6 +37,7 @@ bfd-template single-hop OPTIMIZED-BFD
 ### B. Protocol Integration
 
 ```ios
+
 router bgp 65001
  neighbor 10.1.1.2 fall-over bfd
 !

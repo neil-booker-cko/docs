@@ -126,12 +126,19 @@ default.
 ## Notes
 
 - AD is evaluated **before** the best-path algorithm within a routing protocol.
+
   Two OSPF routes competing with each other use OSPF metric, not AD. AD only
   resolves conflicts between different routing sources.
+
 - **Route redistribution** does not carry AD. A route redistributed from EIGRP
+
   into OSPF is installed with OSPF's AD (110) on the receiving router.
+
 - Cisco **ECMP** requires all candidate routes to have the same AD and metric.
+
   Routes from different protocols cannot be load-balanced unless manipulated with
   policy.
+
 - A static route to Null0 with AD 254 is a common pattern for BGP black-hole
+
   communities — high enough to lose to any real route.

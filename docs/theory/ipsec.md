@@ -71,9 +71,12 @@ IKEv1 operates in two phases:
 negotiation). Two modes:
 
 - **Main mode:** 6 messages. Identity of each peer is protected by encryption
+
   negotiated in the earlier messages. More secure; required when peer identity
   should not be exposed.
+
 - **Aggressive mode:** 3 messages. Peer identity is sent in the clear before
+
   encryption is established. Faster but pre-shared key identity is exposed to
   passive eavesdroppers. Avoid in new deployments.
 
@@ -87,8 +90,11 @@ IKEv2 (RFC 7296) replaces both phases with a single 4-message exchange, while
 adding capabilities IKEv1 lacked:
 
 - **IKE_SA_INIT** (2 messages): peers propose cipher suites, perform Diffie-Hellman
+
   key exchange, and exchange nonces
+
 - **IKE_AUTH** (2 messages): peers authenticate (PSK, certificates, or EAP) and
+
   create the first CHILD_SA (equivalent to the IPsec SA)
 
 Additional CHILD_SAs (for additional traffic selectors) are created with
@@ -172,9 +178,13 @@ Detection and activation:
 
 1. During `IKE_SA_INIT`, both peers include a NAT detection notification payload
 2. Each peer hashes its own IP and port; if the received hash does not match the
+
    observed source address, NAT is present
+
 3. If either peer detects NAT, both peers switch to UDP 4500 for all subsequent
+
    IKE and ESP traffic
+
 4. ESP packets are encapsulated as: `UDP 4500 | Non-ESP Marker | ESP`
 
 NAT-T is built into IKEv2 and requires no explicit configuration on most

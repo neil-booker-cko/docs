@@ -1,9 +1,12 @@
 # Cisco IOS-XE: VLAN, Trunking, and Inter-VLAN Routing Configuration
 
 VLANs segment a physical switch into multiple independent broadcast domains. 802.1Q tags
-frames on trunk links so that a single physical connection carries traffic for many VLANs
-simultaneously. Inter-VLAN routing is performed either by a Layer 3 switch using Switched
-Virtual Interfaces (SVIs) or by an external router using subinterfaces (router-on-a-stick).
+frames on trunk links so that a single physical connection carries traffic for many
+VLANs
+simultaneously. Inter-VLAN routing is performed either by a Layer 3 switch using
+Switched
+Virtual Interfaces (SVIs) or by an external router using subinterfaces
+(router-on-a-stick).
 
 For protocol background see [VLANs and 802.1Q](../theory/vlans.md).
 
@@ -12,21 +15,39 @@ For protocol background see [VLANs and 802.1Q](../theory/vlans.md).
 ## 1. Overview & Principles
 
 - **VLAN database:** VLANs 1–4094 are defined in the local VLAN database (or propagated
-  via VTP). Each VLAN is an independent broadcast domain — frames are never forwarded between
+
+via VTP). Each VLAN is an independent broadcast domain — frames are never forwarded
+between
   VLANs without a Layer 3 routing decision.
+
 - **802.1Q tagging:** On trunk ports, every frame carries a 4-byte 802.1Q tag (VLAN ID +
+
   priority bits) inserted after the source MAC address. The native VLAN is the only VLAN
   whose frames traverse a trunk untagged by default.
-- **Native VLAN:** Frames arriving on a trunk without a tag are assigned to the native VLAN.
-  VLAN 1 is the factory default native VLAN and also carries CDP, STP, VTP, and PAgP control
+
+- **Native VLAN:** Frames arriving on a trunk without a tag are assigned to the native
+VLAN.
+
+VLAN.
+
+VLAN 1 is the factory default native VLAN and also carries CDP, STP, VTP, and PAgP
+control
   traffic. Best practice is to set an unused, dedicated native VLAN (e.g., 999) and keep
   VLAN 1 off all user trunk ports.
-- **SVI vs router-on-a-stick:** An SVI is a virtual Layer 3 interface on a multilayer switch
-  and is the preferred inter-VLAN method for most campus environments — routing is performed
-  in hardware. Router-on-a-stick uses a single physical link with 802.1Q subinterfaces and
+
+- **SVI vs router-on-a-stick:** An SVI is a virtual Layer 3 interface on a multilayer
+switch
+
+switch
+
+and is the preferred inter-VLAN method for most campus environments — routing is
+performed
+in hardware. Router-on-a-stick uses a single physical link with 802.1Q subinterfaces and
   is suited to branch sites where no multilayer switch is available.
+
 - **DTP (Dynamic Trunking Protocol):** IOS-XE switches negotiate trunking automatically
-  with DTP. Disable it with `switchport nonegotiate` on all access and static trunk ports
+
+with DTP. Disable it with `switchport nonegotiate` on all access and static trunk ports
   to prevent misconfiguration and VLAN-hopping attacks.
 
 ---
@@ -64,6 +85,7 @@ Define VLANs in the VLAN database before assigning them to ports. VLAN 1 exists 
 and cannot be deleted — do not use it for user traffic.
 
 ```ios
+
 vlan 10
  name USERS
 !
@@ -86,6 +108,7 @@ Access ports carry traffic for exactly one VLAN, untagged. `switchport nonegotia
 DTP negotiation and must be configured on all non-trunk ports.
 
 ```ios
+
 interface GigabitEthernet1/0/1
  description User workstation
  switchport mode access            ! Hard-set as access — do not rely on auto-negotiation
@@ -113,6 +136,7 @@ list to only VLANs that are needed on the link — this reduces STP scope and li
 radius of a misconfiguration.
 
 ```ios
+
 interface GigabitEthernet1/0/48
  description Uplink to distribution switch
  switchport trunk encapsulation dot1q  ! Required on older platforms (3750, 4500); omit on newer
@@ -131,6 +155,7 @@ to that VLAN is in a forwarding state — a VLAN with no active ports will show 
 line protocol down.
 
 ```ios
+
 ! Enable IP routing globally (required for inter-VLAN routing via SVI)
 ip routing
 !
@@ -160,6 +185,7 @@ Used at branch sites where a router rather than a multilayer switch provides int
 routing. The physical interface has no IP address — each subinterface carries one VLAN.
 
 ```ios
+
 ! Physical interface — no IP address; just bring it up
 interface GigabitEthernet0/0
  no ip address
@@ -196,6 +222,7 @@ own local VLAN database, VTP advertisements are forwarded but not acted upon, an
 is no risk of accidental VLAN propagation.
 
 ```ios
+
 ! VTP transparent mode — local VLAN database only; no propagation
 vtp mode transparent
 vtp domain CORP                      ! Domain name must still match for VTP to pass through
@@ -209,6 +236,7 @@ Restrict the VLAN list on every trunk to only VLANs that are actually required o
 Remove VLANs as they are decommissioned.
 
 ```ios
+
 ! Add a VLAN to an existing trunk
 interface GigabitEthernet1/0/48
  switchport trunk allowed vlan add 40
@@ -230,6 +258,7 @@ with any other port in the secondary VLAN) and `community` (ports can communicat
 their community but not with other secondary VLANs).
 
 ```ios
+
 ! Step 1: Define secondary VLANs
 vlan 101
  private-vlan isolated              ! Isolated secondary — ports cannot talk to each other

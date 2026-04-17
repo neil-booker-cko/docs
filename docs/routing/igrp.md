@@ -56,6 +56,7 @@ packet-beta
 Each route entry is 14 bytes, following the header.
 
 ```mermaid
+
 ---
 title: "IGRP Route Entry"
 ---
@@ -86,6 +87,7 @@ packet-beta
 IGRP's metric is computed from the same K-value formula later adopted by EIGRP:
 
 ```text
+
 Metric = [K1 × Bandwidth + (K2 × Bandwidth)/(256 - Load) + K3 × Delay]
          × [K5 / (Reliability + K4)]
 ```
@@ -93,17 +95,23 @@ Metric = [K1 × Bandwidth + (K2 × Bandwidth)/(256 - Load) + K3 × Delay]
 Default K-values: K1=1, K2=0, K3=1, K4=0, K5=0, reducing to:
 
 ```text
+
 Metric = Bandwidth + Delay
 ```
 
 ## Notes
 
 - **Classful only** — IGRP carries no subnet mask, making VLSM impossible.
+
   This was a fundamental limitation compared to EIGRP and OSPF.
+
 - **Broadcast updates** are sent every 90 seconds to `255.255.255.255`.
+
   The invalid timer is 270s; the flush timer is 630s — significantly slower
   than modern protocols.
+
 - **No authentication** — any device on the segment can inject routes.
 - IGRP and EIGRP can coexist and automatically redistribute routes between
+
   each other when configured with the same AS number (on IOS versions that
   still supported IGRP).

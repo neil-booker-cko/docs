@@ -68,6 +68,7 @@ Fortinet upgrade portal if the unit has internet access.
 ### Verify after reload
 
 ```fortios
+
 get system status
 ```
 
@@ -94,6 +95,7 @@ reboot of both units, which would cause a full outage.
     ```
 
 2. Connect to the **secondary** unit directly (use its management IP, not the
+
    cluster virtual IP).
 
 3. Upgrade the secondary unit:
@@ -103,6 +105,7 @@ reboot of both units, which would cause a full outage.
     ```
 
 4. The secondary reboots. The primary handles all traffic during this time. Wait for
+
    the secondary to come back online and rejoin the cluster.
 
     ```fortios
@@ -130,6 +133,7 @@ reboot of both units, which would cause a full outage.
     ```
 
 8. If HA override is enabled, the higher-priority unit will reclaim the primary role
+
    automatically after syncing.
 
 ### Uninterruptible upgrade (automated sequence)
@@ -141,6 +145,7 @@ fails over, then upgrades the original primary — without manual intervention.
 To verify the setting:
 
 ```fortios
+
 show system ha | grep uninterruptible
 ```
 
@@ -182,6 +187,7 @@ FortiGate retains the previously running firmware image on a separate partition.
 boot the previous image:
 
 ```fortios
+
 execute restore image {current | previous}
 ```
 

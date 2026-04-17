@@ -39,6 +39,7 @@ Azure VPN Gateway in active-active mode exposes two private IP endpoints reachab
 via ExpressRoute private peering. Each FortiGate tunnel connects to one instance.
 
 ```fortios
+
 config vpn ipsec phase1-interface
     edit "azure-aa-tunnel-a"
         set interface "port1"
@@ -75,6 +76,7 @@ Azure VPN Gateway default ASN is `65515`. Enable `ebgp-multipath` to install
 both tunnel paths as equal-cost forwarding entries.
 
 ```fortios
+
 config router bgp
     set as 65000
     set ebgp-multipath enable
@@ -130,6 +132,7 @@ matched on the FortiGate tunnel interface:
 | Instance 1 | `169.254.22.1` | `169.254.22.2` |
 
 ```fortios
+
 config system interface
     edit "azure-aa-tunnel-a"
         set ip 169.254.21.2 255.255.255.255
@@ -172,6 +175,7 @@ ExpressRoute private peering MTU is 1500. IPsec overhead (ESP + IKEv2) reduces
 the effective payload. Clamp MSS on the FortiGate VTI interfaces:
 
 ```fortios
+
 config system interface
     edit "azure-aa-tunnel-a"
         set mtu-override enable

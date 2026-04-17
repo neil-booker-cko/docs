@@ -19,17 +19,31 @@ For FortiGate SD-WAN configuration see [FortiGate SD-WAN](../fortigate/fortigate
 
 A site with two WAN links — MPLS and internet broadband — presents the classic scenario:
 
-- MPLS is expensive and low-latency; it should carry real-time and business-critical traffic.
-- Internet broadband is cheap and high-bandwidth; it should carry general web and bulk traffic.
-- If MPLS degrades (congestion, provider issue) without going completely down, static routes
+- MPLS is expensive and low-latency; it should carry real-time and business-critical
+traffic.
+traffic.
+
+- Internet broadband is cheap and high-bandwidth; it should carry general web and bulk
+traffic.
+traffic.
+
+- If MPLS degrades (congestion, provider issue) without going completely down, static
+routes
+
+routes
+
   and PBR cannot detect this. Traffic continues on a degraded path.
+
 - If internet broadband is lost, it must fail over to MPLS automatically.
 
-BGP with BFD can detect a link failure (~900ms), but it cannot detect degraded quality on
-a live link, and it cannot steer individual application flows independently of the routing
+BGP with BFD can detect a link failure (~900ms), but it cannot detect degraded quality
+on
+a live link, and it cannot steer individual application flows independently of the
+routing
 table. PBR can steer flows by application, but it cannot react to quality metrics.
 
-SD-WAN combines the per-flow steering of PBR with real-time quality measurement, providing
+SD-WAN combines the per-flow steering of PBR with real-time quality measurement,
+providing
 application-aware, quality-driven path selection that reacts to degradation rather than
 just outages.
 
@@ -44,10 +58,13 @@ broadband connections, LTE/5G, dedicated leased lines. These are what the provid
 delivers to the CPE.
 
 The **overlay** is the logical topology built on top: SD-WAN tunnels (IPsec or GRE) that
-create a consistent virtual fabric regardless of the underlying transport. Health monitoring
-and traffic steering operate on the overlay members, not directly on the physical interfaces.
+create a consistent virtual fabric regardless of the underlying transport. Health
+monitoring
+and traffic steering operate on the overlay members, not directly on the physical
+interfaces.
 
-In many deployments the overlay tunnels terminate at a hub, a cloud gateway, or a regional
+In many deployments the overlay tunnels terminate at a hub, a cloud gateway, or a
+regional
 SD-WAN PoP. The underlay provides reachability; the overlay provides the policy plane.
 
 ### Health Monitoring
@@ -73,11 +90,20 @@ a preferred set of members or a zone.
 
 Within the matching members, the rule applies a selection strategy:
 
-- **Best quality:** Choose the member currently meeting SLA with the best measured quality.
+- **Best quality:** Choose the member currently meeting SLA with the best measured
+quality.
+quality.
+
 - **Lowest cost:** Use the cheapest member that meets SLA; fall back if it fails.
 - **Highest priority (manual preference):** Use a specific member; fail over to the next
+
   if SLA is violated.
-- **Load balance:** Distribute sessions across members using ECMP, weighted distribution,
+
+- **Load balance:** Distribute sessions across members using ECMP, weighted
+distribution,
+
+distribution,
+
   or per-session round-robin.
 
 ### Load Balancing
@@ -85,11 +111,21 @@ Within the matching members, the rule applies a selection strategy:
 SD-WAN supports distributing traffic across multiple qualifying members simultaneously:
 
 - **Per-session ECMP:** Each new session is assigned to one member; load is balanced
+
   at session granularity. Individual sessions are not split across links.
-- **Weighted distribution:** Members receive traffic in proportion to configured weights.
+
+- **Weighted distribution:** Members receive traffic in proportion to configured
+weights.
+
+weights.
+
   A member with weight 2 receives approximately twice the sessions of a member with
   weight 1.
-- **Bandwidth-weighted:** Distribution is weighted by the configured bandwidth of each member.
+
+- **Bandwidth-weighted:** Distribution is weighted by the configured bandwidth of each
+member.
+
+member.
 
 ### Failover Without a Routing Change
 
@@ -114,7 +150,8 @@ protocol timers.
 | BGP with BFD | Routing change (prefix withdrawn) | ~900ms (BFD default) | None | Complex |
 | SD-WAN | SLA threshold violation | <1s (probe interval) | Yes (app, DSCP, service) | Moderate |
 
-Static routes and PBR share the same fundamental limitation: they react to interface state
+Static routes and PBR share the same fundamental limitation: they react to interface
+state
 (up/down), not to quality. A link that is up but experiencing 30% packet loss looks
 identical to a healthy link to these mechanisms.
 
@@ -160,9 +197,15 @@ A Performance SLA defines:
 - **Probe target:** IP or hostname to probe (e.g. `8.8.8.8`, a hub interface IP).
 - **Probe type:** ICMP, HTTP, DNS.
 - **Probe interval:** How often to send probes (default 500ms–1s).
-- **Failure threshold:** Number of consecutive probe failures before declaring the member
+- **Failure threshold:** Number of consecutive probe failures before declaring the
+member
+
+member
+
   down for SLA purposes.
+
 - **SLA thresholds:** Maximum acceptable latency, jitter, and packet loss. Members
+
   violating any threshold are considered out-of-SLA.
 
 Performance SLAs are assigned to members. A member that fails its SLA probes or violates
@@ -175,10 +218,13 @@ an in-SLA member.
 Steering rules are evaluated top-down, first-match. Each rule defines:
 
 - **Match criteria:** Source interface/zone, destination address, application group,
+
   internet service (ISDB), DSCP value, or protocol/port.
+
 - **Preferred members or zone:** The ordered list of members or a zone to use.
 - **Selection strategy:** Best quality, lowest cost, highest priority, or load balance.
 - **Fallback behaviour:** If all preferred members are out-of-SLA, use any available
+
   member or drop traffic (configurable).
 
 ---
@@ -219,7 +265,8 @@ probe to a target behind the MPLS network or the hub device to test the full pat
 ### SLA Threshold Calibration
 
 Thresholds that are too tight cause unnecessary failovers on transient probe variation.
-Thresholds that are too loose allow degraded paths to remain in service. Measure baseline
+Thresholds that are too loose allow degraded paths to remain in service. Measure
+baseline
 latency and jitter on each member under normal conditions before setting thresholds. A
 common starting point is:
 
@@ -250,15 +297,22 @@ these services to preferred members without managing large ACLs.
 ## Notes
 
 - SD-WAN does not create bandwidth — it allocates existing bandwidth more effectively.
+
   If aggregate demand exceeds the capacity of available members, SD-WAN cannot resolve
   the congestion, only distribute it.
+
 - SD-WAN health checks complement QoS but serve a different function: health checks
+
   determine which path to use; QoS determines how traffic is treated on the chosen path.
   For real-time traffic, both mechanisms should be deployed together. See
   [Quality of Service](qos.md).
+
 - In hub-and-spoke SD-WAN deployments, the hub device must have sufficient capacity to
-  handle traffic from all spoke sites simultaneously, including during failover scenarios
+
+handle traffic from all spoke sites simultaneously, including during failover scenarios
   where traffic shifts from direct internet breakout to the hub overlay.
+
 - SD-WAN logging (FortiGate: `Log & Report → Forward Traffic` with SD-WAN fields
+
   enabled) provides per-session records of which member was selected and why. This is
   the primary tool for verifying that steering rules are behaving as designed.

@@ -124,6 +124,7 @@ RSTP eliminates timer-based convergence for point-to-point links by using a
 Proposal/Agreement handshake.
 
 ```mermaid
+
 sequenceDiagram
     participant A as Upstream Bridge (Designated)
     participant B as Downstream Bridge
@@ -138,6 +139,7 @@ sequenceDiagram
 ## Cisco IOS-XE Configuration
 
 ```ios
+
 ! Set spanning tree mode
 spanning-tree mode rapid-pvst
 
@@ -159,6 +161,7 @@ interface GigabitEthernet1/0/2
 Verification:
 
 ```ios
+
 show spanning-tree vlan 10
 show spanning-tree vlan 10 detail
 show spanning-tree interface GigabitEthernet1/0/1
@@ -167,26 +170,39 @@ show spanning-tree interface GigabitEthernet1/0/1
 ## Notes
 
 - **RSTP Proposal/Agreement:** Rapid transition applies only to point-to-point
+
   full-duplex links. Shared (half-duplex) ports still use STP timer-based convergence.
   Edge ports (PortFast) go directly to Forwarding without a handshake.
+
 - **Cisco Rapid PVST+:** Cisco's per-VLAN implementation of RSTP. Runs an independent
+
   RSTP instance for each VLAN, using the System ID Extension to embed the VLAN ID in
   the Bridge ID. Enable with `spanning-tree mode rapid-pvst`.
+
 - **PortFast:** Immediately transitions an access port to Forwarding, bypassing
+
   Discarding/Learning. Use only on ports connected to end hosts. Never enable on
   inter-switch links — if a BPDU is received on a PortFast port without BPDU Guard,
   the port loses its PortFast status and reverts to normal STP.
+
 - **BPDU Guard:** Shuts down (`err-disabled`) a PortFast port the moment a BPDU is
+
   received. Prevents rogue or misconfigured switches from influencing the STP topology.
   Recovery: `errdisable recovery cause bpduguard`.
+
 - **Root Guard:** Prevents a port from becoming a Root Port. If a superior BPDU is
+
   received on a Root Guard port, the port is placed in `root-inconsistent` state
   (blocking) and a log message is generated. Automatically recovers when the superior
   BPDUs stop.
+
 - **Topology Change:** A TC event causes bridges to flush their MAC address tables,
+
   temporarily increasing flooding. Excessive TCs (logged as
   `%SPANTREE-2-ROOTPORT_LOST_BRIDGEASSURANCE`) can cause intermittent traffic drops
   and are worth investigating.
+
 - **MSTP:** Maps VLANs to IST (Internal Spanning Tree) instances, reducing the number
+
   of active STP instances. Useful in large data-centre environments with many VLANs.
   Cisco calls its MSTP implementation MST; it is compatible with the IEEE standard.

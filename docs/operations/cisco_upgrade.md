@@ -64,6 +64,7 @@ Install mode uses a three-phase process: **add**, **activate**, and **commit**.
 ### Single-command upgrade (recommended for maintenance windows)
 
 ```ios
+
 install add file flash:cat9k_iosxe.17.09.04.SPA.bin activate commit prompt-level none
 ```
 
@@ -72,6 +73,7 @@ This completes all three phases in sequence. The device reloads during the activ
 ### Two-step upgrade (allows review before commit)
 
 ```ios
+
 ! Step 1: Add the image to the install store
 install add file flash:cat9k_iosxe.17.09.04.SPA.bin
 
@@ -90,6 +92,7 @@ install commit
 ### Checking install state
 
 ```ios
+
 show install summary
 show install log
 ```
@@ -104,6 +107,7 @@ rollback is available.
 To manually rollback to the last committed version:
 
 ```ios
+
 install rollback to committed
 ```
 
@@ -123,6 +127,7 @@ Bundle mode upgrade is simpler but requires a full reload and does not support
 in-service upgrades.
 
 ```ios
+
 ! Set the boot variable to the new image
 boot system flash:cat9k_iosxe.17.09.04.SPA.bin
 
@@ -136,6 +141,7 @@ reload
 Verify after reload:
 
 ```ios
+
 show version | include Version
 ```
 
@@ -147,6 +153,7 @@ For Catalyst 9000 StackWise stacks, the following command upgrades all stack mem
 and auto-copies the image to members that do not have it:
 
 ```ios
+
 request platform software package install switch all file flash:cat9k_iosxe.17.09.04.SPA.bin auto-copy
 ```
 
@@ -168,6 +175,7 @@ disruption.
 ISSU command sequence:
 
 ```ios
+
 ! Load the new version on the standby supervisor/switch
 issu loadversion <slot> file flash:cat9k_iosxe.17.09.04.SPA.bin
 

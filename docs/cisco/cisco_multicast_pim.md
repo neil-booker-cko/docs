@@ -13,23 +13,36 @@ See [IP Multicast](../theory/multicast.md) for protocol theory and tree mechanic
 ## 1. Overview & Principles
 
 - **IGMP (Internet Group Management Protocol):** Runs between a host and its first-hop
+
   router. IGMPv2 supports any-source joins (`224.x.x.x`). IGMPv3 adds source-specific
   joins, which is required for PIM-SSM.
+
 - **PIM (Protocol Independent Multicast):** Runs between routers. PIM is independent of
+
   the unicast routing protocol — it uses the unicast RIB only for RPF (Reverse Path
   Forwarding) checks. PIM-SM (Sparse Mode) is the standard production deployment.
+
 - **Rendezvous Point (RP):** In PIM-SM, the RP is the root of the shared distribution
+
   tree. Sources register to the RP; receivers join toward the RP. The RP must be
   reachable by all routers in the PIM domain.
+
 - **Shared tree vs. Shortest Path Tree:** PIM-SM initially uses the RP-rooted shared
+
   tree `(*,G)`. The first-hop router can trigger a switchover to the source-rooted
   Shortest Path Tree (SPT) `(S,G)` for lower latency once traffic is flowing.
+
 - **RPF check:** Before accepting a multicast packet on an interface, the router checks
+
   that the interface is the one it would use to reach the source (or RP, for shared tree
   traffic). Packets failing the RPF check are discarded to prevent loops.
+
 - **PIM-SSM:** Source-Specific Multicast eliminates the RP entirely. Receivers join
+
   `(S,G)` directly, requiring IGMPv3. Uses the 232.0.0.0/8 address range by default.
+
 - **IGMP Snooping:** A Layer 2 switch feature that inspects IGMP messages to avoid
+
   flooding multicast traffic to all ports in a VLAN — only ports with active receivers
   receive the stream.
 
@@ -67,6 +80,7 @@ Multicast routing must be enabled globally before any PIM or IGMP configuration 
 effect on interfaces.
 
 ```ios
+
 ip multicast-routing distributed           ! Enable multicast forwarding on all interfaces
 !
 ! 'distributed' uses distributed CEF for multicast — required on most IOS-XE platforms.
@@ -79,6 +93,7 @@ Enable IGMP on interfaces that face receivers. IGMPv3 is preferred because it su
 source-specific membership reports, which are required for PIM-SSM.
 
 ```ios
+
 interface GigabitEthernet0/1
  description ACCESS-SEGMENT-RECEIVERS
  ip pim sparse-mode                        ! PIM must also be enabled on the interface
@@ -101,6 +116,7 @@ same RP address. It is suitable for small, stable networks where RP redundancy i
 required.
 
 ```ios
+
 ! Enable PIM sparse-mode on every interface that participates in multicast routing.
 ! This includes transit interfaces, not just receiver-facing interfaces.
 interface GigabitEthernet0/0
@@ -133,6 +149,7 @@ router acts as the Mapping Agent and distributes the RP-to-group mapping to all
 routers in the domain.
 
 ```ios
+
 ! --- On the RP router ---
 interface Loopback0
  ip address 192.168.0.254 255.255.255.255
@@ -161,6 +178,7 @@ preferred over Auto-RP for new deployments. BSR distributes RP candidate informa
 using PIM bootstrap messages.
 
 ```ios
+
 ! --- On BSR candidate router(s) ---
 ! Priority: higher value = more preferred (default 0)
 ip pim bsr-candidate Loopback0 32 priority 10
@@ -184,6 +202,7 @@ PIM-SSM removes the RP requirement entirely. Receivers must use IGMPv3 to specif
 the group and the source address. IOS-XE maps the 232.0.0.0/8 range to SSM by default.
 
 ```ios
+
 ! Enable SSM for the default 232.0.0.0/8 range
 ip pim ssm default
 !
@@ -209,6 +228,7 @@ forwarding at Layer 2 so that frames are only sent to ports where interested rec
 have been detected. Without snooping, multicast floods like broadcast within the VLAN.
 
 ```ios
+
 ! IGMP snooping is on by default — confirm and fine-tune per VLAN
 ip igmp snooping                           ! Global enable (default)
 ip igmp snooping vlan 100                  ! Enable on a specific VLAN
@@ -237,6 +257,7 @@ traffic arrives on, RPF checks fail and traffic is dropped. A static mroute over
 unicast RPF lookup for a specific source or source range.
 
 ```ios
+
 ! Force RPF check for source 10.100.0.0/24 to use GigabitEthernet0/2
 ! instead of the unicast routing table entry
 ip mroute 10.100.0.0 255.255.255.0 GigabitEthernet0/2
@@ -257,6 +278,7 @@ Setting `spt-threshold infinity` keeps all traffic on the shared tree and preven
 switchover.
 
 ```ios
+
 ! Prevent SPT switchover — all traffic remains on the RP-rooted shared tree
 ! Use in large-scale deployments where (S,G) state proliferation is a concern
 ip pim spt-threshold infinity

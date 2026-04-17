@@ -34,6 +34,7 @@ pool's `network` statement.
 Reserve a specific IP for a device by binding its MAC address:
 
 ```ios
+
 ip dhcp pool HOST-PRINTER-01
  host 10.0.1.50 255.255.255.0
  client-identifier 0100.1122.3344.55   ! 01 prefix + MAC in hex
@@ -43,6 +44,7 @@ ip dhcp pool HOST-PRINTER-01
 Alternatively, use hardware-address format:
 
 ```ios
+
 ip dhcp pool HOST-PRINTER-02
  host 10.0.1.51 255.255.255.0
  hardware-address 00:11:22:33:44:66
@@ -54,6 +56,7 @@ ip dhcp pool HOST-PRINTER-02
 Common per-pool options:
 
 ```ios
+
 ip dhcp pool LAN-VLAN10
  network 10.0.1.0 255.255.255.0
  default-router 10.0.1.1
@@ -67,6 +70,7 @@ ip dhcp pool LAN-VLAN10
 ### D. Verification
 
 ```ios
+
 show ip dhcp pool                      ! Pool names, address ranges, utilisation
 show ip dhcp binding                   ! Active leases: IP, MAC, expiry, type
 show ip dhcp conflict                  ! IPs in conflict (declined by clients)
@@ -83,6 +87,7 @@ When the DHCP server is on a different subnet from the clients, the default gate
 router (or Layer 3 switch) must relay DHCP broadcasts to the server as unicast.
 
 ```ios
+
 interface Vlan10
  ip address 10.0.1.1 255.255.255.0
  ip helper-address 10.0.0.100          ! DHCP server address
@@ -94,6 +99,7 @@ IEN-116 Name Service (42). Only DHCP is needed in most environments; disable the
 rest:
 
 ```ios
+
 no ip forward-protocol udp 69         ! TFTP
 no ip forward-protocol udp 53         ! DNS
 no ip forward-protocol udp 37         ! Time
@@ -107,6 +113,7 @@ no ip forward-protocol udp 49         ! TACACS
 Specify multiple `ip helper-address` entries to forward requests to both servers:
 
 ```ios
+
 interface Vlan10
  ip helper-address 10.0.0.100         ! Primary DHCP server
  ip helper-address 10.0.0.101         ! Secondary DHCP server
@@ -127,8 +134,11 @@ DHCP messages on a per-port basis.
 On an unprotected switch, any device can:
 
 - **Rogue server:** Respond to DHCP Discovers with malicious offers (wrong gateway,
+
   DNS server pointing to an attacker — effectively a man-in-the-middle).
+
 - **Starvation attack:** Send thousands of DHCP Discovers with spoofed source MACs,
+
   exhausting the server's address pool so legitimate devices cannot get an address.
 
 ### Trusted vs Untrusted Ports
@@ -146,7 +156,9 @@ On untrusted ports, the switch:
 
 - Drops any DHCP **server** messages (OFFER, ACK, NAK) — only servers should send these
 - Validates that the source MAC in the Ethernet frame matches the `chaddr` field in
+
   the DHCP packet (anti-spoofing)
+
 - Rate-limits DHCP packets to prevent starvation
 
 The switch also builds a **DHCP snooping binding table**: for every successful ACK on
@@ -156,6 +168,7 @@ used by DAI and IP Source Guard.
 ### Configuration
 
 ```ios
+
 ! Enable globally
 ip dhcp snooping
 ip dhcp snooping vlan 10,20,30         ! Enable per VLAN (not global by default)
@@ -185,6 +198,7 @@ interface range GigabitEthernet1/0/10 - 48
 The binding table is lost on reload by default. Persist it to flash or a TFTP server:
 
 ```ios
+
 ip dhcp snooping database flash:dhcp-snooping-db.txt
 ip dhcp snooping database write-delay 60   ! Write every 60 seconds
 ```
@@ -192,6 +206,7 @@ ip dhcp snooping database write-delay 60   ! Write every 60 seconds
 ### Verification
 
 ```ios
+
 show ip dhcp snooping                      ! Global status, trusted ports, option 82 state
 show ip dhcp snooping binding              ! Binding table: MAC, IP, VLAN, interface, expiry
 show ip dhcp snooping statistics           ! Forwarded/dropped message counts per reason
@@ -210,6 +225,7 @@ sender MAC against the snooping binding table. If the combination is not in the 
 the ARP is dropped.
 
 ```mermaid
+
 sequenceDiagram
     participant Attacker
     participant Switch
@@ -226,6 +242,7 @@ sequenceDiagram
 DHCP snooping must be enabled before DAI:
 
 ```ios
+
 ! DAI requires snooping to be enabled first
 ip dhcp snooping
 ip dhcp snooping vlan 10,20,30
@@ -257,6 +274,7 @@ Devices with statically configured IPs have no DHCP snooping entry. Add them via
 an ARP ACL:
 
 ```ios
+
 arp access-list STATIC-DEVICES
  permit ip host 10.0.1.50 mac host 00:11:22:33:44:55
  permit ip host 10.0.1.51 mac host 00:11:22:33:44:66
@@ -267,6 +285,7 @@ ip arp inspection filter STATIC-DEVICES vlan 10
 ### Verification
 
 ```ios
+
 show ip arp inspection                     ! Global DAI status, trusted ports
 show ip arp inspection vlan 10             ! Per-VLAN forwarded/dropped ARP counts
 show ip arp inspection statistics          ! Detailed drop reasons
@@ -285,6 +304,7 @@ This prevents IP spoofing — a host cannot send traffic claiming to be from ano
 IP address even if ARP inspection is satisfied.
 
 ```ios
+
 ! Enable on untrusted access ports
 interface range GigabitEthernet1/0/10 - 48
  ip verify source                          ! Filter by IP only
@@ -294,12 +314,14 @@ interface range GigabitEthernet1/0/10 - 48
 For devices with static IPs, add a static binding:
 
 ```ios
+
 ip source binding 001122334455 vlan 10 10.0.1.50 interface GigabitEthernet1/0/20
 ```
 
 ### Verification
 
 ```ios
+
 show ip verify source                      ! IP Source Guard bindings per interface
 show ip source binding                     ! All static and dynamic bindings
 ```
@@ -312,6 +334,7 @@ DHCP Snooping, DAI, and IP Source Guard are designed to work as a layered stack.
 Each builds on the previous layer's binding table:
 
 ```mermaid
+
 flowchart TD
     A["DHCP Snooping<br/>Builds binding table<br/>Blocks rogue servers<br/>Rate-limits starvation"]
     B["Dynamic ARP Inspection<br/>Validates ARP against binding table<br/>Blocks ARP poisoning / MITM"]
@@ -333,6 +356,7 @@ A 48-port access switch serving VLAN 10 (users) and VLAN 20 (printers), with upl
 to a distribution switch and a DHCP server on VLAN 99:
 
 ```ios
+
 ! DHCP Snooping
 ip dhcp snooping
 ip dhcp snooping vlan 10,20

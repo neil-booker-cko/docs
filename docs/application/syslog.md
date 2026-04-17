@@ -26,6 +26,7 @@ RFC 5424 messages are UTF-8 text with a defined structure:
 **Example:**
 
 ```text
+
 <165>1 2026-04-02T10:23:15.123Z router01 bgpd 1234 BGP-PEER
   [exampleSDID@32473 peer="10.0.0.1"] BGP peer 10.0.0.1 state changed to Established
 ```
@@ -35,6 +36,7 @@ RFC 5424 messages are UTF-8 text with a defined structure:
 The PRI value encodes both the **Facility** and **Severity**:
 
 ```text
+
 PRI = (Facility × 8) + Severity
 ```
 
@@ -98,10 +100,17 @@ Severity 5 (Notice).
 ## Notes
 
 - **Cisco IOS** uses local0–local7 (`16`–`23`) by default. Most network vendors map
+
   their log levels to the 0–7 severity scale with vendor-specific facility mappings.
+
 - **UDP transport** is fire-and-forget — messages can be lost under load or on a
+
   lossy path. For critical infrastructure logs, TCP or TLS (RFC 5425) should be used.
+
 - **TLS (RFC 5425)** over TCP port `6514` provides both reliability and
+
   confidentiality — important when logs traverse untrusted networks.
+
 - **RELP** (Reliable Event Logging Protocol) is a common alternative to TCP syslog,
+
   adding application-layer acknowledgement to prevent message loss.

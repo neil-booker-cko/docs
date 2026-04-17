@@ -35,6 +35,7 @@ Header-Name: value\r\n
 **Example GET request:**
 
 ```text
+
 GET /api/status HTTP/1.1
 Host: example.com
 Accept: application/json
@@ -44,6 +45,7 @@ Connection: keep-alive
 **Example POST request:**
 
 ```text
+
 POST /api/data HTTP/1.1
 Host: example.com
 Content-Type: application/json
@@ -77,6 +79,7 @@ Content-Length: 27
 ## HTTP/1.1 — Response Format
 
 ```text
+
 HTTP/1.1 STATUS_CODE Reason Phrase\r\n
 Header-Name: value\r\n
 \r\n
@@ -86,6 +89,7 @@ Header-Name: value\r\n
 **Example response:**
 
 ```text
+
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 42
@@ -121,6 +125,7 @@ HTTP/2 replaces the text format with a binary framing layer. Multiple streams ar
 multiplexed over a single TCP connection, each identified by a stream ID.
 
 ```mermaid
+
 ---
 title: "HTTP/2 Frame"
 ---
@@ -174,9 +179,17 @@ the application protocol (`h2` for HTTP/2, `h3` for HTTP/3).
 ## Notes
 
 - **HTTP/1.1 pipelining** (sending multiple requests without waiting for responses)
+
   was theoretically supported but poorly implemented; HTTP/2 multiplexing is the
   correct solution.
+
 - **HSTS** (HTTP Strict Transport Security, RFC 6797) instructs browsers to always
+
   use HTTPS for a domain, preventing downgrade attacks.
-- **CORS** (Cross-Origin Resource Sharing) uses the `Origin`, `Access-Control-Allow-Origin`,
+
+- **CORS** (Cross-Origin Resource Sharing) uses the `Origin`,
+`Access-Control-Allow-Origin`,
+
+`Access-Control-Allow-Origin`,
+
   and preflight `OPTIONS` requests to control cross-origin access from browsers.

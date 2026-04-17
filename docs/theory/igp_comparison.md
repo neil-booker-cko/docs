@@ -58,6 +58,7 @@ Composite metric from K-values applied to bandwidth and delay (default K1=1, K3=
 K2=K4=K5=0):
 
 ```text
+
 Metric = 256 × (10^7 / min_bandwidth_kbps + sum_of_delays_in_tens_of_microseconds)
 ```
 
@@ -120,7 +121,9 @@ With BFD and tuned SPF throttle timers, OSPF can converge in under one second.
 
 - Maximum 15 hops limits deployment to small, flat networks.
 - Full routing table sent every 30 seconds regardless of changes — bandwidth
+
   inefficient on large tables.
+
 - No concept of areas or summarisation hierarchy.
 - Suitable for: small branch offices, lab environments, legacy migrations.
 
@@ -130,17 +133,22 @@ With BFD and tuned SPF throttle timers, OSPF can converge in under one second.
 - Partial updates — only changes are sent, not the full table.
 - Supports manual and automatic summarisation at any router.
 - Query boundary problem: poorly summarised networks can generate excessive Active
+
   state queries that propagate network-wide ("stuck in active" / SIA).
+
 - Suitable for: Cisco-only enterprise networks, WAN hub-and-spoke, campus.
 
 ### OSPF
 
 - Hierarchical area design limits LSA flooding scope. Backbone (area 0) interconnects
+
   all areas via ABRs.
+
 - Stub, Totally Stubby, and NSSA area types reduce LSA database size in remote areas.
 - Full topology database per area — every router in an area has identical LSDB.
 - DR/BDR election reduces flooding on multi-access (Ethernet) segments.
 - Suitable for: multi-vendor enterprise, large networks, service provider edge,
+
   any network requiring vendor-agnostic IGP.
 
 ---
@@ -189,14 +197,21 @@ offset by predictable convergence and extensive industry familiarity.
 ## Notes
 
 - **Redistribution between EIGRP and OSPF** requires a seed metric in both
+
   directions. EIGRP redistributed into OSPF defaults to E2 (external type 2) at
   cost 20. OSPF redistributed into EIGRP requires an explicit `default-metric`
   or per-route metric.
+
 - **EIGRP named mode** is the recommended configuration style on IOS-XE. It
+
   consolidates address-family (IPv4/IPv6) and topology configuration under a single
   `router eigrp <name>` stanza and enables SHA-256 authentication.
+
 - **OSPF `network` vs `ip ospf area`**: the interface-level command
+
   (`ip ospf <pid> area <area>`) is more explicit and is the recommended style on
   modern IOS-XE and NX-OS.
+
 - See individual protocol pages for full packet formats:
+
   [OSPF](../routing/ospf.md), [EIGRP](../routing/eigrp.md), [RIP](../routing/rip.md).

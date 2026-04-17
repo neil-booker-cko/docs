@@ -139,6 +139,7 @@ allocated to other classes. Remaining bandwidth is distributed among CBWFQ class
 according to their configured weights or percentages.
 
 ```ios
+
 policy-map WAN-QOS
  class VOIP-BEARER
   priority 512           ! Strict priority queue, 512 Kbps maximum
@@ -161,6 +162,7 @@ dropping at lower queue depths than lower drop precedence (e.g. AF11). This prev
 tail-drop synchronisation and allows TCP flows to back off gradually.
 
 ```ios
+
 policy-map WAN-QOS
  class AF1-CLASS
   bandwidth percent 30
@@ -194,18 +196,29 @@ CoS-to-DSCP mapping tables are applied at trunk interfaces when QoS is enabled.
 ## Notes
 
 - DSCP markings are **advisory** — they express intent, not enforcement. Only
+
   properly configured queuing and scheduling policies enforce the per-hop behaviour.
+
 - Always **re-mark untrusted ingress traffic**. Customer devices and end-user hosts
+
   may set arbitrary DSCP values. Reset or re-classify at the access edge.
+
 - **EF traffic must be rate-limited (policed) at ingress.** Without policing, a
+
   misbehaving EF-marked flow can starve all other traffic classes by monopolising
   the strict priority queue.
+
 - On **FortiGate**, traffic shaping uses DSCP values for classification under
+
   `config firewall shaper` and `config firewall shaping-policy`. DSCP marking can
   be applied per-policy.
+
 - `show policy-map interface <interface>` on Cisco IOS displays per-class packet and
+
   byte counts, queue depth, and drop statistics. Use this to verify QoS policy
   operation.
+
 - The **ECN bits** (bits 1–0 of the ToS byte) are independent of DSCP and provide
+
   end-to-end congestion signalling between ECN-capable endpoints. Do not confuse ECN
   with DSCP when reading packet captures.

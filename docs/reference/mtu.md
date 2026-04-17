@@ -1,8 +1,10 @@
 # MTU and Fragmentation Reference
 
-MTU (Maximum Transmission Unit) is the largest Layer 3 packet that can be transmitted without
+MTU (Maximum Transmission Unit) is the largest Layer 3 packet that can be transmitted
+without
 fragmentation on a given link. When a packet exceeds the path MTU, IPv4 fragments it (if
-DF=0) or returns an ICMP Type 3 Code 4 message (if DF=1). IPv6 never fragments in transit
+DF=0) or returns an ICMP Type 3 Code 4 message (if DF=1). IPv6 never fragments in
+transit
  — the source must perform Path MTU Discovery.
 
 ## Quick Reference
@@ -39,7 +41,8 @@ DF=0) or returns an ICMP Type 3 Code 4 message (if DF=1). IPv6 never fragments i
 
 ## IPv4 Fragmentation
 
-IPv4 fragmentation is performed by routers when a packet exceeds the outgoing link MTU and
+IPv4 fragmentation is performed by routers when a packet exceeds the outgoing link MTU
+and
 the DF bit is not set. The receiving host reassembles fragments.
 
 ### Header Fields
@@ -59,7 +62,8 @@ A 2000-byte datagram forwarded over a 1500-byte MTU link splits into two fragmen
 | 1 | 1500 bytes | 20 bytes | 1480 bytes | 1 | 0 |
 | 2 | 540 bytes | 20 bytes | 520 bytes | 0 | 185 (1480 ÷ 8) |
 
-Each fragment carries a full 20-byte IP header. Fragmentation increases per-packet overhead
+Each fragment carries a full 20-byte IP header. Fragmentation increases per-packet
+overhead
 and stresses reassembly buffers at the destination.
 
 ---
@@ -72,34 +76,50 @@ path before sending large packets.
 ### How It Works
 
 1. The source sets DF=1 on all outgoing packets.
-2. If an intermediate router cannot forward the packet without fragmenting it, the router
+2. If an intermediate router cannot forward the packet without fragmenting it, the
+router
+
+router
+
     discards the packet and returns **ICMP Type 3 Code 4** (Fragmentation Needed) to the
     source. The message includes the next-hop MTU in the Type-Specific field.
+
 3. The source reduces its effective packet size to the advertised MTU and retransmits.
-4. The process repeats until the packet traverses the full path without triggering a Fragmentation
+4. The process repeats until the packet traverses the full path without triggering a
+Fragmentation
+
+Fragmentation
+
     Needed response.
 
 ### PMTUD Failure
 
-The most common failure mode is **firewalls that block ICMP Type 3 Code 4**. When this message
+The most common failure mode is **firewalls that block ICMP Type 3 Code 4**. When this
+message
 is dropped:
 
 - The source never learns that the path cannot support large packets.
 - TCP sessions using large packets stall silently.
 - Small packets (e.g. ACKs, SYN/SYN-ACK) succeed; large transfers (file downloads, SCP,
+
     HTTPS with large payloads) hang indefinitely.
+
 - The symptom is sometimes called "black hole routing."
 
-Mitigation: permit ICMP Type 3 (all codes) on all firewall policies, or use TCP MSS clamping
+Mitigation: permit ICMP Type 3 (all codes) on all firewall policies, or use TCP MSS
+clamping
 as a workaround.
 
 ---
 
 ## TCP MSS Clamping
 
-When PMTUD cannot be relied upon — because ICMP is blocked or tunnel endpoints do not generate
-ICMP — routers can clamp the **TCP MSS** (Maximum Segment Size) option in SYN and SYN-ACK
-packets. This limits the maximum TCP segment size negotiated during the handshake, preventing
+When PMTUD cannot be relied upon — because ICMP is blocked or tunnel endpoints do not
+generate
+ICMP — routers can clamp the **TCP MSS** (Maximum Segment Size) option in SYN and
+SYN-ACK
+packets. This limits the maximum TCP segment size negotiated during the handshake,
+preventing
 oversized packets from entering the network.
 
 ### Recommended MSS Values
@@ -124,6 +144,7 @@ interface Tunnel0
 Cisco IOS — clamp MSS on a WAN interface:
 
 ```ios
+
 interface GigabitEthernet0/1
  ip tcp adjust-mss 1452
 ```
@@ -131,6 +152,7 @@ interface GigabitEthernet0/1
 FortiGate — MSS override is available per interface or per firewall policy via the CLI:
 
 ```fortigate
+
 config system interface
     edit "wan1"
         set tcp-mss 1452
@@ -157,15 +179,34 @@ must be able to forward packets of at least this size without fragmentation.
 ## Notes
 
 - **Jumbo frames must be configured end-to-end.** Any link in the path that does not support
-    jumbo frames will silently drop oversized packets. Confirm MTU on every hop before enabling
+
+jumbo frames will silently drop oversized packets. Confirm MTU on every hop before
+enabling
     jumbo frames.
+
 - **Always configure MTU symmetrically** on both ends of a tunnel. Asymmetric MTU causes
+
     one-directional fragmentation issues that are difficult to diagnose.
-- **FortiGate VTI MTU** is set in the tunnel interface config: `set mtu 1500`. TCP MSS clamping
+
+- **FortiGate VTI MTU** is set in the tunnel interface config: `set mtu 1500`. TCP MSS
+clamping
+
+clamping
+
     is available per-interface or per-policy.
-- **Cisco IOS:** `ip mtu <bytes>` sets the IP MTU on an interface (may differ from the interface
+
+- **Cisco IOS:** `ip mtu <bytes>` sets the IP MTU on an interface (may differ from the
+interface
+
+interface
+
     hardware MTU). `ip tcp adjust-mss <bytes>` clamps TCP MSS on SYN packets transiting
     the interface.
-- PMTUD black holes are a common cause of unexplained TCP stalls on VPN and tunnel deployments.
-    When troubleshooting, test with progressively smaller ping sizes: `ping -s 1400 -M do
+
+- PMTUD black holes are a common cause of unexplained TCP stalls on VPN and tunnel
+deployments.
+
+deployments.
+
+When troubleshooting, test with progressively smaller ping sizes: `ping -s 1400 -M do
     <destination>` on Linux.

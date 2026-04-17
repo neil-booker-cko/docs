@@ -144,6 +144,7 @@ route-map RM-TAG-NO-EXPORT permit 10
 Strip all communities before advertising to a customer:
 
 ```ios
+
 route-map RM-STRIP-COMMUNITIES permit 10
  set community none
 ```
@@ -151,6 +152,7 @@ route-map RM-STRIP-COMMUNITIES permit 10
 Match an inbound community and set local preference (e.g. AWS primary path):
 
 ```ios
+
 ip community-list standard AWS-PRIMARY permit 7224:9300
 !
 route-map RM-AWS-IN permit 10
@@ -162,6 +164,7 @@ route-map RM-AWS-IN permit 20
 Apply the route-map to a BGP neighbour:
 
 ```ios
+
 router bgp 65000
  neighbor 169.254.1.1 route-map RM-AWS-IN in
 ```
@@ -169,6 +172,7 @@ router bgp 65000
 Add a community tag on routes advertised to a peer:
 
 ```ios
+
 route-map RM-PEER-OUT permit 10
  set community 65000:200 additive
 ```
@@ -178,15 +182,24 @@ route-map RM-PEER-OUT permit 10
 ## Notes
 
 - Communities are **optional transitive** attributes — they are forwarded to eBGP
+
   peers by default. Always strip internal policy communities before advertising to
   customers or peers using `set community none` in an outbound route-map.
+
 - Multiple communities can be attached to a single route. Match with
+
   `ip community-list` using `permit` entries; use `match community <list-name>`
   in route-maps.
+
 - `show ip bgp <prefix>` displays the communities attached to a route.
+
   `show ip bgp community <value>` filters the BGP table to routes carrying that
   community.
+
 - The `additive` keyword in `set community` appends to existing communities rather
+
   than replacing them. Without `additive`, any existing communities are overwritten.
+
 - For 4-byte ASN environments, prefer Large Communities (RFC 8092) over standard
+
   communities to avoid the 16-bit AS field truncation problem.

@@ -2,7 +2,8 @@
 
 ## 1. Overview & Principles
 
-This architecture utilizes a layered protocol approach to provide encrypted, high-bandwidth
+This architecture utilizes a layered protocol approach to provide encrypted,
+high-bandwidth
 connectivity to AWS. The Cisco IOS-XE handles the physical path (Direct Connect),
 while the FortiGate manages the security layer (IPsec).
 
@@ -19,8 +20,11 @@ The design consists of a recursive routing model:
 Since AWS **does not support BFD over VPN**, we must rely on a hierarchy of timers:
 
 - **Underlay (Cisco):** Uses BFD (300ms x 3) to ensure that if a DX fiber cut occurs,
+
     the transport path shifts in <1s.
+
 - **Overlay (FortiGate):** Uses aggressive Dead Peer Detection (DPD) and BGP Next-Hop
+
     Tracking. By linking BGP to the VTI status via `link-down-failover`, we ensure
     that routes are withdrawn the moment the tunnel path is declared dead by DPD,
     rather than waiting for the BGP hold-timer.
@@ -43,6 +47,7 @@ timeline
 ### Overlay Failure (Silent Path Loss)
 
 ```mermaid
+
 timeline
     title Failure Scenario: VPN Path Failure (No BFD)
     section Optimized Timers
@@ -56,6 +61,7 @@ timeline
 ### A. Cisco IOS-XE (Underlay - Modern Address-Family)
 
 ```ios
+
 bfd-template single-hop AWS-DX-BFD
  interval min-tx 300 min-rx 300 multiplier 3
  no bfd echo
@@ -87,6 +93,7 @@ fast failure detection. AWS TGW BGP timers are fixed at **10s keepalive / 30s
 hold** — configure the FortiGate to match.
 
 ```fortios
+
 config vpn ipsec phase1-interface
     edit "vpn-071eda31a-0"
         set interface "bond0.601"

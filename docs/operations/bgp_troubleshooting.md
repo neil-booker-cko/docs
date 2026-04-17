@@ -28,10 +28,15 @@ stateDiagram-v2
 **Common stuck states:**
 
 - **Active** — TCP is not completing. Peer is unreachable, wrong peer IP, or a
+
   firewall is blocking TCP 179.
+
 - **OpenSent / OpenConfirm** — TCP connected but OPEN message was rejected. AS number
+
   mismatch, router-ID collision, or hold timer incompatibility.
+
 - **Established then drops** — Session formed but keepalives are being lost. High CPU,
+
   ACL blocking keepalives mid-session, or hold timer too short.
 
 ---
@@ -43,6 +48,7 @@ Before checking any BGP parameter, confirm basic IP reachability to the peer.
 **Cisco IOS-XE:**
 
 ```ios
+
 ping <peer-ip> source <local-ip>
 telnet <peer-ip> 179
 ```
@@ -52,6 +58,7 @@ Check transit interface ACLs — many operators permit ICMP but forget to permit
 bidirectionally.
 
 ```ios
+
 show ip access-lists
 show ip interface <interface>
 ```
@@ -70,12 +77,14 @@ the OPEN message content is wrong.
 **Check current state:**
 
 ```ios
+
 show ip bgp neighbors <peer-ip> | include BGP state
 ```
 
 **Check session parameters:**
 
 ```ios
+
 show ip bgp neighbors <peer-ip> | include (AS path|Hold|Keepalive|Notif)
 ```
 
@@ -84,6 +93,7 @@ show ip bgp neighbors <peer-ip> | include (AS path|Hold|Keepalive|Notif)
 - Wrong peer IP in the `neighbor` statement
 - Peer's `neighbor` statement points to a different address
 - Source interface not matching — if using `update-source loopback`, the peer must
+
   have a route back to that loopback
 
 **Stuck in OpenSent or OpenConfirm:**
@@ -101,6 +111,7 @@ When a session rejects an OPEN or terminates, a NOTIFICATION message is sent wit
 error code and subcode. These are logged and visible in `show ip bgp neighbors`.
 
 ```ios
+
 show ip bgp neighbors <peer-ip> | include notification
 ```
 
@@ -121,6 +132,7 @@ Session is Established but expected prefixes are missing.
 **Prefix not appearing on remote peer:**
 
 ```ios
+
 show ip bgp summary
 show ip bgp <prefix>
 show ip bgp neighbors <peer-ip> advertised-routes
@@ -136,6 +148,7 @@ Check that:
 **Prefix received but not installed in routing table:**
 
 ```ios
+
 show ip bgp <prefix>
 show ip route <prefix>
 ```
@@ -145,11 +158,13 @@ A prefix can be received and present in the BGP table but not installed if:
 - The next-hop is unreachable (common in iBGP without `next-hop-self`)
 - A locally preferred or more-specific route wins
 - The prefix is marked as not best path — `show ip bgp <prefix>` shows the `>`
+
   indicator on the best path
 
 **Diagnosing inbound filtering:**
 
 ```ios
+
 show ip bgp neighbors <peer-ip> received-routes   ! Requires: neighbor <peer> soft-reconfiguration inbound
 show ip bgp neighbors <peer-ip> routes            ! Post-filter view
 ```
@@ -160,6 +175,7 @@ or prefix-list is filtering out.
 **Live UPDATE monitoring:**
 
 ```ios
+
 debug ip bgp <peer-ip> updates in
 debug ip bgp <peer-ip> updates out
 ```
@@ -185,6 +201,7 @@ debug ip bgp <peer-ip> updates out
 ## Cisco IOS-XE Diagnostic Commands
 
 ```ios
+
 show ip bgp summary
 show ip bgp neighbors <peer-ip>
 show ip bgp <prefix>
@@ -203,6 +220,7 @@ no debug ip bgp
 ## FortiGate BGP Diagnostics
 
 ```fortios
+
 get router info bgp summary
 get router info bgp neighbors <peer-ip>
 get router info bgp neighbors <peer-ip> advertised-routes
@@ -212,6 +230,7 @@ get router info bgp neighbors <peer-ip> received-routes
 **Enable debug logging:**
 
 ```fortios
+
 diagnose ip router bgp all enable
 diagnose ip router bgp level info
 diagnose debug enable
@@ -221,6 +240,7 @@ diagnose debug enable
     Disable BGP debug after capture — it generates significant output on busy units.
 
 ```fortios
+
 diagnose debug disable
 diagnose ip router bgp all disable
 ```

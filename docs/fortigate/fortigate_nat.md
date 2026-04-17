@@ -1,10 +1,14 @@
 # FortiGate: NAT Configuration
 
-FortiGate performs Network Address Translation in two distinct directions: Source NAT (SNAT)
-for outbound traffic originating inside the network, and Destination NAT (DNAT) for inbound
+FortiGate performs Network Address Translation in two distinct directions: Source NAT
+(SNAT)
+for outbound traffic originating inside the network, and Destination NAT (DNAT) for
+inbound
 traffic targeting published services. FortiOS supports two NAT implementation modes —
-Policy NAT (legacy, per-policy) and Central NAT (recommended, separate SNAT and DNAT tables).
-Central NAT decouples address translation from firewall policy logic, improving operational
+Policy NAT (legacy, per-policy) and Central NAT (recommended, separate SNAT and DNAT
+tables).
+Central NAT decouples address translation from firewall policy logic, improving
+operational
 clarity at scale.
 
 For protocol background see [Network Address Translation (NAT)](../theory/nat.md).
@@ -14,26 +18,40 @@ For protocol background see [Network Address Translation (NAT)](../theory/nat.md
 ## 1. Overview & Principles
 
 - **Policy NAT (legacy):** NAT parameters are embedded directly in each firewall
+
   policy using `set nat enable`, `set ippool enable`, and `set poolname`. Simple to
   configure but ties
   address translation tightly to access policy, making large rulesets harder to audit.
+
 - **Central NAT (recommended):** Enabled globally; SNAT rules live in
+
   `config firewall central-snat-map` and DNAT rules are configured as VIPs under
-  `config firewall vip`. Firewall policies reference VIP objects as destination addresses.
+`config firewall vip`. Firewall policies reference VIP objects as destination addresses.
   Central NAT is the preferred model when managing multiple policies or VDOMs.
+
 - **IP Pools:** Define the public source address range used for SNAT. Three types are
+
   available: Overload (PAT — many-to-one), One-to-One (static, no port translation), and
   Fixed Port Range (predictable port allocation for specific applications).
+
 - **VIPs (Virtual IPs):** Define inbound DNAT mappings — an external IP (or IP:port) is
+
   mapped to an internal IP (or IP:port). VIPs must be referenced as destination address
   objects in a permitting firewall policy before traffic is forwarded.
+
 - **Hairpin NAT:** When an internal host accesses a VIP destination from inside the
+
   network, the FortiGate must perform both DNAT (to reach the server) and SNAT (so
   reply traffic returns through the firewall). This is handled with a loopback
   policy or, preferably, by using split-horizon DNS to resolve the published name
   to the internal IP directly.
-- **Order of operations:** Central SNAT rules are evaluated after the firewall policy match.
-  The first matching central-snat-map entry is applied; entries are evaluated top-down by
+
+- **Order of operations:** Central SNAT rules are evaluated after the firewall policy
+match.
+
+match.
+
+The first matching central-snat-map entry is applied; entries are evaluated top-down by
   sequence number.
 
 ---
@@ -68,6 +86,7 @@ translation — existing Policy NAT entries in firewall policies are no longer e
 Central NAT is active. Enable on all VDOMs that will use the central tables.
 
 ```fortios
+
 config system settings
     set central-nat enable
 end
@@ -83,14 +102,20 @@ IP Pools define the translated source address range used for outbound traffic. T
 types are supported:
 
 - **Overload (PAT):** Many internal addresses share one or more public IPs; port multiplexing
+
   provides session uniqueness. Default type; suitable for most internet access scenarios.
+
 - **One-to-One:** Each internal IP is statically mapped to a unique external IP. No port
+
   translation; the external IP range must be as large as the internal source range.
+
 - **Fixed Port Range:** Allocates a deterministic port block per internal IP. Useful for
+
   applications that embed source port information in-payload (e.g., some SIP implementations)
   or where consistent port ranges are required by an upstream carrier.
 
 ```fortios
+
 config firewall ippool
     edit "INET-PAT-POOL"
         set type overload
@@ -119,6 +144,7 @@ source address object, then apply the specified IP pool. A protocol value of `0`
 all protocols.
 
 ```fortios
+
 config firewall central-snat-map
     edit 1
         set srcintf "internal"
@@ -143,6 +169,7 @@ traffic — it must be referenced as the destination address in a firewall polic
 **Port forwarding (external IP:port → internal IP:port):**
 
 ```fortios
+
 config firewall vip
     edit "WEB-SERVER-VIP"
         set type static-nat
@@ -160,6 +187,7 @@ end
 **Full one-to-one static NAT (no port restriction):**
 
 ```fortios
+
 config firewall vip
     edit "APP-SERVER-STATIC"
         set type static-nat
@@ -173,6 +201,7 @@ end
 **Firewall policy referencing a VIP:**
 
 ```fortios
+
 config firewall policy
     edit 50
         set srcintf "wan1"
@@ -192,6 +221,7 @@ In environments not using Central NAT, SNAT is configured per firewall policy. T
 must be created under `config firewall ippool` first.
 
 ```fortios
+
 config firewall policy
     edit 10
         set srcintf "internal"
@@ -217,6 +247,7 @@ FortiOS supports NAT64 for environments requiring IPv6 clients to reach IPv4 des
 Configuration requires an IPv6-to-IPv4 mapping prefix and is enabled per VDOM.
 
 ```fortios
+
 config system settings
     set gui-nat46-64 enable
 end
@@ -252,6 +283,7 @@ hostname to internal resolvers, eliminating the hairpin entirely.
 Where split-horizon DNS is not possible, create a loopback policy:
 
 ```fortios
+
 config firewall policy
     edit 60
         set srcintf "internal"

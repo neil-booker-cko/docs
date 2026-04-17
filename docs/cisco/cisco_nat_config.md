@@ -2,8 +2,10 @@
 
 NAT (Network Address Translation) rewrites IP address fields — and for PAT, port
 fields — as packets cross the boundary between inside and outside interfaces. IOS-XE
-maintains a translation table that maps inside local addresses to inside global addresses
-and ensures return traffic is matched and forwarded correctly back to the originating host.
+maintains a translation table that maps inside local addresses to inside global
+addresses
+and ensures return traffic is matched and forwarded correctly back to the originating
+host.
 
 For protocol background see [Network Address Translation (NAT)](../theory/nat.md).
 
@@ -11,20 +13,45 @@ For protocol background see [Network Address Translation (NAT)](../theory/nat.md
 
 ## 1. Overview & Principles
 
-- **Inside local:** The IP address assigned to a host on the inside network (RFC 1918 space
+- **Inside local:** The IP address assigned to a host on the inside network (RFC 1918
+space
+
+space
+
   in most deployments).
-- **Inside global:** The translated address seen on the outside (public) network — the address
+
+- **Inside global:** The translated address seen on the outside (public) network — the
+address
+
+address
+
   the outside world sees as the source.
+
 - **Outside local / outside global:** Addresses of the remote (outside) host as seen
+
   from the inside and outside respectively. For standard internet NAT these are usually
   the same.
+
 - **Interface designation:** Every interface participating in NAT must be marked `ip nat
-  inside` or `ip nat outside`. A packet is only translated if it enters on an inside interface
-  and exits on an outside interface (or vice versa). Missing designations are the most common
+
+inside` or `ip nat outside`. A packet is only translated if it enters on an inside
+interface
+and exits on an outside interface (or vice versa). Missing designations are the most
+common
   cause of NAT not working.
-- **Translation order:** IOS-XE evaluates static NAT entries first, then dynamic NAT pools,
+
+- **Translation order:** IOS-XE evaluates static NAT entries first, then dynamic NAT
+pools,
+
+pools,
+
   then PAT overload, and finally policy NAT route-maps. Static entries take precedence.
-- **NAT and routing:** The router applies NAT after the routing decision for outbound traffic
+
+- **NAT and routing:** The router applies NAT after the routing decision for outbound
+traffic
+
+traffic
+
   and before the routing decision for inbound traffic. Ensure the post-NAT address is
   reachable via the routing table.
 
@@ -60,6 +87,7 @@ Every interface that participates in NAT must be designated before any translati
 take effect. NAT will silently fail if interfaces are not correctly labelled.
 
 ```ios
+
 interface GigabitEthernet0/0
  description Uplink to ISP
  ip address 203.0.113.1 255.255.255.252
@@ -88,6 +116,7 @@ address are automatically forwarded to the inside local address without an ACL o
 additional config.
 
 ```ios
+
 ! One-to-one static NAT
 ip nat inside source static 192.168.1.10 203.0.113.10
 
@@ -110,6 +139,7 @@ multiplex ports. Suitable when a block of public IPs is available and port shari
 not desired.
 
 ```ios
+
 ! Define ACL to identify inside addresses eligible for translation
 ip access-list standard ACL-NAT-INSIDE
  permit 192.168.1.0 0.0.0.255
@@ -132,6 +162,7 @@ numbers. This is the standard internet breakout configuration for sites with a s
 IP. The `overload` keyword enables port translation.
 
 ```ios
+
 ! ACL defines which inside addresses are eligible for PAT
 ip access-list standard ACL-PAT-INSIDE
  permit 192.168.0.0 0.0.255.255       ! Covers all 192.168.x.x subnets
@@ -153,6 +184,7 @@ or restricts translation to traffic destined for specific networks — essential
 site has multiple ISP connections with separate public IP ranges.
 
 ```ios
+
 ! Example: VLAN 10 uses ISP-A, VLAN 20 uses ISP-B
 
 ! ACLs to match each source subnet
@@ -181,6 +213,7 @@ IPv6-only clients to reach IPv4 internet resources. Requires IOS-XE 15.2 or late
 `ipv6 unicast-routing` global command.
 
 ```ios
+
 ipv6 unicast-routing
 !
 ! Stateless NAT64 prefix — maps IPv6 source to an embedded IPv4 address
@@ -199,6 +232,7 @@ the NAT device and has a VPN peer behind it, a static NAT entry maps the peer's 
 address to a routable public address so IKE can be initiated from the outside.
 
 ```ios
+
 ! Static NAT for a VPN peer behind this router
 ! Must be configured before IKE negotiations begin
 ip nat inside source static 192.168.1.254 203.0.113.50
@@ -225,6 +259,7 @@ timeouts and maximum entry limits to avoid table exhaustion. Use `clear` command
 — clearing active translations drops established sessions.
 
 ```ios
+
 ! Per-protocol translation timeouts (seconds)
 ip nat translation timeout 300          ! General UDP timeout (default 300s)
 ip nat translation tcp-timeout 86400    ! TCP established session timeout (default 24h)

@@ -8,25 +8,34 @@ calculations once a neighbor failure is detected.
 
 ### The Role of DUAL in Convergence
 
-EIGRP maintains a topology table containing **Successors** (primary paths) and **Feasible
+EIGRP maintains a topology table containing **Successors** (primary paths) and
+**Feasible
 Successors**(backup paths).
 
 - **Local Repair:** If a local interface goes down, EIGRP promotes a Feasible Successor
+
     to the routing table in milliseconds.
+
 - **Remote/Silent Failure:** If the neighbor fails but the interface stays "Up"
+
     (e.g., through a switch), EIGRP must wait for the **Hold Timer** to expire before
     DUAL can trigger.
 
 ### Key Principles
 
 - **The 1s/3s "Aggressive" Limit:** While OSPF can be tuned to sub-second "minimal"
+
     hellos, EIGRP typically bottoms out at 1-second Hellos. Going faster without
     BFD significantly risks "Stuck-In-Active" (SIA) issues if the CPU is momentarily
     busy.
+
 - **BFD Offloading:** BFD allows the protocol to maintain high-stability timers
+
     (5/15) to prevent churn, while still reacting to physical failures at sub-second
     speeds.
+
 - **DUAL Catalyst:** BFD provides the sub-second trigger required for "silent" failures.
+
     Instead of waiting 15 seconds, BFD notifies EIGRP in <1 second, allowing DUAL
     to immediately promote a backup path or enter the **Active** state to query
     neighbors.
@@ -55,6 +64,7 @@ timeline
 ### Restoration Timeline (Adjacency)
 
 ```mermaid
+
 timeline
     title EIGRP Restoration (Adjacency)
     section Standard EIGRP
@@ -78,6 +88,7 @@ Named mode is the modern standard and allows for unified BFD configuration withi
 the address-family.
 
 ```ios
+
 router eigrp CORE
  address-family ipv4 unicast autonomous-system 100
   ! Enable BFD globally for all AF interfaces
@@ -117,9 +128,14 @@ router eigrp CORE
 ### Engineering Guidance
 
 - **Use BFD** as the primary detection mechanism for all Core and Distribution links.
+
     It is the only way to achieve sub-second convergence safely.
+
 - **Tuned Timers (1s/3s)** are acceptable for branch offices or lower-speed links
+
     where sub-second convergence isn't a requirement and BFD is unsupported.
+
 - **Feasible Successors:** Ensure your network design provides EIGRP with feasible
+
     successors. BFD detects the failure faster, but DUAL needs a valid backup path
     in the topology table to achieve "instant" (sub-50ms) convergence.
