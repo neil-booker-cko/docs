@@ -196,6 +196,13 @@ nav:
           - HA VPN Optimization: gcp/bgp_vpn_optimization.md
           - FortiGate to HA VPN (ECMP): gcp/fortigate_bgp_vpn_bfd.md
           - Troubleshooting VPN & BGP Logs: gcp/troubleshooting_vpn_bgp_log_analysis_guide.md
+      - Equinix:
+          - Fabric Concepts: equinix/equinix_fabric_concepts.md
+          - FCR Architecture & Deployment: equinix/equinix_fcr_architecture.md
+          - FCR Setup & Provisioning: equinix/equinix_fcr_setup.md
+          - Cisco to Equinix FCR: equinix/cisco_to_equinix_fcr.md
+          - FortiGate to Equinix FCR: equinix/fortigate_to_equinix_fcr.md
+          - IP WAN Best Practices: equinix/equinix_ip_wan_best_practices.md
   - Operations & Reference:
       - Operations:
           - Cisco IOS-XE Upgrade: operations/cisco_upgrade.md
