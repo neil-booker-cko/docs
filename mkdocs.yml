@@ -202,6 +202,7 @@ nav:
           - FCR Setup & Provisioning: equinix/equinix_fcr_setup.md
           - Cisco to Equinix FCR: equinix/cisco_to_equinix_fcr.md
           - FortiGate to Equinix FCR: equinix/fortigate_to_equinix_fcr.md
+          - Cloud-to-Cloud Interconnect: equinix/equinix_cloud_to_cloud_interconnect.md
           - IP WAN Best Practices: equinix/equinix_ip_wan_best_practices.md
   - Operations & Reference:
       - Operations:
