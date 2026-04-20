@@ -98,6 +98,7 @@ nav:
               - Multicast: theory/multicast.md
               - Quality of Service: theory/qos.md
               - MPLS Fundamentals: theory/mpls.md
+              - Active-Active & Multi-Path: theory/active_active_multipath.md
               - SD-WAN Design Principles: theory/sdwan.md
               - Cloud Network Design: theory/cloud_network_design.md
           - Tunneling & VPN:
@@ -193,6 +194,7 @@ nav:
           - VRRP: fortigate/fortigate_vrrp.md
           - NAT: fortigate/fortigate_nat.md
           - HA (FGCP): fortigate/fortigate_ha.md
+          - Third-Party VPN: fortigate/fortigate_third_party_vpn.md
   - Cloud Architecture:
       - AWS:
           - Direct Connect Setup: aws/aws_direct_connect_setup.md
@@ -200,18 +202,21 @@ nav:
           - BGP over VPN Optimization: aws/bgp_vpn_optimization.md
           - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md
           - Troubleshooting VPN & BGP Logs: aws/troubleshooting_vpn_bgp_log_analysis_guide.md
+          - Third-Party VPN: aws/aws_third_party_vpn.md
       - Azure:
           - ExpressRoute Setup: azure/azure_expressroute_setup.md
           - BGP Stack (Flagship): azure/bgp_stack_vpn_over_expressroute.md
           - Active-Active VPN Optimization: azure/bgp_vpn_optimization.md
           - FortiGate to VPN GW (ECMP): azure/fortigate_bgp_vpn_bfd.md
           - Troubleshooting VPN & BGP Logs: azure/troubleshooting_vpn_bgp_log_analysis_guide.md
+          - Third-Party VPN: azure/azure_third_party_vpn.md
       - GCP:
           - Cloud Interconnect Setup: gcp/gcp_cloud_interconnect_setup.md
           - BGP Stack (Flagship): gcp/bgp_stack_vpn_over_interconnect.md
           - HA VPN Optimization: gcp/bgp_vpn_optimization.md
           - FortiGate to HA VPN (ECMP): gcp/fortigate_bgp_vpn_bfd.md
           - Troubleshooting VPN & BGP Logs: gcp/troubleshooting_vpn_bgp_log_analysis_guide.md
+          - Third-Party VPN: gcp/gcp_third_party_vpn.md
       - Equinix:
           - Fabric Concepts: equinix/equinix_fabric_concepts.md
           - FCR Architecture & Deployment: equinix/equinix_fcr_architecture.md
@@ -228,6 +233,8 @@ nav:
           - BGP Troubleshooting: operations/bgp_troubleshooting.md
           - OSPF Troubleshooting: operations/ospf_troubleshooting.md
           - Config Backup & Restore: operations/config_backup.md
+          - IPsec VPN Troubleshooting: operations/ipsec_vpn_troubleshooting.md
+          - IPsec Best Practices: operations/ipsec_best_practices.md
       - Reference:
           - Overview: reference/index.md
           - IP Network Ranges: reference/ip_networks.md
