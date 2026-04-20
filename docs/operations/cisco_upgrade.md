@@ -49,6 +49,213 @@ Complete all items before beginning the upgrade.
 
 ---
 
+## File Transfer: TFTP vs SCP
+
+### TFTP (Legacy)
+
+TFTP is simple and widely supported but slow (~1-5 Mbps) and unencrypted:
+
+```ios
+copy tftp://10.0.0.1/cat9k_iosxe.17.09.04.SPA.bin flash:
+```
+
+**Pros:**
+
+- No authentication required
+- Minimal device CPU overhead
+- Works on any network with UDP 69
+
+**Cons:**
+
+- Slow (UDP-based, no windowing)
+- Unencrypted
+- Single-threaded transfer
+- Unreliable on lossy networks
+
+### SCP (Recommended)
+
+SCP (Secure Copy Protocol) uses SSH and is faster (~50-200 Mbps with tuning):
+
+```ios
+copy scp://username@10.0.0.1/path/to/image.bin flash: vrf management
+```
+
+**Pros:**
+
+- Encrypted (SSH)
+- Faster than TFTP (TCP-based with windowing)
+- Authenticated
+- Better network reliability
+- Supports IPv6
+
+**Cons:**
+
+- Requires SSH server on source
+- Device must have SSH client (all modern IOS-XE versions)
+- SSH window size tuning needed for optimal speed
+
+---
+
+## SCP File Transfer Setup & Optimization
+
+### 1. Enable SSH on Router
+
+Ensure SSH is enabled (required for SCP client):
+
+```ios
+! Check if SSH is already enabled
+show ip ssh
+
+! If needed, enable SSH (most devices have it enabled by default)
+ip ssh version 2
+```
+
+### 2. Source Server SSH Configuration
+
+Your Linux/Windows SCP server must have SSH enabled. Verify SSH is listening:
+
+```bash
+# Linux: Check SSH daemon
+sudo systemctl status ssh
+# or
+sudo systemctl status sshd
+
+# Verify SSH is listening on port 22
+netstat -tuln | grep :22
+ss -tuln | grep :22
+```
+
+### 3. Copy File via SCP (Basic)
+
+```ios
+copy scp://admin@10.0.0.1/images/cat9k_iosxe.17.09.04.SPA.bin flash:
+Password: ****
+```
+
+The router will prompt for SSH password (or use public key if configured).
+
+### 4. Tune SSH/TCP Window Size for Faster Transfer
+
+By default, SSH uses a small buffer which limits throughput. Tuning TCP window size on the
+**source server** dramatically improves transfer speed (10x improvement possible).
+
+#### Linux Server Tuning
+
+Before copying, on the Linux server, increase TCP window size:
+
+```bash
+# Check current window size
+cat /proc/sys/net/ipv4/tcp_rmem
+# Typical output: 4096  87380  6291456 (min, default, max)
+
+# Increase buffer sizes (as root)
+sudo sysctl -w net.ipv4.tcp_rmem="4096 87380 16777216"
+sudo sysctl -w net.ipv4.tcp_wmem="4096 65536 16777216"
+
+# For SSH specifically, edit /etc/ssh/sshd_config
+sudo vi /etc/ssh/sshd_config
+
+# Add or uncomment these lines:
+TCPKeepAlive yes
+ClientAliveInterval 60
+ClientAliveCountMax 10
+# Set SSH session timeout to accommodate large files (0 = no timeout)
+
+# Reload SSH daemon
+sudo systemctl reload sshd
+```
+
+#### Windows Server Tuning (SCP via SSH)
+
+If using Windows with OpenSSH or WinSCP:
+
+```powershell
+# PowerShell: Check current TCP window size
+Get-NetTCPSetting | Format-Table State, ReceiveBufferSize
+
+# Increase buffer (Admin PowerShell)
+Set-NetTCPSetting -SettingName InternetCustom -ReceiveBufferSize 16777216
+
+# Or use netsh (alternative)
+netsh int tcp set global autotuninglevel=normal
+netsh int tcp set global autotuninglevel=experimental
+```
+
+### 5. Tune Router SSH/TCP for Inbound Transfers
+
+On the **Cisco router**, optimize inbound SCP transfer:
+
+```ios
+! Increase SSH connection buffer
+ip ssh window size 32768
+
+! Set TCP MSS clamping if needed (for fragmentation issues)
+ip tcp adjust-mss 1400
+
+! Enable TCP window scaling (RFC 1323)
+ip tcp path-mtu-discovery
+
+! Optional: TCP keepalives to prevent timeout on long transfers
+service tcp-keepalives-in
+service tcp-keepalives-out
+```
+
+### 6. Performance Baseline & Verification
+
+Test transfer speed:
+
+```bash
+# Linux: Test SCP transfer with timing
+time scp admin@10.0.0.1:/path/to/large_file /tmp/test
+
+# Example output:
+# real    2m15s  (135 seconds for 1 GB file = 7.4 Mbps, untuned)
+# Tuned: ~100+ Mbps typical on 1 Gigabit network
+```
+
+On the router, monitor SSH session during transfer:
+
+```ios
+! While transfer is in progress (from another terminal)
+show ip ssh
+
+! Check TCP window size negotiated
+show tcp brief
+
+! Monitor CPU/memory during transfer
+show processes cpu sorted
+show memory statistics
+```
+
+### 7. SCP Command Examples
+
+```ios
+! Basic SCP copy
+copy scp://admin@10.0.0.1/images/cat9k_iosxe.17.09.04.SPA.bin flash:
+
+! SCP with VRF (if management interface is on separate VRF)
+copy scp://admin@10.0.0.1/images/cat9k_iosxe.17.09.04.SPA.bin flash: vrf management
+
+! SCP to alternate location
+copy scp://admin@10.0.0.1/images/image.bin bootflash:staging/
+
+! Copy with custom SSH port (if server uses non-standard port)
+copy scp://admin@10.0.0.1:2222/images/image.bin flash:
+```
+
+### 8. Troubleshooting SCP Failures
+
+| Error | Cause | Fix |
+| --- | --- | --- |
+| **Authentication failed** | Wrong password or user not authorized | Verify SSH credentials; check server permissions |
+| **File not found** | Path incorrect or typo | Verify path on server: `ls -la /images/` |
+| **Connection timeout** | Network unreachable or firewall blocking SSH | Check firewall allows TCP 22; ping server |
+| **Permission denied** | SSH user lacks read permission on file | Server: `chmod 644 image.bin` |
+| **Slow transfer (<5 Mbps)** | TCP window size not tuned | Apply server tuning from step 4 |
+| **Transfer hangs mid-way** | SSH timeout or TCP reset | Increase `ClientAliveCountMax` on server; check MTU |
+
+---
+
 ## Install Mode Upgrade Procedure
 
 Install mode uses a three-phase process: **add**, **activate**, and **commit**.
