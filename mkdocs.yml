@@ -1,5 +1,8 @@
 site_name: Network Engineering Reference
 site_description: Protocol packet formats, routing design, vendor implementation guides, and quick-reference cheat sheets for network engineers.
+site_url: https://network-engineering.example.com/
+repo_url: https://github.com/user/network-engineering-docs
+copyright: Copyright &copy; 2024 Network Engineering Reference. All rights reserved.
 docs_dir: docs
 
 theme:
@@ -19,14 +22,17 @@ theme:
         name: Switch to light mode
   features:
     - navigation.sections
+    - navigation.instant
     - navigation.top
     - toc.integrate
     - search.highlight
     - search.suggest
     - content.code.copy
     - content.code.annotate
+    - content.tabs.link
 
 markdown_extensions:
+  - attr_list
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -43,8 +49,11 @@ markdown_extensions:
   - tables
   - admonition
   - pymdownx.details
+  - footnotes
+  - sane_lists
   - toc:
       permalink: true
+      baselevel: 2
 
 hooks:
   - hooks.py
