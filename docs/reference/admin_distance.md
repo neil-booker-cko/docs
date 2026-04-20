@@ -123,6 +123,70 @@ default.
 
 ---
 
+## Fortinet FortiGate — Distance
+
+FortiGate does not use "administrative distance" in the traditional sense. Instead,
+route selection is determined by:
+
+1. **Prefix length** — Longest prefix match always wins
+2. **Static vs Dynamic** — Static routes can override dynamic routes via configurable distance
+3. **Protocol metric** — Within BGP, OSPF, or RIP, the protocol's own metric determines preference
+
+### Static Route Distance (FortiGate)
+
+Static routes have an optional **distance** value (0-255):
+
+```fortios
+config router static
+  edit 1
+    set destination 10.1.0.0 255.255.0.0
+    set gateway 192.0.2.1
+    set distance 10
+    ! Distance 10 — higher than most dynamic protocols, acts as backup
+  next
+end
+```
+
+**Common distance values:**
+
+| Distance | Typical Use |
+| --- | --- |
+| `0` | Default static route; preferred over all dynamic routes |
+| `10` | Backup to OSPF (cost 10) |
+| `20` | Backup to eBGP |
+| `100` | Backup to RIP; preferred over OSPF |
+| `255` | Route is never installed (disabled effectively) |
+
+### Dynamic Routing Metrics (FortiGate)
+
+FortiGate's dynamic routing protocols do not have an "AD" equivalent — they compete
+on metric alone once prefix length is matched:
+
+- **OSPF:** Cost (lower = better)
+- **BGP:** AS path length, local preference, MED, etc.
+- **RIP:** Hop count (max 15)
+
+If two OSPF routes for the same prefix exist (e.g., via different neighbors),
+FortiGate selects the one with lower cost. Equally-good routes load-balance (ECMP).
+
+### Example: Static Route Overriding OSPF
+
+```fortios
+! OSPF learns 10.1.0.0/16 with cost 100
+! Static route configured as backup:
+
+config router static
+  edit 1
+    set destination 10.1.0.0 255.255.0.0
+    set gateway 192.0.2.2
+    set distance 110
+    ! Distance 110: only used if OSPF route disappears
+  next
+end
+```
+
+---
+
 ## Notes
 
 - AD is evaluated **before** the best-path algorithm within a routing protocol.
