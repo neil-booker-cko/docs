@@ -198,6 +198,10 @@ nav:
           - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
           - VPN & Tunneling:
               - DMVPN Config: cisco/cisco_dmvpn_config.md
+          - Management & Monitoring:
+              - AAA Config: cisco/cisco_aaa_config.md
+              - Syslog Config: cisco/cisco_syslog_config.md
+              - SNMP Config: cisco/cisco_snmp_config.md
       - FortiGate:
           - Interface & Routing Basics: fortigate/fortigate_interface_routing_basics.md
           - BGP Config: fortigate/fortigate_bgp_config.md
