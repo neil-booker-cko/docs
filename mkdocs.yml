@@ -67,6 +67,28 @@ plugins:
 
 nav:
   - Home: index.md
+  - Quick Reference:
+      - Cisco Templates:
+          - BGP: templates/cisco/bgp-minimal.md
+          - OSPF: templates/cisco/ospf-minimal.md
+          - EIGRP: templates/cisco/eigrp-minimal.md
+          - BFD: templates/cisco/bfd-minimal.md
+          - IPsec VPN: templates/cisco/ipsec-vpn-minimal.md
+          - DMVPN: templates/cisco/dmvpn-minimal.md
+          - HSRP: templates/cisco/hsrp-minimal.md
+          - AAA: templates/cisco/aaa-minimal.md
+          - SSH: templates/cisco/ssh-minimal.md
+          - Security Hardening: templates/cisco/security-hardening-minimal.md
+      - FortiGate Templates:
+          - BGP: templates/fortigate/bgp-minimal.md
+          - OSPF: templates/fortigate/ospf-minimal.md
+          - BFD: templates/fortigate/bfd-minimal.md
+          - IPsec VPN: templates/fortigate/ipsec-vpn-minimal.md
+          - VRRP: templates/fortigate/vrrp-minimal.md
+          - HA: templates/fortigate/ha-minimal.md
+          - AAA: templates/fortigate/aaa-minimal.md
+          - SSH: templates/fortigate/ssh-minimal.md
+          - Security Hardening: templates/fortigate/security-hardening-minimal.md
   - Fundamentals:
       - Theory:
           - Protocol Comparisons:
