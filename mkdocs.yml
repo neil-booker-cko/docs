@@ -261,6 +261,7 @@ nav:
           - Config Backup & Restore: operations/config_backup.md
           - IPsec VPN Troubleshooting: operations/ipsec_vpn_troubleshooting.md
           - IPsec Best Practices: operations/ipsec_best_practices.md
+          - Security Hardening: operations/security_hardening.md
       - Reference:
           - Overview: reference/index.md
           - IP Network Ranges: reference/ip_networks.md
