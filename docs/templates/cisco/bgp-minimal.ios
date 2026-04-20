@@ -1,0 +1,12 @@
+! Cisco IOS-XE: BGP Minimal Configuration
+! Single EBGP peering session
+! Replace CAPITALIZED values with your environment
+
+router bgp 65000
+  bgp router-id 10.0.0.1
+  neighbor 10.0.0.2 remote-as 65001
+  address-family ipv4
+    neighbor 10.0.0.2 activate
+    network 10.1.0.0 mask 255.255.0.0
+    network 10.2.0.0 mask 255.255.0.0
+  exit-address-family

@@ -1,0 +1,15 @@
+! Cisco IOS-XE: BFD Minimal Configuration
+! BFD with BGP integration for fast failure detection
+
+interface GigabitEthernet0/0/0
+  ip address 10.0.0.1 255.255.255.0
+  bfd interval 300 min_rx 300 multiplier 3
+
+router bgp 65000
+  bgp router-id 10.0.0.1
+  neighbor 10.0.0.2 remote-as 65001
+  neighbor 10.0.0.2 fall-over bfd single-hop
+  address-family ipv4
+    neighbor 10.0.0.2 activate
+    network 10.1.0.0 mask 255.255.0.0
+  exit-address-family

@@ -1,0 +1,18 @@
+! Cisco IOS-XE: HSRP Minimal Configuration
+! Active/Standby gateway redundancy
+! Replace CAPITALIZED values with your environment
+
+! PRIMARY ROUTER (will be active)
+interface GigabitEthernet0/0/1
+  ip address 10.0.1.1 255.255.255.0
+  standby version 2
+  standby 1 ip 10.0.1.254
+  standby 1 priority 110
+  standby 1 preempt
+
+! SECONDARY ROUTER (will be standby)
+interface GigabitEthernet0/0/1
+  ip address 10.0.1.2 255.255.255.0
+  standby version 2
+  standby 1 ip 10.0.1.254
+  standby 1 priority 100

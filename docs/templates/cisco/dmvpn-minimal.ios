@@ -1,0 +1,46 @@
+! Cisco IOS-XE: DMVPN Hub Minimal Configuration
+! Phase 1 (all traffic through hub)
+
+crypto ikev2 proposal DMVPN-PROPOSAL
+  encryption aes-cbc-256
+  integrity sha256
+  dh-group 14
+
+crypto ikev2 policy DMVPN-POLICY
+  proposal DMVPN-PROPOSAL
+
+crypto ikev2 keyring DMVPN-KEYRING
+  peer 0.0.0.0
+    pre-shared-key DMVPN_PSK_HERE
+
+crypto ikev2 profile DMVPN-PROFILE
+  match fvrf any
+  match identity address 0.0.0.0
+  authentication remote pre-share
+  authentication local pre-share
+  keyring DMVPN-KEYRING
+  lifetime 28800
+  dpd 10 3 on-demand
+
+crypto ipsec transform-set DMVPN-TS esp-aes 256 esp-sha256-hmac
+  mode transport
+
+crypto ipsec profile DMVPN-IPSEC
+  set transform-set DMVPN-TS
+  set pfs group14
+
+interface Tunnel0
+  ip address 10.255.0.1 255.255.0.0
+  ip mtu 1400
+  tunnel source GigabitEthernet0/0/0
+  tunnel mode gre multipoint
+  tunnel key 100
+  tunnel protection ipsec profile DMVPN-IPSEC
+  ip nhrp network-id 100
+  ip nhrp authentication DMVPN_AUTH_HERE
+
+router eigrp 100
+  eigrp router-id 10.0.0.1
+  network 10.255.0.0 0.0.255.255
+  network 10.0.0.0 0.0.255.255
+  no auto-summary
