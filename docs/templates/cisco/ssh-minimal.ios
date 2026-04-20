@@ -1,0 +1,18 @@
+! Cisco IOS-XE: SSH Minimal Configuration
+! SSH v2 with key-based authentication
+
+ip ssh version 2
+ip ssh rsa keypair-name SSH-KEY-1
+crypto key generate rsa modulus 2048 label SSH-KEY-1
+
+ip ssh authentication retries 3
+ip ssh time-out 120
+
+ip scp server enable
+
+line vty 0 4
+  transport input ssh
+  exec-timeout 10 0
+  login local
+
+username admin privilege 15 secret YOUR_PASSWORD_HERE

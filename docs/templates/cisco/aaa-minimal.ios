@@ -1,0 +1,28 @@
+! Cisco IOS-XE: AAA Minimal Configuration
+! Local authentication with TACACS+ backup
+
+aaa new-model
+aaa authentication login default local
+aaa authentication enable default enable
+aaa authorization exec default local
+aaa accounting exec default start-stop group tacacs+
+aaa accounting commands 15 default start-stop group tacacs+
+
+tacacs server TAC-SERVER
+  address ipv4 192.0.2.10
+  key TACACS_KEY_HERE
+  timeout 10
+
+username admin privilege 15 password YOUR_PASSWORD_HERE
+username operator privilege 5 password YOUR_PASSWORD_HERE
+
+ip tacacs source-interface Loopback0
+
+line console 0
+  login authentication default
+  exec-timeout 5 0
+
+line vty 0 4
+  login authentication default
+  exec-timeout 5 0
+  transport input ssh
