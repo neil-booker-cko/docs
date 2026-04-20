@@ -102,6 +102,9 @@ nav:
               - NTP vs PTP: theory/ntp_vs_ptp.md
               - HSRP vs VRRP: theory/hsrp_vs_vrrp.md
           - Foundations:
+              - Physical Layer (L1): theory/physical_layer.md
+              - Ethernet Evolution: theory/ethernet_evolution.md
+              - Switching Fundamentals (L2): theory/switching_fundamentals.md
               - Interface & Routing Fundamentals: theory/interface_routing_fundamentals.md
               - IP Addressing & Subnetting Design: theory/ip_addressing_design.md
               - VLANs & 802.1Q: theory/vlans.md
