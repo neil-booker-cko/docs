@@ -40,19 +40,16 @@ An MPLS label is a 32-bit header inserted between Layer 2 and Layer 3:
 Multiple labels can be stacked on a packet. The **top label** is used for forwarding at the current
 hop; when removed, the next label (if present) is used at the next hop.
 
-```text
+```mermaid
+flowchart TD
+    A["Ingress (CE to PE)<br/>[IP header][data]"]
+    B["After PE Ingress<br/>[Label1: PE→P]<br/>[Label2: P→Egress PE]<br/>[IP header][data]"]
+    C["At Transit P<br/>(pop Label1)<br/>[Label2: P→Egress PE]<br/>[IP header][data]"]
+    D["At Egress PE<br/>(pop Label2)<br/>[IP header][data]"]
 
-Ingress (CE to PE):
-  [IP header][data]
-
-After Ingress PE labels:
-  [Label1: PE→P][Label2: P→Egress PE][IP header][data]
-
-At Transit P (pop Label1):
-  [Label2: P→Egress PE][IP header][data]
-
-At Egress PE (pop Label2):
-  [IP header][data]
+    A -->|Push Labels| B
+    B -->|Swap Label1| C
+    C -->|Pop Label2| D
 ```
 
 ## Key Components
@@ -110,13 +107,13 @@ advertises them to neighbors
 
 **LDP Session Setup:**
 
-```text
+```mermaid
+sequenceDiagram
+    participant RouterA as Router A
+    participant RouterB as Router B
 
-Router A (IGP: 192.168.1.0/24)
-  ↓
-Router A sends to Router B: "I can reach 192.168.1.0/24, use label 100"
-  ↓
-Router B stores in LFIB: "If label=100, pop label and forward via IP lookup"
+    RouterA->>RouterB: LDP: "192.168.1.0/24 reachable, label=100"
+    RouterB->>RouterB: Store in LFIB:<br/>label 100 → pop & IP lookup
 ```
 
 ### BGP (Border Gateway Protocol)
@@ -162,10 +159,18 @@ This is much faster than IPv4 longest-prefix-match at each hop.
 
 ### Scenario: CE Behind PE in MPLS Domain
 
-```text
+```mermaid
+graph LR
+    CE1["CE1<br/>10.1.0.0/24"]
+    PE1["PE1<br/>Ingress"]
+    P["P<br/>Transit<br/>MPLS Core"]
+    PE2["PE2<br/>Egress"]
+    CE2["CE2<br/>10.2.0.0/24"]
 
-CE1 ──── PE1 ════ P ════ PE2 ──── CE2
-(10.1.0.0/24)  [MPLS Core]  (10.2.0.0/24)
+    CE1 -->|IP| PE1
+    PE1 -->|MPLS| P
+    P -->|MPLS| PE2
+    PE2 -->|IP| CE2
 ```
 
 #### Step 1: IGP and BGP Setup

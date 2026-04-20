@@ -63,7 +63,6 @@ docs/
 - DSCP and QoS must be paired — do not add DSCP reference without accompanying QoS content
 - LLDP and CDP should be documented together in the same section
 - Equinix FCR guides should include both Cisco and FortiGate examples (separate guides per vendor)
-- MPLS is explicitly out of scope
 
 **Markdown Requirements:**
 
