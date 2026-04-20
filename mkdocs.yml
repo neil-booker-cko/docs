@@ -60,36 +60,40 @@ nav:
   - Home: index.md
   - Fundamentals:
       - Theory:
-          - Interface & Routing Fundamentals: theory/interface_routing_fundamentals.md
-          - BGP vs BFD: theory/bgp_bfd_comparison.md
-          - OSPF vs BFD: theory/ospf_bfd_comparison.md
-          - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
-          - EIGRP vs OSPF vs RIP: theory/igp_comparison.md
-          - NTP vs PTP: theory/ntp_vs_ptp.md
-          - eBGP vs iBGP: theory/ebgp_vs_ibgp.md
-          - OSPF vs IS-IS: theory/ospf_vs_isis.md
-          - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
-          - Spanning Tree Design: theory/spanning_tree.md
-          - STP/RSTP Configuration: theory/stp_rstp_configuration.md
-          - Port Aggregation (LAG): theory/port_aggregation.md
-          - IP Addressing & Subnetting Design: theory/ip_addressing_design.md
-          - Firewall Rule Processing: theory/firewall_rule_processing.md
-          - Policy-Based Routing: theory/policy_based_routing.md
-          - OSPF Advanced: theory/ospf_advanced.md
-          - Route Redistribution: theory/route_redistribution.md
-          - Data Centre Topologies: theory/dc_topologies.md
-          - HSRP vs VRRP: theory/hsrp_vs_vrrp.md
-          - GLBP: theory/glbp.md
-          - Multicast: theory/multicast.md
-          - Quality of Service: theory/qos.md
-          - MPLS Fundamentals: theory/mpls.md
-          - SD-WAN Design Principles: theory/sdwan.md
-          - DHCP Security: theory/dhcp_security.md
-          - VLANs & 802.1Q: theory/vlans.md
-          - NAT: theory/nat.md
-          - IPsec & IKE: theory/ipsec.md
-          - DMVPN: theory/dmvpn.md
-          - Cloud Network Design: theory/cloud_network_design.md
+          - Protocol Comparisons:
+              - BGP vs BFD: theory/bgp_bfd_comparison.md
+              - OSPF vs BFD: theory/ospf_bfd_comparison.md
+              - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
+              - EIGRP vs OSPF vs RIP: theory/igp_comparison.md
+              - eBGP vs iBGP: theory/ebgp_vs_ibgp.md
+              - OSPF vs IS-IS: theory/ospf_vs_isis.md
+              - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
+              - NTP vs PTP: theory/ntp_vs_ptp.md
+              - HSRP vs VRRP: theory/hsrp_vs_vrrp.md
+          - Foundations:
+              - Interface & Routing Fundamentals: theory/interface_routing_fundamentals.md
+              - IP Addressing & Subnetting Design: theory/ip_addressing_design.md
+              - VLANs & 802.1Q: theory/vlans.md
+              - Port Aggregation (LAG): theory/port_aggregation.md
+              - NAT: theory/nat.md
+              - DHCP Security: theory/dhcp_security.md
+              - Firewall Rule Processing: theory/firewall_rule_processing.md
+          - Network Architecture:
+              - Data Centre Topologies: theory/dc_topologies.md
+              - Spanning Tree Design: theory/spanning_tree.md
+              - STP/RSTP Configuration: theory/stp_rstp_configuration.md
+              - Policy-Based Routing: theory/policy_based_routing.md
+              - OSPF Advanced: theory/ospf_advanced.md
+              - Route Redistribution: theory/route_redistribution.md
+              - GLBP: theory/glbp.md
+              - Multicast: theory/multicast.md
+              - Quality of Service: theory/qos.md
+              - MPLS Fundamentals: theory/mpls.md
+              - SD-WAN Design Principles: theory/sdwan.md
+              - Cloud Network Design: theory/cloud_network_design.md
+          - Tunneling & VPN:
+              - IPsec & IKE: theory/ipsec.md
+              - DMVPN: theory/dmvpn.md
       - Routing Protocols:
           - Overview: routing/index.md
           - BGP: routing/bgp.md
@@ -160,7 +164,8 @@ nav:
           - NAT Config: cisco/cisco_nat_config.md
           - ACL Config: cisco/cisco_acl_config.md
           - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
-          - DMVPN Config: cisco/cisco_dmvpn_config.md
+          - VPN & Tunneling:
+              - DMVPN Config: cisco/cisco_dmvpn_config.md
       - FortiGate:
           - Interface & Routing Basics: fortigate/fortigate_interface_routing_basics.md
           - BGP Config: fortigate/fortigate_bgp_config.md
