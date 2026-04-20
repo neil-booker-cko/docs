@@ -50,7 +50,7 @@ Sends informational and above (notice, warning, error, critical, alert, emergenc
 
 ```ios
 logging host 192.0.2.50
-logging host 192.0.2.51 transport tcp port 1514
+logging host 192.0.2.51 transport tcp port 601
 logging source-interface Loopback0
 logging facility local7
 logging trap informational
@@ -62,7 +62,7 @@ logging sequence-numbers
 **Settings:**
 
 - **host:** Syslog server IP (can have multiple)
-- **transport tcp port 1514:** Use TCP instead of UDP (more reliable)
+- **transport tcp port 601:** Use TCP instead of UDP (more reliable)
 - **source-interface:** Consistent sender IP (required for syslog server filtering)
 - **facility local7:** Syslog facility (local0-local7 for custom apps)
 - **trap informational:** Minimum log level
@@ -419,8 +419,8 @@ logging sequence-numbers
 ntp server 10.0.0.1 prefer
 ntp server 10.0.0.2
 
-logging host 192.0.2.50 transport tcp port 1514
-logging host 192.0.2.51 transport tcp port 1514
+logging host 192.0.2.50 transport tcp port 601
+logging host 192.0.2.51 transport tcp port 601
 logging trap notice
 
 logging source-interface Loopback0
