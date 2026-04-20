@@ -7,14 +7,29 @@ upgrade paths.
 
 ---
 
-## Bundle Mode vs Install Mode
+## IOS-XE Version & Boot Mode Compatibility
+
+### Upgrade Method by IOS-XE Version
+
+| IOS-XE Version | Default Boot Mode | Upgrade Command | Status |
+| --- | --- | --- | --- |
+| **16.x and earlier** | Bundle mode | `request platform software package install ...` | Legacy (sunset 2023) |
+| **17.0 - 17.x** | Install mode | `install add file ... activate commit` | **Current (recommended)** |
+| **18.x and later** | Install mode | `install add file ... activate commit` | **Current** |
+
+!!! warning
+    The `request platform software package install` command is **deprecated** as of IOS-XE 17.x.
+    If you are running IOS-XE 17.x or later, use the modern `install` commands instead.
+    Legacy commands may be removed in future releases.
+
+### Boot Modes
 
 Cisco IOS-XE platforms support two boot modes:
 
 | Mode | How it boots | Use case |
 | --- | --- | --- |
-| Bundle mode | Single monolithic `.bin` file | Simpler; no in-service upgrade capability |
-| Install mode | Package directory (`packages.conf`) | Default on Cat9k; supports ISSU and StackWise rolling upgrades |
+| Bundle mode | Single monolithic `.bin` file | IOS-XE 16.x; simpler but no ISSU |
+| Install mode | Package directory (`packages.conf`) | IOS-XE 17.x+; default on Cat9k; supports ISSU |
 
 To check the current boot mode:
 
@@ -256,9 +271,10 @@ copy scp://admin@10.0.0.1:2222/images/image.bin flash:
 
 ---
 
-## Install Mode Upgrade Procedure
+## Install Mode Upgrade Procedure (IOS-XE 17.x and later)
 
-Install mode uses a three-phase process: **add**, **activate**, and **commit**.
+Install mode uses a three-phase process: **add**, **activate**, and **commit**. This is the
+**recommended method for all current releases** (IOS-XE 17.x+).
 
 ### Phase overview
 
@@ -328,10 +344,13 @@ store retains the previous package set until a new commit is made.
 
 ---
 
-## Bundle Mode Upgrade
+## Bundle Mode Upgrade (IOS-XE 16.x and earlier)
 
-Bundle mode upgrade is simpler but requires a full reload and does not support
-in-service upgrades.
+Bundle mode upgrade applies to **IOS-XE 16.x and earlier** devices. It is simpler but requires
+a full reload and does not support in-service upgrades.
+
+!!! note
+    If your device is running IOS-XE 17.x or later, use the **Install Mode** procedure instead.
 
 ```ios
 
@@ -356,30 +375,64 @@ show version | include Version
 
 ## StackWise Upgrade
 
-For Catalyst 9000 StackWise stacks, the following command upgrades all stack members
-and auto-copies the image to members that do not have it:
+### Modern Method (IOS-XE 17.x+)
+
+For Catalyst 9000 StackWise in **IOS-XE 17.x and later**, use the standard `install` commands,
+which auto-propagate to all stack members:
 
 ```ios
 
-request platform software package install switch all file flash:cat9k_iosxe.17.09.04.SPA.bin auto-copy
+! Single-command upgrade (recommended)
+install add file flash:cat9k_iosxe.17.09.04.SPA.bin activate commit prompt-level none
 ```
 
-All stack members reload simultaneously unless StackWise Virtual with SSO is configured.
-For non-SSO stacks, plan for a full stack reload.
+The `install add` command automatically copies the image to all stack members that do not have
+it before activation.
 
-!!! note
-    For StackWise Virtual (SVL) deployments with SSO configured, rolling upgrade
-    minimises downtime. One switch reloads while the other maintains forwarding.
+### Legacy Method (IOS-XE 16.x and earlier - DEPRECATED)
+
+!!! warning
+    This method is **deprecated** as of IOS-XE 17.x and may be removed in future releases.
+    Do not use on new deployments.
+
+For older IOS-XE 16.x StackWise deployments, the legacy command was:
+
+```ios
+
+request platform software package install switch all file flash:cat9k_iosxe.16.12.04.SPA.bin auto-copy
+```
+
+### StackWise Reload Behavior
+
+All stack members reload simultaneously unless StackWise Virtual with SSO is configured.
+
+**For non-SSO stacks:** Plan for a full stack reload (all switches down briefly).
+
+**For StackWise Virtual (SVL) with SSO:** Rolling upgrade minimises downtime. One switch
+reloads while the other maintains forwarding.
+
+Verify SSO capability:
+
+```ios
+show redundancy
+! Look for "Redundancy State" = "SSO" or "HA"
+```
 
 ---
 
 ## ISSU (In-Service Software Upgrade)
 
-ISSU is available on Catalyst 9000 platforms with StackWise Virtual (dual-chassis SSO)
-or with dual supervisor modules. It allows a software upgrade with minimal traffic
-disruption.
+### Availability & Platforms
 
-ISSU command sequence:
+ISSU is available on **Catalyst 9000 and ASR 9000 platforms** running **IOS-XE 17.x or later**
+with one of the following redundancy configurations:
+
+- StackWise Virtual (dual-chassis SSO)
+- Dual supervisor modules (Active/Standby)
+
+ISSU allows a software upgrade with zero traffic disruption (hitless upgrade).
+
+### ISSU Command Sequence (IOS-XE 17.x+)
 
 ```ios
 
