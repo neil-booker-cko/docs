@@ -88,6 +88,7 @@ nav:
           - VLANs & 802.1Q: theory/vlans.md
           - NAT: theory/nat.md
           - IPsec & IKE: theory/ipsec.md
+          - DMVPN: theory/dmvpn.md
           - Cloud Network Design: theory/cloud_network_design.md
       - Routing Protocols:
           - Overview: routing/index.md
@@ -159,6 +160,7 @@ nav:
           - NAT Config: cisco/cisco_nat_config.md
           - ACL Config: cisco/cisco_acl_config.md
           - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
+          - DMVPN Config: cisco/cisco_dmvpn_config.md
       - FortiGate:
           - Interface & Routing Basics: fortigate/fortigate_interface_routing_basics.md
           - BGP Config: fortigate/fortigate_bgp_config.md
