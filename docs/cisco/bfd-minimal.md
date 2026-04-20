@@ -87,7 +87,5 @@ show ip bgp neighbors 10.0.0.2
 ! Check: BGP using BFD for failure detection
 ```
 
-## Next Steps
-
-- Review [BFD configuration guide](../../cisco/cisco_bfd_config_guide.md) for advanced features
+- Review [BFD configuration guide](../cisco/cisco_bfd_config_guide.md) for advanced features
 - Combine with HSRP for redundant gateways (see [HSRP minimal](hsrp-minimal.md))

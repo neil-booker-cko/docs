@@ -90,7 +90,5 @@ diagnose ip route list
 ! Detailed routing table
 ```
 
-## Next Steps
-
 - Add BFD for faster failure detection (see [BFD minimal](bfd-minimal.md))
-- Review [FortiGate BGP guide](../../fortigate/fortigate_bgp_config.md)
+- Review [FortiGate BGP guide](../fortigate/fortigate_bgp_config.md)

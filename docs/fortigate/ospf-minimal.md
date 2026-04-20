@@ -126,7 +126,5 @@ diagnose ip route list
 ! Detailed routing table with OSPF routes
 ```
 
-## Next Steps
-
 - Add BFD for faster failure detection (see [BFD minimal](bfd-minimal.md))
-- Review [FortiGate OSPF guide](../../fortigate/fortigate_ospf_config.md)
+- Review [FortiGate OSPF guide](../fortigate/fortigate_ospf_config.md)

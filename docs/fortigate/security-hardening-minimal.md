@@ -241,8 +241,4 @@ show system interface port1
 ! Check: Management interface access settings
 ```
 
-## Next Steps
-
 - Configure AAA (see [AAA minimal](aaa-minimal.md))
-- Configure SSH hardening (see [SSH minimal](ssh-minimal.md))
-- Review [FortiGate security hardening guide](../../operations/security_hardening.md)

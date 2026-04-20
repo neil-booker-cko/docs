@@ -183,9 +183,6 @@ diagnose sys ha transition
 ! Check: Failover events and transitions
 ```
 
-## Next Steps
-
-- Review [FortiGate HA guide](../../fortigate/fortigate_ha_config.md) for active-active details
 - Add BFD for faster detection (see [BFD minimal](bfd-minimal.md))
 - Implement session state sync over dedicated link
 - Review [VRRP minimal](vrrp-minimal.md) for per-subnet virtual IP failover

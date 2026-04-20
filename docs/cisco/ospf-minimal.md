@@ -88,8 +88,6 @@ show ip route ospf
 ! Check: OSPF-learned routes in routing table
 ```
 
-## Next Steps
-
 - Add BFD for faster failure detection (see `bfd-minimal.md`)
-- Implement area design for scalability (see [OSPF configuration guide](../../cisco/cisco_ospf_config.md))
+- Implement area design for scalability (see [OSPF configuration guide](../cisco/cisco_ospf_config.md))
 - Configure OSPF authentication for security

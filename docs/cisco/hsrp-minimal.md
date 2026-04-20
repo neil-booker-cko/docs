@@ -131,8 +131,6 @@ show interface GigabitEthernet0/0/1 | include HSRP
 
 4. **Primary takes over** (because it has higher priority and `preempt` enabled).
 
-## Next Steps
-
 - Add BFD for sub-second failover (see [BFD minimal](bfd-minimal.md))
 - Implement HSRP on multiple subnets for redundancy
-- Review [HSRP configuration guide](../../cisco/cisco_hsrp_vrrp.md) for advanced features
+- Review [HSRP configuration guide](../cisco/cisco_hsrp_vrrp.md) for advanced features

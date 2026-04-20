@@ -96,9 +96,7 @@ show ip route bgp
 ! Check: BGP-learned routes appear in routing table
 ```
 
-## Next Steps
-
 - Add more neighbors as needed
 - Implement route filtering (prefix lists, route maps)
 - Add BFD for faster failure detection (see `bfd-minimal.md`)
-- Review [BGP configuration guide](../../cisco/cisco_bgp_ibgp.md) for advanced features
+- Review [BGP configuration guide](../cisco/cisco_bgp_ibgp.md) for advanced features

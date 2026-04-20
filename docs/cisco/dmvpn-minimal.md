@@ -100,7 +100,7 @@ For each new spoke, add configuration on spoke and ensure hub can reach it.
 ## DMVPN Phases
 
 This template is **Phase 1** (all traffic through hub). For Phase 2/3, see
-[DMVPN theory guide](../../theory/dmvpn.md).
+[DMVPN theory guide](../theory/dmvpn.md).
 
 ## Verification
 
@@ -120,8 +120,6 @@ show crypto session brief
 ! Check: IPsec SAs active
 ```
 
-## Next Steps
-
-- Review [DMVPN configuration guide](../../cisco/cisco_dmvpn_config.md) for Phase 2/3
+- Review [DMVPN configuration guide](../cisco/cisco_dmvpn_config.md) for Phase 2/3
 - Add BFD for faster convergence
 - Implement access lists for hub-based filtering

@@ -75,7 +75,5 @@ show ip eigrp topology
 ! Check: Topology table for alternate routes
 ```
 
-## Next Steps
-
 - Add BFD for faster failure detection (see [BFD minimal](bfd-minimal.md))
-- Review [EIGRP configuration guide](../../cisco/cisco_eigrp_config.md)
+- Review [EIGRP configuration guide](../cisco/cisco_eigrp_config.md)

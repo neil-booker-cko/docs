@@ -145,8 +145,5 @@ ping VIRTUAL_IP
 # Should respond from the active master
 ```
 
-## Next Steps
-
-- Review [FortiGate HA guide](../../fortigate/fortigate_ha_config.md) for active-active HA
 - Add BFD to detect link failures (see [BFD minimal](bfd-minimal.md))
 - Review [HSRP minimal](../cisco/hsrp-minimal.md) for Cisco equivalent

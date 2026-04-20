@@ -144,8 +144,4 @@ get system interface port1
 ! Check: Port1 management access settings
 ```
 
-## Next Steps
-
 - Configure AAA with TACACS+/RADIUS (see [AAA minimal](aaa-minimal.md))
-- Implement security hardening (see [Security hardening minimal](security-hardening-minimal.md))
-- Review [FortiGate SSH configuration guide](../../fortigate/fortigate_ssh_config.md)

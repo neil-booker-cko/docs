@@ -127,7 +127,4 @@ get router info bgp neighbors 10.0.0.2
 ! Check: BGP neighbor using BFD
 ```
 
-## Next Steps
-
-- Review [BFD configuration guide](../../fortigate/fortigate_bfd_config.md)
 - Combine with VRRP for redundant gateways (see [VRRP minimal](vrrp-minimal.md))

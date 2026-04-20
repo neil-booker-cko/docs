@@ -137,8 +137,6 @@ debug aaa authentication
 ! Troubleshoot AAA issues (disable with: no debug all)
 ```
 
-## Next Steps
-
 - Configure SSH certificates for key-based auth (see [SSH minimal](ssh-minimal.md))
 - Implement security hardening (see [Security hardening minimal](security-hardening-minimal.md))
-- Review [AAA configuration guide](../../cisco/cisco_aaa_config.md)
+- Review [AAA configuration guide](../cisco/cisco_aaa_config.md)

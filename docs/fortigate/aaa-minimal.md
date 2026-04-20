@@ -153,8 +153,5 @@ diagnose debug authd
 ! Troubleshoot authentication issues
 ```
 
-## Next Steps
-
 - Configure SSH hardening (see [SSH minimal](ssh-minimal.md))
 - Implement security hardening (see [Security hardening minimal](security-hardening-minimal.md))
-- Review [FortiGate AAA configuration guide](../../fortigate/fortigate_aaa_config.md)

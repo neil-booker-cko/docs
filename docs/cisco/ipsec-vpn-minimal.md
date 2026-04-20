@@ -158,8 +158,6 @@ ping 169.254.1.2
 | IKE Phase 2 fails | Transform mismatch; traffic selectors don't match on both sides |
 | Tunnel up, no traffic | Routes missing; ACL blocking; MTU too large |
 
-## Next Steps
-
 - Add BGP over tunnel (see [BGP minimal](bgp-minimal.md))
 - Add BFD for faster failure detection (see [BFD minimal](bfd-minimal.md))
-- Review [IPsec VPN guide](../../operations/ipsec_vpn_troubleshooting.md) for diagnostics
+- Review [IPsec VPN guide](../operations/ipsec_vpn_troubleshooting.md) for diagnostics

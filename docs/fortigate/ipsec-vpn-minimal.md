@@ -168,8 +168,3 @@ diagnose vpn tunnel stat
 get router info bgp summary
 ! Check: BGP neighbor status (if using BGP)
 ```
-
-## Next Steps
-
-- Review [FortiGate IPsec VPN guide](../../fortigate/fortigate_ipsec_vpn.md)
-- Review [IPsec troubleshooting guide](../../operations/ipsec_vpn_troubleshooting.md)

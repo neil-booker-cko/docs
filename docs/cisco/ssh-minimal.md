@@ -130,8 +130,5 @@ debug ip ssh
 ! Troubleshoot SSH connection issues
 ```
 
-## Next Steps
-
 - Configure key-based authentication with SSH certificates (see [AAA minimal](aaa-minimal.md))
 - Implement security hardening (see [Security hardening minimal](security-hardening-minimal.md))
-- Review [SSH configuration guide](../../cisco/cisco_ssh_config.md)

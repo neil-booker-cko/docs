@@ -201,8 +201,5 @@ show running-config | include (service | no service)
 ! Check: All security-related service settings
 ```
 
-## Next Steps
-
 - Configure AAA for centralized authentication (see [AAA minimal](aaa-minimal.md))
 - Configure SSH (see [SSH minimal](ssh-minimal.md))
-- Review [Security hardening guide](../../operations/security_hardening.md)
