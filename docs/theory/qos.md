@@ -344,18 +344,14 @@ interface GigabitEthernet0/0
 ## Notes
 
 - QoS does not create bandwidth — it only prioritises how existing bandwidth is used.
-
   If a link is consistently at 100% utilisation, the only real fix is more bandwidth.
 
 - `show policy-map interface <int>` shows per-class packet/byte counts, queue depths,
-
   and drop counts. Non-zero drops in the wrong class indicate a policy problem.
 
 - FortiGate traffic shaping uses DSCP matching under `config firewall shaper` and
-
   `config firewall shaping-policy`. FortiGate SD-WAN SLA thresholds are a complementary
   mechanism — see [FortiGate SD-WAN](../fortigate/fortigate_sdwan.md).
 
 - DSCP is preserved across MPLS networks via EXP/TC bits (3-bit field; maps to the top
-
   3 bits of DSCP). Verify with your provider that DSCP is honoured end-to-end.

@@ -147,18 +147,15 @@ E2E and P2P must not be mixed on the same network segment.
 ## Notes
 
 - **Hardware timestamping** is essential for sub-microsecond accuracy. Software
-
   timestamping introduces jitter from OS scheduling and is suitable only for
   microsecond-class requirements.
 
 - **PTP profiles** define a consistent set of options for specific industries.
-
   Common profiles: IEEE 1588 Default, ITU-T G.8275.1 (telecom full on-path
   support), ITU-T G.8275.2 (telecom partial on-path support), AES67 (audio), SMPTE
   ST 2059-2 (broadcast video).
 
 - **linuxptp** (`ptp4l` / `phc2sys`) is the standard open-source PTPv2
-
   implementation on Linux.
 
 - **Comparison with NTP**: see [NTP vs PTP](../theory/ntp_vs_ptp.md).

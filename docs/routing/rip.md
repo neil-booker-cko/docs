@@ -95,18 +95,14 @@ packet-beta
 ## Notes
 
 - **Split horizon** prevents a router from advertising a route back out the interface
-
   it was learned on, reducing routing loops. **Poison reverse** actively advertises
   routes learned on an interface back with metric 16 for faster loop prevention.
 
 - **Triggered updates** (RFC 2453) send immediate partial updates when a route
-
   changes rather than waiting for the next periodic update, accelerating convergence.
 
 - **Maximum 25 route entries** per message. Large routing tables require multiple
-
   UDP messages.
 
 - RIP is not suitable for modern production networks. It has been largely replaced
-
   by OSPF and EIGRP in enterprise environments.

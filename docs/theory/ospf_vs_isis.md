@@ -85,15 +85,12 @@ Both protocols flood LSAs/LSPs to build an identical topology database within a 
 Key differences:
 
 - OSPF LSAs have individual sequence numbers and ages; LSAs are reflooded every MaxAge
-
   (3600 s default).
 
 - IS-IS LSPs have sequence numbers and remaining lifetime; LSPs are refreshed every
-
   15 minutes by default.
 
 - IS-IS PDUs are smaller than OSPF LSAs for equivalent topology due to more efficient
-
   encoding.
 
 ---
@@ -150,7 +147,6 @@ underlay)
 ## Notes
 
 - IS-IS does not require IP to form adjacencies — the neighbour relationship is Layer 2
-
   based. This is both an advantage (works even if IP is misconfigured) and a constraint
 (neighbours must be on the same Layer 2 segment unless using GRE or other
 encapsulation).
@@ -162,6 +158,5 @@ private
   use AFI, `0001` = area 1, `1921.6800.0001` = router system ID (192.168.0.1 in hex).
 
 - IS-IS has no concept of passive interfaces in the same way as OSPF — interfaces not
-
   running IS-IS are simply not configured with `ip router isis`. Use `passive-interface`
   under `router isis` to advertise a prefix without forming adjacencies.

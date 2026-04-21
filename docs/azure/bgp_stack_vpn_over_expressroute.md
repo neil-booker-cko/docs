@@ -24,16 +24,13 @@ flowchart TD
 ```
 
 - **Underlay BGP:** Cisco IOS-XE peers with the Microsoft Enterprise Edge (MSEE)
-
   router over the ExpressRoute private peering. Microsoft's ASN is `12076`.
 
 - **IPsec Tunnel:** FortiGate terminates IKEv2 tunnels to the Azure VPN Gateway
-
   using private IPs reachable via the ExpressRoute underlay. The VPN Gateway must
   be configured to use **private IP addressing** on the connection.
 
 - **Overlay BGP:** FortiGate and Azure VPN Gateway peer BGP inside the IPsec tunnel,
-
   exchanging VNet and on-premises prefixes with encryption end-to-end.
 
 ### Key Differences from AWS DX
@@ -438,7 +435,6 @@ the secondary carries full load until the primary recovers.
 
 - Cisco: `show bfd neighbors` should show secondary peer up
 - Cisco: `show bgp vpnv4 unicast vrf AZURE neighbors MSEE_SECONDARY_IP` —
-
   should show **Established**
 
 - FortiGate: Both VPN tunnels should route traffic via secondary ER circuit
@@ -446,11 +442,9 @@ the secondary carries full load until the primary recovers.
 **If one VPN tunnel is down, the other should carry traffic:**
 
 - FortiGate: `get router info bgp neighbors 169.254.21.1` and `...169.254.22.1`
-
   — one UP, one DOWN
 
 - FortiGate: `get router info routing-table 10.100.0.0` should show single
-
   next-hop (failed tunnel removed from ECMP)
 
 - Check tunnel status: `diagnose vpn tunnel list` — one SA should be missing
@@ -459,5 +453,4 @@ the secondary carries full load until the primary recovers.
 
 - Cisco: `show bgp vpnv4 unicast vrf AZURE summary` — both MSEE peers **Down**
 - FortiGate: VPN tunnels continue via static ER routes (if configured) or fail
-
   if no underlay path exists

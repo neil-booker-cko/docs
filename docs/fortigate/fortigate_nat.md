@@ -18,29 +18,24 @@ For protocol background see [Network Address Translation (NAT)](../theory/nat.md
 ## 1. Overview & Principles
 
 - **Policy NAT (legacy):** NAT parameters are embedded directly in each firewall
-
   policy using `set nat enable`, `set ippool enable`, and `set poolname`. Simple to
   configure but ties
   address translation tightly to access policy, making large rulesets harder to audit.
 
 - **Central NAT (recommended):** Enabled globally; SNAT rules live in
-
   `config firewall central-snat-map` and DNAT rules are configured as VIPs under
 `config firewall vip`. Firewall policies reference VIP objects as destination addresses.
   Central NAT is the preferred model when managing multiple policies or VDOMs.
 
 - **IP Pools:** Define the public source address range used for SNAT. Three types are
-
   available: Overload (PAT — many-to-one), One-to-One (static, no port translation), and
   Fixed Port Range (predictable port allocation for specific applications).
 
 - **VIPs (Virtual IPs):** Define inbound DNAT mappings — an external IP (or IP:port) is
-
   mapped to an internal IP (or IP:port). VIPs must be referenced as destination address
   objects in a permitting firewall policy before traffic is forwarded.
 
 - **Hairpin NAT:** When an internal host accesses a VIP destination from inside the
-
   network, the FortiGate must perform both DNAT (to reach the server) and SNAT (so
   reply traffic returns through the firewall). This is handled with a loopback
   policy or, preferably, by using split-horizon DNS to resolve the published name
@@ -102,15 +97,12 @@ IP Pools define the translated source address range used for outbound traffic. T
 types are supported:
 
 - **Overload (PAT):** Many internal addresses share one or more public IPs; port multiplexing
-
   provides session uniqueness. Default type; suitable for most internet access scenarios.
 
 - **One-to-One:** Each internal IP is statically mapped to a unique external IP. No port
-
   translation; the external IP range must be as large as the internal source range.
 
 - **Fixed Port Range:** Allocates a deterministic port block per internal IP. Useful for
-
   applications that embed source port information in-payload (e.g., some SIP implementations)
   or where consistent port ranges are required by an upstream carrier.
 

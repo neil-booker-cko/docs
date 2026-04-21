@@ -114,20 +114,16 @@ stateDiagram-v2
 ## Notes
 
 - **Composite metric** is calculated from bandwidth and delay by default
-
   (K1=1, K3=1, K2=K4=K5=0). Load and reliability (K2, K4, K5) are available
   but rarely used as they cause instability.
 
 - **Unequal-cost load balancing** via the `variance` command allows EIGRP to
-
   install multiple paths with different metrics, proportional to their metric ratio.
 
 - **BFD** provides sub-second failure detection for EIGRP neighbours independently
-
   of the Hello/hold timer — see the
   [EIGRP vs BFD comparison](../theory/eigrp_bfd_comparison.md).
 
 - **Named mode** (IOS 15.0.1M+) consolidates all EIGRP configuration under a
-
   single `router eigrp <name>` stanza and is the preferred configuration style
   on modern IOS-XE.

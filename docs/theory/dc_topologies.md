@@ -151,11 +151,9 @@ spine is an eBGP router; each leaf-spine link is an eBGP peering. This provides:
 - **Simple ECMP:** BGP ECMP across all spine uplinks
 - **Fast convergence:** BFD on every leaf-spine link; sub-second failure detection
 - **Clear failure domain:** A spine failure withdraws its BGP routes; leaves immediately
-
   re-hash traffic to remaining spines
 
 - **Operational simplicity:** Each leaf has the same config template; adding a leaf
-
   requires only adding eBGP sessions to all spines
 
 ```mermaid
@@ -176,11 +174,9 @@ graph LR
 ASN assignment options:
 
 - **Unique ASN per device:** Each spine and leaf has its own private ASN. Clean loop
-
   prevention; recommended by RFC 7938.
 
 - **Shared ASN per tier:** All spines share one ASN; all leaves share another. Simpler
-
   but requires `allowas-in` or `as-path relax` to allow prefixes to traverse the fabric
   (since the leaf's own ASN appears in the path learned from spine).
 
@@ -300,7 +296,6 @@ timeline
 described the mathematical properties of this topology in 1953 for telephone switching.
 
 - **BGP Unnumbered** (RFC 5549) simplifies spine-leaf underlay configuration further by
-
   using IPv6 link-local addresses for peering, eliminating the need to assign IPv4
   addresses to every point-to-point link.
 
@@ -313,9 +308,7 @@ MAC/IP as the default gateway for a VLAN, enabling VMs to migrate between leaves
   changing their gateway.
 
 - See [Spanning Tree: Design and Convergence](spanning_tree.md) for STP design principles
-
   relevant to the three-tier access layer.
 
 - See [VXLAN](../packets/vxlan.md) and [BGP](../routing/bgp.md) for the underlying
-
   protocol references used in spine-leaf overlays.

@@ -134,11 +134,9 @@ DHCP messages on a per-port basis.
 On an unprotected switch, any device can:
 
 - **Rogue server:** Respond to DHCP Discovers with malicious offers (wrong gateway,
-
   DNS server pointing to an attacker — effectively a man-in-the-middle).
 
 - **Starvation attack:** Send thousands of DHCP Discovers with spoofed source MACs,
-
   exhausting the server's address pool so legitimate devices cannot get an address.
 
 ### Trusted vs Untrusted Ports
@@ -156,7 +154,6 @@ On untrusted ports, the switch:
 
 - Drops any DHCP **server** messages (OFFER, ACK, NAK) — only servers should send these
 - Validates that the source MAC in the Ethernet frame matches the `chaddr` field in
-
   the DHCP packet (anti-spoofing)
 
 - Rate-limits DHCP packets to prevent starvation

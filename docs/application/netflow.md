@@ -170,28 +170,22 @@ interface GigabitEthernet0/0
 ## Notes
 
 - **Sampling**: on high-speed interfaces, exporting every packet is impractical.
-
   Sampled NetFlow exports 1-in-N packets (e.g. 1:1000). The collector must apply the
   sampling rate when estimating traffic volumes.
 
 - **Active timeout** (default 30–60 s): long-running flows (e.g. TCP sessions) are
-
   exported periodically even if the flow has not ended.
 
 - **Inactive timeout** (default 15 s): idle flows are exported when no packets have
-
   been seen for this duration.
 
 - IPFIX is preferred over NetFlow v5 for new deployments: template-based, supports
-
   IPv6, variable-length fields, and is IETF-standardised.
 
 - Common collectors: Elastic Stack (Logstash IPFIX/NetFlow plugin), ntopng, Kentik,
-
   SolarWinds NTA, Cisco Secure Network Analytics (formerly Stealthwatch).
 
 - **sFlow** (RFC 3176) is a distinct sampling protocol used primarily on Arista,
-
   Juniper, and other non-Cisco switches. It samples raw packet headers at the data
   plane rather than exporting flow records, making it more suitable for visibility
   on high-speed interfaces without dedicated flow hardware.

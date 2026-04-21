@@ -71,35 +71,29 @@ interface Tunnel0
 ## Notes
 
 - **Overhead and MTU:** GRE adds at minimum a 4-byte header on top of a 20-byte outer
-
   IP header — 24 bytes total. On a 1500-byte MTU path, the effective inner payload MTU
   is 1476 bytes. Always configure `ip mtu` and `ip tcp adjust-mss` on GRE tunnel
   interfaces to prevent fragmentation.
 
 - **No encryption:** GRE provides encapsulation only — no confidentiality, integrity,
-
   or authentication. IPsec is typically layered on top. GRE-over-IPsec (GRE tunnel
   protected by an IPsec tunnel) is the most common pattern; IPsec transport mode with
   GRE is another variant.
 
 - **DMVPN:** Dynamic Multipoint VPN uses mGRE (multipoint GRE) — a single tunnel
-
   interface accepts connections from multiple spoke endpoints, each identified by the
   Key field in conjunction with NHRP (Next Hop Resolution Protocol, RFC 2332).
 
 - **GRE keepalives:** Cisco IOS keepalives (`keepalive <interval> <retries>`) work by
-
   sending a GRE-encapsulated packet addressed back to the tunnel source. If the far end
   does not echo the packet, the tunnel interface is brought down after the retry count
   is exhausted.
 
 - **PPTP distinction:** RFC 2637 defines an Enhanced GRE header (Ver=1) used by
-
   Point-to-Point Tunnelling Protocol. PPTP GRE is not compatible with standard GRE and
   should not be confused with RFC 2784 GRE.
 
 - **Recursive routing:** A common misconfiguration is routing the GRE tunnel destination
-
   via the tunnel interface itself, causing a recursive loop. Always ensure the tunnel
   destination is reachable via a non-tunnel route, typically the physical interface or
   a specific static route.

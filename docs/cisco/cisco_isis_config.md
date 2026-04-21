@@ -18,13 +18,11 @@ NET (Network Entity Title / NSAP) identifies the router globally within the IS-I
 domain.
 
 - **NET format:** `<AFI>.<Area-ID>.<System-ID>.<SEL>` — e.g.,
-
   `49.0001.1921.6800.0001.00` where `49` = private-use AFI, `0001` = area 1,
   `1921.6800.0001` = router system ID (192.168.0.1 encoded as 6 hex bytes), `00` = SEL
   (always 00 for routers).
 
 - L1 adjacencies form only with same-area routers; L2 adjacencies form between any
-
   L2-capable routers regardless of area.
 
 - IS-IS for IPv6 (RFC 5308) adds IPv6 TLVs to the same process; Multi-Topology IS-IS
@@ -32,7 +30,6 @@ domain.
 (MT-ISIS, RFC 5120) runs separate topologies for IPv4 and IPv6 within the same instance.
 
 - BFD integrates natively with IS-IS (`bfd all-interfaces` or per-interface) for
-
   sub-second failure detection.
 
 ---

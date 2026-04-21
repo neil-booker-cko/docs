@@ -90,7 +90,6 @@ the
 - Route counts should match, or differ only as expected (e.g., a new static route was
   added intentionally)
   added intentionally)
-
   - No new interface errors or err-disabled ports
   - All BGP and OSPF neighbours re-established with matching prefix counts
   - CPU and memory have returned to baseline levels

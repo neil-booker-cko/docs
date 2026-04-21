@@ -179,12 +179,10 @@ the application protocol (`h2` for HTTP/2, `h3` for HTTP/3).
 ## Notes
 
 - **HTTP/1.1 pipelining** (sending multiple requests without waiting for responses)
-
   was theoretically supported but poorly implemented; HTTP/2 multiplexing is the
   correct solution.
 
 - **HSTS** (HTTP Strict Transport Security, RFC 6797) instructs browsers to always
-
   use HTTPS for a domain, preventing downgrade attacks.
 
 - **CORS** (Cross-Origin Resource Sharing) uses the `Origin`,

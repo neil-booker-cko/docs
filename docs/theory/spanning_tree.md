@@ -230,22 +230,18 @@ repeated MAC table flushes and sustained performance degradation.
 ## Spanning Tree Limitations
 
 - **Blocked ports waste bandwidth.** In a two-uplink design, 50% of uplink capacity is
-
   blocked at all times. MLAG/vPC (Cisco) or similar multi-chassis LAG technologies
   present two physical uplinks as a single LAG to STP, allowing both to forward.
 
 - **Scale limit.** A single STP domain should not span more than ~7 switches in
-
   diameter. Beyond this, convergence timers become unreliable and topology changes
   cause disproportionate disruption.
 
 - **East-west traffic in the datacentre.** Three-tier topologies with STP at the access
-
   layer force east-west (server-to-server) traffic to traverse the distribution layer
   even when source and destination are on the same rack. Spine-leaf eliminates this.
 
 - **Modern alternative.** In greenfield datacentres, Layer 3 routing to the access
-
   layer (each ToR switch is a BGP speaker, no L2 between racks) eliminates spanning
   tree entirely. See [Data Centre Topologies](dc_topologies.md).
 
@@ -254,18 +250,14 @@ repeated MAC table flushes and sustained performance degradation.
 ## Notes
 
 - Always configure `spanning-tree mode rapid-pvst` on Cisco IOS-XE — legacy STP
-
   (`pvst`) is not appropriate for any modern network.
 
 - Use `show spanning-tree vlan <id> detail` to identify the Root Bridge, root path
-
   cost, port roles, and port states for each VLAN.
 
 - `show spanning-tree inconsistentports` reveals ports in `root-inconsistent` or
-
   `loop-inconsistent` state — investigate before clearing.
 
 - STP diameter recommendations: keep STP domain diameter ≤ 7 hops; tune max-age and
-
   forward-delay only when absolutely necessary, and only with full understanding of the
   convergence implications.

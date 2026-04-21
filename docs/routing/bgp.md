@@ -185,20 +185,16 @@ stateDiagram-v2
 ## Notes
 
 - **eBGP vs iBGP:** eBGP peers are in different AS numbers (TTL=1 by default);
-
   iBGP peers are within the same AS. iBGP requires full mesh or route reflectors —
   it does not modify AS_PATH, so loop prevention relies on not re-advertising
   iBGP-learned routes to other iBGP peers.
 
 - **4-byte ASNs** (RFC 6793) extend the AS space to 32 bits. The AS_PATH attribute
-
   uses the AS4_PATH attribute for compatibility with 2-byte-only speakers.
 
 - **Graceful Restart** (RFC 4724) allows a restarting router to retain forwarding
-
   state while BGP reconverges. Peers advertise GR capability in OPEN Optional
   Parameters.
 
 - **BFD** integration triggers faster session failure detection than the BGP hold
-
   timer alone — see the [BGP vs BFD comparison](../theory/bgp_bfd_comparison.md).

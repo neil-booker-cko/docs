@@ -185,24 +185,19 @@ show gnxi state detail
 ## Notes
 
 - gNMI requires TLS. Self-signed certificates are acceptable for lab use; production
-
   deployments should use a PKI with device certificates.
 
 - Cisco IOS-XE gNMI support: 16.12+ for `Get` and `Subscribe`; 17.x for full `Set`
-
   support. Check `show gnxi state detail` for capability confirmation.
 
 - `ON_CHANGE` subscription is more efficient than `SAMPLE` for infrequently changing
-
   state (BGP session status, interface admin state). `SAMPLE` is correct for counters
   and gauges.
 
 - Not all paths support `ON_CHANGE` — use `Capabilities` or device documentation to
-
   confirm. Unsupported paths fall back to `TARGET_DEFINED` behaviour.
 
 - FortiGate has limited native gNMI support; FortiOS primarily exposes REST and SNMP
-
   for telemetry. FortiManager may provide limited gNMI in newer releases.
 
 - The `sample_interval` field is in nanoseconds: 10 s = `10000000000`.

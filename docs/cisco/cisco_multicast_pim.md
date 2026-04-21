@@ -13,36 +13,29 @@ See [IP Multicast](../theory/multicast.md) for protocol theory and tree mechanic
 ## 1. Overview & Principles
 
 - **IGMP (Internet Group Management Protocol):** Runs between a host and its first-hop
-
   router. IGMPv2 supports any-source joins (`224.x.x.x`). IGMPv3 adds source-specific
   joins, which is required for PIM-SSM.
 
 - **PIM (Protocol Independent Multicast):** Runs between routers. PIM is independent of
-
   the unicast routing protocol — it uses the unicast RIB only for RPF (Reverse Path
   Forwarding) checks. PIM-SM (Sparse Mode) is the standard production deployment.
 
 - **Rendezvous Point (RP):** In PIM-SM, the RP is the root of the shared distribution
-
   tree. Sources register to the RP; receivers join toward the RP. The RP must be
   reachable by all routers in the PIM domain.
 
 - **Shared tree vs. Shortest Path Tree:** PIM-SM initially uses the RP-rooted shared
-
   tree `(*,G)`. The first-hop router can trigger a switchover to the source-rooted
   Shortest Path Tree (SPT) `(S,G)` for lower latency once traffic is flowing.
 
 - **RPF check:** Before accepting a multicast packet on an interface, the router checks
-
   that the interface is the one it would use to reach the source (or RP, for shared tree
   traffic). Packets failing the RPF check are discarded to prevent loops.
 
 - **PIM-SSM:** Source-Specific Multicast eliminates the RP entirely. Receivers join
-
   `(S,G)` directly, requiring IGMPv3. Uses the 232.0.0.0/8 address range by default.
 
 - **IGMP Snooping:** A Layer 2 switch feature that inspects IGMP messages to avoid
-
   flooding multicast traffic to all ports in a VLAN — only ports with active receivers
   receive the stream.
 

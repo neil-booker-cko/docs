@@ -54,15 +54,12 @@ and operational differences between them matter for design and troubleshooting.
 
 - **No IHL** — header length field removed; header is always exactly 40 bytes
 - **No header checksum** — upper-layer protocols (TCP/UDP) cover integrity; eliminates
-
   per-hop recalculation overhead
 
 - **No fragmentation fields** — moved to the Fragment Extension Header; only the source
-
   may fragment
 
 - **No inline options** — replaced by chained Extension Headers referenced via the
-
   Next Header field
 
 ---
@@ -169,13 +166,10 @@ routing
   link-local addresses when running IPv6.
 
 - Cisco IOS-XE: `ipv6 unicast-routing` enables IPv6 forwarding globally.
-
   `ipv6 address <prefix/len> eui-64` auto-generates the IID from the interface MAC.
 
 - FortiGate supports dual-stack natively; IPv6 firewall policies are maintained in a
-
   separate policy table from IPv4 (`config firewall policy6`).
 
 - Never route `fe80::/10` — link-local addresses are non-routable by design. Use global
-
   unicast or ULA for any routed IPv6 traffic.

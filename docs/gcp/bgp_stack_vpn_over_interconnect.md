@@ -24,22 +24,18 @@ flowchart TD
 ```
 
 - **Underlay BGP:** Cisco IOS-XE peers with a GCP Cloud Router over the
-
   Cloud Interconnect VLAN attachment. Cloud Router BGP ASN is configurable;
   GCP does not use a fixed ASN like Azure's `12076`.
 
 - **HA VPN Tunnels:** FortiGate terminates IKEv2 tunnels to a Cloud VPN Gateway.
-
   GCP HA VPN requires two tunnels for the 99.99% SLA. Tunnel endpoints are the
   public IPs of the HA VPN gateway interfaces.
 
 - **Overlay BGP:** FortiGate and a second Cloud Router (VPN-attached) peer BGP
-
   inside the IPsec tunnels, exchanging VPC and on-premises prefixes with
   encryption end-to-end.
 
 - **BFD on Interconnect:** Unlike AWS and Azure, GCP Cloud Router supports BFD
-
   over Dedicated Interconnect VLAN attachments, enabling sub-second underlay
   failure detection.
 

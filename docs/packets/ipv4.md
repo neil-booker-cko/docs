@@ -59,11 +59,8 @@ packet-beta
 ## Notes
 
 - **Fragmentation** occurs when a packet exceeds the MTU of a link. The receiving host
-
   reassembles fragments using the Identification, Flags, and Fragment Offset fields.
   Setting DF prevents fragmentation and triggers an ICMP Type 3 Code 4
   (Fragmentation Needed) message back to the sender — the basis of Path MTU Discovery.
-
 - **DSCP** replaced the original ToS (Type of Service) byte. The two ECN bits were
-
   carved out of the original ToS field in RFC 3168.

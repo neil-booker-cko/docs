@@ -42,10 +42,8 @@ packet-beta
 ## Notes
 
 - **802.1Q VLAN tagging** inserts a 4-byte tag between the Source MAC and EtherType
-
   fields, pushing the EtherType to offset 128 bits.
 
 - **Jumbo frames** extend the maximum payload to 9000 bytes on supported hardware.
 - The **preamble** (7 bytes) and **SFD** (1 byte) are prepended at the physical layer
-
   and are not visible to the MAC sublayer.

@@ -54,18 +54,11 @@ packet-beta
 ## Notes
 
 - **Path MTU Discovery** (RFC 1191) relies on ICMP Type 3 Code 4 (Fragmentation
-
   Needed). Blocking ICMP at firewalls can silently break PMTUD, causing TCP sessions
   to hang when traversing links with a smaller MTU.
-
 - **Traceroute** works by sending probes with incrementing TTL values and collecting
-
   the Type 11 (Time Exceeded) replies from each router along the path.
-
 - **ICMP for IPv6** is ICMPv6 (RFC 4443), which subsumes the role of ARP (via
-
   Neighbour Discovery) in addition to standard diagnostics.
-
 - ICMP error messages always include the **IP header and first 8 bytes of the
-
   offending datagram** so the sender can correlate the error to a specific flow.

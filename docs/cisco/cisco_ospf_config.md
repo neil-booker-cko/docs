@@ -23,7 +23,6 @@ with
 `router-id` — automatic selection is non-deterministic and changes on interface failure.
 
 - **Area 0 (backbone):** All non-backbone areas must connect to area 0, either directly
-
   or via a virtual link. Traffic between two non-backbone areas always transits area 0.
 
 - **LSA types:**
@@ -38,7 +37,6 @@ with
   | **Type 7** | NSSA External LSA | Within NSSA only | ASBR inside an NSSA; ABR converts to Type 5 |
 
 - **DR/BDR election:** On broadcast (Ethernet) segments, OSPF elects a Designated
-
   Router and Backup DR to reduce adjacency count. All routers form full adjacencies only
   with the DR and BDR; they use multicast 224.0.0.6 to reach DR/BDR and 224.0.0.5 for
   all OSPF routers. Election is based on priority (highest wins; default 1); a priority
@@ -47,17 +45,12 @@ with
   joining later.
 
 - **Cost calculation:** `cost = reference-bandwidth / interface-bandwidth`. The default
-
   reference-bandwidth is 100 Mbps, which gives every link faster than 100 Mbps a cost
   of 1 — unusable in 1GbE/10GbE environments. Always raise it to 10000 (10 Gbps) or
   higher on all routers in the domain, consistently.
 
 - **SPF throttle timers:** OSPF delays SPF execution after a topology change to avoid
-CPU
-
-CPU
-
-  spikes during flapping. The three parameters are: initial delay, minimum hold (backoff
+  CPU spikes during flapping. The three parameters are: initial delay, minimum hold (backoff
   floor), and maximum hold (backoff ceiling). After each SPF run, the hold doubles up to
   the maximum before resetting.
 

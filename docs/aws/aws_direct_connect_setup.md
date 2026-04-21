@@ -254,19 +254,15 @@ primary/backup path design.
 ## Key BGP Behaviours
 
 - AWS advertises the VPC CIDR attached to the VGW (Private VIF) or all TGW-attached
-
   VPC CIDRs (Transit VIF)
 
 - The default prefix limit is 100 routes per BGP session on a Private VIF and 200 on a
-
   Transit VIF. Exceeding the limit causes the BGP session to be reset
 
 - AWS will not accept a default route (0.0.0.0/0) advertised by the customer over a
-
   Private or Transit VIF
 
 - APIPA addressing (169.254.x.x) on the VIF is expected and supported — do not filter
-
   this range on the customer router
 
 ---

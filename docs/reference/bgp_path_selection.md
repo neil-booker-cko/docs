@@ -97,24 +97,19 @@ Gateway Routers Checking Next-hops"**.
 ## Notes
 
 - **Weight is Cisco-only.** It is not a BGP attribute and is never advertised to any
-
   peer. Use Local Preference for AS-wide path preference.
 
 - **MED comparison scope.** By default, MED is only compared between paths from the
-
   same neighbouring AS. `bgp always-compare-med` forces comparison across all paths.
   Use with caution — inconsistent MED values across peers can cause routing instability.
 
 - **Missing MED.** A route with no MED is treated as MED `0` by default (best).
-
   `bgp bestpath med missing-as-worst` treats it as `4294967295` (worst) instead.
 
 - **ECMP / multipath.** Configure `maximum-paths` (iBGP: `maximum-paths ibgp`). All
-
   attributes through step 8 must be equal. `bgp bestpath as-path multipath-relax`
   allows eBGP multipath across different AS numbers; step 9 onward is then skipped.
 
 - **Route reflection.** When a route reflector re-advertises a route it adds the
-
   Originator ID (the originating speaker's Router ID). Step 10 uses Originator ID
   instead of Router ID to prevent the reflector from incorrectly preferring itself.

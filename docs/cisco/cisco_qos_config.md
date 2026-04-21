@@ -13,31 +13,25 @@ tables and per-hop behaviour definitions.
 ## 1. Overview & Principles
 
 - **MQC separates three functions:** classify traffic with `class-map`, define treatment
-
   with `policy-map`, and apply the policy to an interface with `service-policy`.
 
 - **DSCP is the marking standard.** The 6-bit DSCP field in the IP header (RFC 2474)
-
   survives across routing boundaries. CoS (802.1p) and ToS are access-layer signals that
   must be re-marked to DSCP at the trust boundary.
 
 - **QoS only matters at congestion points.** On an uncongested link, scheduling and
-
   queuing have no effect. Size your policies for the slowest link in the path (typically
   the WAN edge).
 
 - **Trust boundary:** Traffic entering the network from an untrusted source (end-user
-
   workstation, remote site CPE) should have its DSCP reset to CS0 (default) at ingress
   and re-marked by the network according to policy.
 
 - **LLQ (Low Latency Queuing):** The `priority` keyword in a policy-map creates a strict
-
   priority queue that is always serviced first, bounded by its rate. Used for VoIP (EF)
   and other delay-sensitive traffic.
 
 - **CBWFQ (Class-Based Weighted Fair Queuing):** The `bandwidth percent` keyword
-
   guarantees minimum bandwidth to a class when the link is congested, without strict
   priority.
 

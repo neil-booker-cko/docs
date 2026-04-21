@@ -16,12 +16,10 @@ Related guides: [Cisco NAT Configuration](cisco_nat_config.md) and
 ## 1. Overview & Principles
 
 - **Evaluation order:** IOS-XE evaluates ACE (access control entries) from the lowest
-
   sequence number to the highest and stops at the first match. Entry order is critical —
   a broad permit before a specific deny will render the deny unreachable.
 
 - **Implicit deny:** All ACLs end with an invisible `deny any` (or `deny ip any any` for
-
   extended). Traffic that does not match any explicit entry is dropped. Add an explicit
   `deny any log` as the last entry to generate log messages for dropped traffic.
 
@@ -41,7 +39,6 @@ dropped
   before a routing decision is made.
 
 - **Stateless:** ACLs are stateless. Return traffic must be explicitly permitted unless
-
   reflexive ACLs or Zone-Based Firewall is used.
 
 ---

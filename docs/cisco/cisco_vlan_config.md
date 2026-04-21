@@ -21,7 +21,6 @@ between
   VLANs without a Layer 3 routing decision.
 
 - **802.1Q tagging:** On trunk ports, every frame carries a 4-byte 802.1Q tag (VLAN ID +
-
   priority bits) inserted after the source MAC address. The native VLAN is the only VLAN
   whose frames traverse a trunk untagged by default.
 

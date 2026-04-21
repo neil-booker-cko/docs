@@ -15,28 +15,22 @@ For protocol theory and a comparison between HSRP and VRRP see
 A VRRP group on FortiGate has the following key attributes:
 
 - **Virtual router ID (VRID):** Group identifier (1–255); must match on all routers
-
   in the group.
 
 - **Virtual IP (vrip):** The shared gateway address that hosts use as their default
-
   gateway.
 
 - **Priority:** 1–254; default 100. The router with the highest priority becomes
-
   Master. A router whose real interface IP matches the vrip is the VRRP owner and
   takes priority 255.
 
 - **Advertisement interval:** How often the Master sends VRRP Advertisements
-
   (default 1 second).
 
 - **Master_Down interval:** 3 × advertisement interval + skew time. If a Backup
-
   does not hear from the Master within this window, it transitions to Master.
 
 - **Preempt:** Enabled by default. A higher-priority router that comes online will
-
   reclaim Master.
 
 - **Version:** VRRPv2 (IPv4 only) or VRRPv3 (IPv4 and IPv6).
@@ -168,17 +162,14 @@ routing table.
 The options available are:
 
 - **Accept mode (`set accept-mode enable`):** Allows the Backup to accept traffic
-
   destined for the vrip even when it is in Backup state. This is useful in asymmetric
   routing scenarios but does not affect failover behaviour.
 
 - **Manual priority adjustment:** If the upstream link is confirmed down and the
-
   FortiGate should not be Master, change the priority manually via CLI or use an
   automation stitch to trigger a priority change on a link-down event.
 
 - **SD-WAN health checks (recommended):** For scenarios where failover should be
-
   triggered by upstream link quality (latency, packet loss, route reachability), use
   FortiGate SD-WAN SLA probes instead of VRRP tracking. SD-WAN operates at the
   forwarding plane and provides faster, application-aware failover without requiring
@@ -295,23 +286,19 @@ diagnose debug reset
 ## Notes
 
 - VRRP on FortiGate works best for simple gateway redundancy where both firewalls have
-
   equivalent upstream connectivity. When failover should be sensitive to link quality,
   path reachability, or application performance, FortiGate SD-WAN is the appropriate
   mechanism. See [FortiGate SD-WAN](fortigate_sdwan.md).
 
 - VRRP Advertisements are sent to multicast `224.0.0.18` (IP protocol 112 for VRRPv2/v3
-
   IPv4) and `FF02::12` (IPv6). Ensure these multicast addresses are permitted on any
   intermediate switch or firewall segment between the VRRP peers.
 
 - The VRRP virtual MAC for group 1 is `0000.5E00.0101`. Confirm the switch fabric
-
   is learning this MAC on the correct port (the Master's port) after a failover. If the
   switch is slow to update its MAC table, a gratuitous ARP from the new Master will
   accelerate convergence.
 
 - Multiple VRRP groups on the same interface can be used to load-balance traffic by
-
   assigning different hosts or VLANs to different VRIDs with the Master/Backup roles
   reversed between groups.

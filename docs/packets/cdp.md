@@ -104,28 +104,23 @@ show cdp entry *
 ## Notes
 
 - **Enabled by default:** CDP is active on all interfaces of Cisco IOS, IOS-XE, and
-
   NX-OS devices by default. This includes uplinks to service providers and customer-
   facing ports where it should typically be disabled.
 
 - **Security:** CDP advertises the IOS version, hardware platform, IP addresses, and
-
   interface names to any directly connected device. Disable CDP on all externally
   facing interfaces and untrusted segments with `no cdp enable` per interface.
 
 - **CDPv2 enhancements:** CDPv2 adds native VLAN (Type `0x000A`) and duplex (Type
-
   `0x000B`) TLVs. When a mismatch is detected, IOS logs a warning:
   `%CDP-4-NATIVE_VLAN_MISMATCH` or `%CDP-4-DUPLEX_MISMATCH`. These are a valuable
   first-line diagnostic for connectivity issues.
 
 - **PoE negotiation:** Cisco IP phones use CDP to negotiate PoE power class with the
-
   switch, advertising requested wattage via the Power Available TLV. This is separate
   from IEEE 802.3af/at/bt hardware negotiation.
 
 - **LLDP vs CDP:** LLDP (IEEE 802.1AB) is vendor-neutral and works across multi-vendor
-
   environments. CDP works only between Cisco devices but provides richer Cisco-specific
   details (Voice VLAN, PoE allocation, native VLAN, platform string). Both protocols
   can run simultaneously on IOS-XE interfaces.

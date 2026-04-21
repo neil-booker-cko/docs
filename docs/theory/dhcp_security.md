@@ -159,11 +159,9 @@ populated before the dependent features can function.
 The boundary between trusted and untrusted must be drawn carefully. The rule is:
 
 - **Trusted:** Uplinks to aggregation or distribution switches, ports connected to DHCP
-
   servers, ports connected to routers or firewalls acting as DHCP relay agents.
 
 - **Untrusted:** All access ports facing end-user devices, printers, IP phones, and
-
   IoT devices.
 
 If an uplink is accidentally left as untrusted, DHCP Acks from the legitimate server
@@ -183,12 +181,10 @@ Static IP devices do not go through a DHCP exchange, so they generate no binding
 entry. This creates a problem for DAI and IP Source Guard:
 
 - **DAI:** A static IP device's ARP will fail validation because there is no binding
-
   entry. The ARP will be dropped. The fix is to create an ARP ACL mapping the device's
   static IP to its MAC and apply it to the VLAN as a DAI override.
 
 - **IP Source Guard:** All traffic from the static IP device will be dropped. The fix
-
   is to add a static binding entry to the snooping table manually.
 
 Every static IP device on a protected VLAN must be explicitly accounted for before
@@ -267,18 +263,15 @@ Verify that all devices — especially static IP devices — have entries before
 ## Notes
 
 - DHCP Snooping, DAI, and IP Source Guard operate at the access layer switch level.
-
   They provide no protection for routed interfaces or Layer 3 paths — an attacker with
   Layer 3 access bypasses all three mechanisms.
 
 - In environments using 802.1X for port authentication, the DHCP exchange occurs after
-
   the port is authorised. DHCP Snooping and DAI function normally in this model. IP
   Source Guard should be evaluated carefully if 802.1X assigns dynamic VLANs — the
   binding table entry must reflect the post-authentication VLAN.
 
 - These features consume TCAM resources on the switch. IP Source Guard in particular
-
   installs a per-host ACL entry in hardware for each binding table entry. On switches
   with limited TCAM, this limits the number of devices that can be protected
   simultaneously. Verify platform-specific limits before large-scale deployment.

@@ -102,16 +102,13 @@ Metric = Bandwidth + Delay
 ## Notes
 
 - **Classful only** — IGRP carries no subnet mask, making VLSM impossible.
-
   This was a fundamental limitation compared to EIGRP and OSPF.
 
 - **Broadcast updates** are sent every 90 seconds to `255.255.255.255`.
-
   The invalid timer is 270s; the flush timer is 630s — significantly slower
   than modern protocols.
 
 - **No authentication** — any device on the segment can inject routes.
 - IGRP and EIGRP can coexist and automatically redistribute routes between
-
   each other when configured with the same AS number (on IOS versions that
   still supported IGRP).

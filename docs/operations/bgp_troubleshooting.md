@@ -28,15 +28,12 @@ stateDiagram-v2
 **Common stuck states:**
 
 - **Active** — TCP is not completing. Peer is unreachable, wrong peer IP, or a
-
   firewall is blocking TCP 179.
 
 - **OpenSent / OpenConfirm** — TCP connected but OPEN message was rejected. AS number
-
   mismatch, router-ID collision, or hold timer incompatibility.
 
 - **Established then drops** — Session formed but keepalives are being lost. High CPU,
-
   ACL blocking keepalives mid-session, or hold timer too short.
 
 ---
@@ -93,7 +90,6 @@ show ip bgp neighbors <peer-ip> | include (AS path|Hold|Keepalive|Notif)
 - Wrong peer IP in the `neighbor` statement
 - Peer's `neighbor` statement points to a different address
 - Source interface not matching — if using `update-source loopback`, the peer must
-
   have a route back to that loopback
 
 **Stuck in OpenSent or OpenConfirm:**
@@ -158,7 +154,6 @@ A prefix can be received and present in the BGP table but not installed if:
 - The next-hop is unreachable (common in iBGP without `next-hop-self`)
 - A locally preferred or more-specific route wins
 - The prefix is marked as not best path — `show ip bgp <prefix>` shows the `>`
-
   indicator on the best path
 
 **Diagnosing inbound filtering:**

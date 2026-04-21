@@ -18,12 +18,10 @@ For gateway redundancy protocol background see [HSRP vs VRRP](../theory/hsrp_vs_
 ## 1. Overview & Principles
 
 - **FGCP heartbeat:** Cluster members exchange heartbeat packets at sub-second intervals
-
   over designated HA interfaces. Loss of heartbeat for the duration of the dead interval
   triggers a failover election.
 
 - **Primary election:** The unit with the highest priority value becomes primary. Ties
-
   are broken by managed device count, then interface link state, then serial number.
   Priority is configurable (0–255; default 128); higher values win.
 
@@ -46,13 +44,11 @@ heartbeat
   and is ready to take over. Simpler to operate; recommended for most deployments.
 
 - **Active-Active (A-A):** The primary distributes sessions to the secondary using a
-
   load-balancing hash. Both units forward traffic. A-A does not double throughput in all
   scenarios — asymmetric traffic paths and UTM inspection requirements can limit gains.
   A-P is preferred unless specific throughput scaling has been validated.
 
 - **HA management interface:** Each cluster member can be assigned a dedicated
-
   management IP independent of cluster state, allowing direct access to a secondary unit
   for diagnostics and upgrade operations.
 
@@ -115,15 +111,12 @@ means HA traffic competes with production data, and a congested link can cause f
 failover events.
 
 - Connect heartbeat interfaces directly between units with a crossover cable (or dedicated
-
   VLAN on a switch not carrying production traffic).
 
 - If only one HA interface is available, heartbeat and session sync will share the same
-
   link; this is acceptable but increases risk of split-brain on high-utilisation links.
 
 - HA interfaces do not participate in the production forwarding table and should not be
-
   configured with IP addresses in normal deployments (FGCP manages addressing internally).
 
 ### C. Management Access to Secondary Unit
@@ -248,20 +241,16 @@ end
 A-A caveats to consider before deployment:
 
 - Sessions forwarded to the secondary traverse the HA link twice (in and out), consuming
-
   heartbeat bandwidth. Dedicated HA links with sufficient capacity are critical.
 
 - Asymmetric routing on the WAN side can cause the return traffic to arrive at the secondary
-
   while the session was established on the primary — FortiGate handles this internally via
   the session sync table, but it adds latency.
 
 - UTM inspection (IPS, AV, SSL inspection) sessions are load-balanced; sessions requiring
-
   NP (network processor) offload may not benefit from A-A distribution.
 
 - A-P is recommended for most deployments. Use A-A only after validating throughput gains
-
   in the specific traffic profile.
 
 ### H. Cluster Verification and Forced Failover

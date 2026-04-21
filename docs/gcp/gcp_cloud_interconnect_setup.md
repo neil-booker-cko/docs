@@ -51,15 +51,12 @@ Cloud Router is Google's managed BGP routing service. Key characteristics:
 - One Cloud Router per region per VPC network
 - Supports multiple BGP sessions, one per VLAN attachment
 - Cloud Router ASN is configurable at creation time (default 64512); it cannot be
-
   changed after the router is created without deleting and recreating it
 
 - Advertises VPC subnets to on-premises; learns on-premises prefixes and programs them
-
   into the VPC's dynamic route table
 
 - Regional — a Cloud Router in us-central1 does not automatically route traffic for
-
   VPCs in europe-west1. For multi-region access, either deploy Cloud Routers per region
   or enable Global Routing mode on the Cloud Router (which allows it to propagate routes
   across regions)
@@ -208,15 +205,12 @@ A single attachment has no redundancy against facility-level failure. The 99.99%
 topology requires:
 
 - Two VLAN attachments on two separate physical interconnects (or two separate Partner
-
   connections)
 
 - The two interconnects must be in different metropolitan areas — different cities or
-
   different Google colocation facilities that Google classifies as separate MAs
 
 - Two Cloud Routers, one per region (or one Cloud Router with two BGP sessions if both
-
   attachments terminate in the same region)
 
 Google does not consider two attachments in the same metropolitan area as qualifying

@@ -96,7 +96,6 @@ quality.
 
 - **Lowest cost:** Use the cheapest member that meets SLA; fall back if it fails.
 - **Highest priority (manual preference):** Use a specific member; fail over to the next
-
   if SLA is violated.
 
 - **Load balance:** Distribute sessions across members using ECMP, weighted
@@ -111,7 +110,6 @@ distribution,
 SD-WAN supports distributing traffic across multiple qualifying members simultaneously:
 
 - **Per-session ECMP:** Each new session is assigned to one member; load is balanced
-
   at session granularity. Individual sessions are not split across links.
 
 - **Weighted distribution:** Members receive traffic in proportion to configured
@@ -205,7 +203,6 @@ member
   down for SLA purposes.
 
 - **SLA thresholds:** Maximum acceptable latency, jitter, and packet loss. Members
-
   violating any threshold are considered out-of-SLA.
 
 Performance SLAs are assigned to members. A member that fails its SLA probes or violates
@@ -218,13 +215,11 @@ an in-SLA member.
 Steering rules are evaluated top-down, first-match. Each rule defines:
 
 - **Match criteria:** Source interface/zone, destination address, application group,
-
   internet service (ISDB), DSCP value, or protocol/port.
 
 - **Preferred members or zone:** The ordered list of members or a zone to use.
 - **Selection strategy:** Best quality, lowest cost, highest priority, or load balance.
 - **Fallback behaviour:** If all preferred members are out-of-SLA, use any available
-
   member or drop traffic (configurable).
 
 ---
@@ -297,12 +292,10 @@ these services to preferred members without managing large ACLs.
 ## Notes
 
 - SD-WAN does not create bandwidth — it allocates existing bandwidth more effectively.
-
   If aggregate demand exceeds the capacity of available members, SD-WAN cannot resolve
   the congestion, only distribute it.
 
 - SD-WAN health checks complement QoS but serve a different function: health checks
-
   determine which path to use; QoS determines how traffic is treated on the chosen path.
   For real-time traffic, both mechanisms should be deployed together. See
   [Quality of Service](qos.md).
@@ -313,6 +306,5 @@ handle traffic from all spoke sites simultaneously, including during failover sc
   where traffic shifts from direct internet breakout to the hub overlay.
 
 - SD-WAN logging (FortiGate: `Log & Report → Forward Traffic` with SD-WAN fields
-
   enabled) provides per-session records of which member was selected and why. This is
   the primary tool for verifying that steering rules are behaving as designed.

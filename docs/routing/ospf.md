@@ -137,19 +137,15 @@ stateDiagram-v2
 ## Notes
 
 - **DR/BDR election** reduces LSA flooding on multi-access segments (Ethernet).
-
   Only the DR and BDR form full adjacencies with all other routers; others remain
   in TwoWay state with each other.
 
 - **Areas** limit LSA flooding scope. The backbone (area 0) interconnects all other
-
   areas via Area Border Routers (ABRs). Stub areas block Type 5 LSAs.
 
 - **BFD** provides sub-second failure detection for OSPF adjacencies independently
-
   of the Dead Interval — see the [OSPF vs BFD comparison](../theory/ospf_bfd_comparison.md).
 
 - **OSPFv3** removes the Authentication field from the common header (relying on
-
   IPsec AH/ESP instead), adds an Instance ID field, and uses IPv6 link-local
   addresses for neighbour communication.

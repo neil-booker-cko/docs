@@ -144,13 +144,10 @@ the
   AS; IGP routes are preferred for intra-AS reachability.
 
 - Route Reflectors do not change the path attributes of reflected routes except adding
-
   `ORIGINATOR_ID` and `CLUSTER_LIST`.
 
 - Confederation eBGP sessions use the real peer AS number for loop detection but strip
-
   confederation sub-ASes from AS_PATH before advertising externally.
 
 - `show ip bgp summary` distinguishes iBGP and eBGP by whether the remote-as matches the
-
   local AS.

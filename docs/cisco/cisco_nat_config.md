@@ -28,7 +28,6 @@ address
   the outside world sees as the source.
 
 - **Outside local / outside global:** Addresses of the remote (outside) host as seen
-
   from the inside and outside respectively. For standard internet NAT these are usually
   the same.
 

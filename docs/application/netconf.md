@@ -212,19 +212,15 @@ netconf-yang feature candidate-datastore
 ## Notes
 
 - NETCONF authentication uses SSH keys or certificates. Password authentication is
-
   supported by the SSH layer but should be avoided in production.
 
 - `ncclient` (Python) is the standard NETCONF client library for automation scripts.
 - RESTCONF is more approachable for scripting — standard HTTPS, JSON or XML payloads,
-
   curl-compatible — but lacks NETCONF's full transactional commit model.
 
 - RESTCONF does not support `lock`, `discard-changes`, or confirmed commit.
 - Cisco YANG Suite and `pyang` are useful tools for exploring, validating, and
-
   converting YANG models.
 
 - The `edit-config` `operation` attribute defaults to `merge` if not specified.
-
   Use `replace` to overwrite a list entry entirely, or `delete` to remove it.

@@ -179,16 +179,13 @@ expected behaviour, not a configuration error. All three providers use link-loca
 addresses for BGP peering on certain connection types:
 
 - **AWS Direct Connect**: the customer may choose APIPA addressing (169.254.0.0/16
-
   range) for the BGP session on a Private VIF or Transit VIF, eliminating the need to
   allocate routable /30 subnets for each VIF
 
 - **Azure VPN Gateway** (active-active mode): uses 169.254.21.x and 169.254.22.x for
-
   the internal BGP peering between gateway instances
 
 - **GCP HA VPN**: uses link-local addresses in the 169.254.0.0/16 range for BGP
-
   sessions over HA VPN tunnels
 
 Do not apply access control lists or firewall rules that block 169.254.0.0/16 on
@@ -246,15 +243,12 @@ All three providers support BGP communities or similar mechanisms for traffic
 engineering:
 
 - **AWS**: BGP communities on Direct Connect to influence Local Preference for inbound
-
   traffic. See [BGP Communities](../reference/bgp_communities.md)
 
 - **Azure**: BGP communities to tag routes by Azure region; used with route filters on
-
   Microsoft Peering to control which services are reachable
 
 - **GCP**: MED (Multi-Exit Discriminator) to influence path preference between multiple
-
   VLAN attachments or between Interconnect and HA VPN backup
 
 Path selection behaviour across providers is documented in
@@ -294,11 +288,9 @@ resources with public IPs and open management ports are a primary attack surface
 credential-stuffing and exploitation of unpatched vulnerabilities. Use one of:
 
 - **Jump host / bastion** in the management subnet of the shared services VPC, reachable
-
   only from on-premises via the dedicated connection
 
 - **VPN** back to on-premises for management access, with the VPN terminating inside the
-
   cloud environment rather than on a public interface
 
 ---

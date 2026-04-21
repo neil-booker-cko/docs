@@ -135,13 +135,8 @@ sequenceDiagram
 ## Notes
 
 - **Window Scale option** (RFC 1323) shifts the Window Size field left by up to 14
-
   bits, allowing windows up to 1 GB — essential for high-bandwidth, high-latency paths.
-
 - **SACK (Selective Acknowledgment)** allows the receiver to acknowledge
-
   non-contiguous blocks, avoiding unnecessary retransmission of already-received data.
-
 - **Timestamps option** enables RTT measurement and protects against sequence number
-
   wrap-around (PAWS) on fast connections.

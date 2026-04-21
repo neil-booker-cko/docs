@@ -152,17 +152,14 @@ PDU {
 ## Notes
 
 - **SNMPv1 and v2c should not be used on untrusted networks** — the community string
-
   is transmitted in cleartext and provides no replay protection. Use SNMPv3 `authPriv`
   for any management traffic crossing untrusted segments.
 
 - **OIDs** (Object Identifiers) are hierarchical dotted-notation identifiers for
-
   managed objects (e.g. `1.3.6.1.2.1.1.1.0` = `sysDescr.0`). MIBs provide
   human-readable names for OIDs.
 
 - **Engine ID discovery** is required before SNMPv3 authentication can succeed.
-
   A manager sends an unauthenticated probe to discover the agent's EngineID,
   EngineBoots, and EngineTime before sending an authenticated request.
 

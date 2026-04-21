@@ -19,7 +19,6 @@ control inter-zone traffic and are referenced in firewall policies as a single i
   object.
 
 - **SD-WAN Member:** A WAN interface (physical or IPsec/GRE tunnel) participating in
-
   SD-WAN load-balancing or path selection. Each member is assigned to a zone.
 
 - **Performance SLA:** Continuous probes (ping, HTTP, DNS) measure latency, jitter, and
@@ -27,7 +26,6 @@ control inter-zone traffic and are referenced in firewall policies as a single i
 packet loss per member. SLA thresholds determine whether a member is considered healthy.
 
 - **SD-WAN Rule (Service):** Matches traffic by source/destination address, application,
-
   or DSCP, then steers it to a preferred member or zone using a selected algorithm.
 
 - **Load-balancing algorithms:**
@@ -213,15 +211,12 @@ end
 SLA states control which members are eligible for traffic steering:
 
 - When a member's measured latency, jitter, or packet loss exceeds configured thresholds,
-
   its SLA status changes to **out-of-SLA**.
 
 - Rules set to `mode priority` skip members with failed SLA and move to the next member
-
   in the priority list.
 
 - Rules set to `mode best-quality` continuously re-evaluate the best member even when all
-
   members are within SLA.
 
 | Steering Mode | Behaviour When Primary Fails SLA | Re-evaluation |

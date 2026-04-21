@@ -182,24 +182,19 @@ route-map RM-PEER-OUT permit 10
 ## Notes
 
 - Communities are **optional transitive** attributes — they are forwarded to eBGP
-
   peers by default. Always strip internal policy communities before advertising to
   customers or peers using `set community none` in an outbound route-map.
 
 - Multiple communities can be attached to a single route. Match with
-
   `ip community-list` using `permit` entries; use `match community <list-name>`
   in route-maps.
 
 - `show ip bgp <prefix>` displays the communities attached to a route.
-
   `show ip bgp community <value>` filters the BGP table to routes carrying that
   community.
 
 - The `additive` keyword in `set community` appends to existing communities rather
-
   than replacing them. Without `additive`, any existing communities are overwritten.
 
 - For 4-byte ASN environments, prefer Large Communities (RFC 8092) over standard
-
   communities to avoid the 16-bit AS field truncation problem.

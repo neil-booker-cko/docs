@@ -258,11 +258,9 @@ in the domain. RP discovery methods:
 PIM routers maintain state entries for each active multicast flow:
 
 - **(*, G)** — shared tree entry: any source sending to group G. Used on the path
-
   from RP to receivers.
 
 - **(S, G)** — source tree entry: traffic specifically from source S to group G.
-
   Created after SPT switchover.
 
 `show ip mroute` displays both types. The `(*, G)` entry shows the RP and the shared
@@ -294,10 +292,8 @@ broadcast (ARP). Far simpler to operate — no PIM configuration on the fabric.
 - `show ip mroute` — multicast routing table; `(*, G)` and `(S, G)` entries with OIL
 - `show ip pim rp mapping` — RP address and discovery method per group range
 - Multicast TTL scoping: set TTL on the source to limit propagation across RP/domain
-
   boundaries. TTL-scoped multicast (TTL < 16 = site-local by convention) is an
   alternative to administratively scoped addresses (239.0.0.0/8).
 
 - IGMPv3 is required for SSM. Verify all hosts and routers support it before deploying
-
   SSM — legacy hosts may not send IGMPv3 Membership Reports.

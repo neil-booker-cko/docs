@@ -158,18 +158,14 @@ Windows default: `49152`–`65535`.
 ## Notes
 
 - **TCP/514 is rsh (remote shell)**, not reliable syslog. RFC 3195 uses TCP/601 for
-
   reliable syslog delivery. This distinction matters for firewall rules.
 
 - **UDP vs TCP for DNS**: Queries use UDP/53 by default. Responses larger than the
-
   negotiated EDNS0 payload (typically 4096 bytes) and zone transfers (AXFR/IXFR)
   use TCP/53. Always allow both.
 
 - **IPsec**: ESP (IP protocol 50) and AH (IP protocol 51) are IP protocols, not
-
   TCP/UDP ports. IKE uses UDP/500; NAT traversal encapsulates ESP in UDP/4500.
 
 - The full IANA port registry is published at
-
   `https://www.iana.org/assignments/service-names-port-numbers/`.

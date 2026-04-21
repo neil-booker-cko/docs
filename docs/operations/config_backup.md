@@ -233,15 +233,12 @@ A backup stored only on the device provides no protection against hardware failu
 Backups must be stored off the device on at least one of the following:
 
 - **TFTP or SCP server** — simple and widely supported; suitable for automated
-
   archive destinations
 
 - **Network management system** — Cisco DNA Center and FortiManager both include
-
   configuration backup and compliance features with version history
 
 - **Version control** — IOS-XE and FortiGate configurations are text files; storing
-
   them in git provides a full change history with diffs and commit messages, making
   auditing straightforward
 
