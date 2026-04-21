@@ -219,5 +219,5 @@ Time.
 
 ## Next Steps
 
-- See [HSRP vs VRRP Theory](../theory/hsrp_vs_vrrp.md) comparison
+- See [HSRP vs VRRP vs GLBP Theory](../theory/hsrp_vrrp_vs_glbp.md) comparison
 - Configure HSRP: [Cisco HSRP & VRRP](../cisco/cisco_hsrp_vrrp.md)

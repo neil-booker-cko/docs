@@ -5,8 +5,8 @@ Cisco IOS-XE, where VRRP is configured as a protocol on an interface, FortiGate 
 configured as a sub-object within the interface definition itself. The FortiGate can act
 as Master or Backup and supports multiple VRRP groups per interface.
 
-For protocol theory and a comparison between HSRP and VRRP see
-[HSRP vs VRRP](../theory/hsrp_vs_vrrp.md).
+For protocol theory and a comparison between HSRP, VRRP, and GLBP see
+[HSRP vs VRRP vs GLBP](../theory/hsrp_vrrp_vs_glbp.md).
 
 ---
 

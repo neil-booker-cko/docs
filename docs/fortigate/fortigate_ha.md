@@ -11,7 +11,7 @@ load-balancing). Heartbeat traffic flows over dedicated HA interfaces; failover 
 stateful
 when session synchronisation is enabled.
 
-For gateway redundancy protocol background see [HSRP vs VRRP](../theory/hsrp_vs_vrrp.md).
+For gateway redundancy protocol background see [HSRP vs VRRP vs GLBP](../theory/hsrp_vrrp_vs_glbp.md).
 
 ---
 

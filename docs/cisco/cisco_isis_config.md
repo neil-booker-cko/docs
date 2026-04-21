@@ -3,32 +3,25 @@
 IS-IS (Intermediate System to Intermediate System, ISO 10589 / RFC 1195) is a link-state
 IGP that runs directly over Layer 2, not over IP. It uses a hierarchical two-level
 structure: Level 1 (intra-area) and Level 2 (inter-area backbone). IS-IS is the
-preferred
-IGP for service provider backbones and large-scale datacentre underlay networks. This
-guide
-covers IOS-XE configuration for IS-IS with IPv4 and IPv6, including BFD integration.
+preferred IGP for service provider backbones and large-scale datacentre underlay
+networks. This guide covers IOS-XE configuration for IS-IS with IPv4 and IPv6,
+including BFD integration.
 
 ---
 
 ## 1. Overview & Principles
 
 - IS-IS adjacencies form at Layer 2 — `ip router isis` on an interface enables IS-IS; a
-
-NET (Network Entity Title / NSAP) identifies the router globally within the IS-IS
-domain.
-
+  NET (Network Entity Title / NSAP) identifies the router globally within the IS-IS
+  domain.
 - **NET format:** `<AFI>.<Area-ID>.<System-ID>.<SEL>` — e.g.,
   `49.0001.1921.6800.0001.00` where `49` = private-use AFI, `0001` = area 1,
   `1921.6800.0001` = router system ID (192.168.0.1 encoded as 6 hex bytes), `00` = SEL
   (always 00 for routers).
-
 - L1 adjacencies form only with same-area routers; L2 adjacencies form between any
   L2-capable routers regardless of area.
-
 - IS-IS for IPv6 (RFC 5308) adds IPv6 TLVs to the same process; Multi-Topology IS-IS
-
-(MT-ISIS, RFC 5120) runs separate topologies for IPv4 and IPv6 within the same instance.
-
+  (MT-ISIS, RFC 5120) runs separate topologies for IPv4 and IPv6 within the same instance.
 - BFD integrates natively with IS-IS (`bfd all-interfaces` or per-interface) for
   sub-second failure detection.
 
