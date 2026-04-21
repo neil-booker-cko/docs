@@ -20,16 +20,59 @@ The design consists of a recursive routing model:
 Since AWS **does not support BFD over VPN**, we must rely on a hierarchy of timers:
 
 - **Underlay (Cisco):** Uses BFD (300ms x 3) to ensure that if a DX fiber cut occurs,
-
     the transport path shifts in <1s.
-
 - **Overlay (FortiGate):** Uses aggressive Dead Peer Detection (DPD) and BGP Next-Hop
-
     Tracking. By linking BGP to the VTI status via `link-down-failover`, we ensure
     that routes are withdrawn the moment the tunnel path is declared dead by DPD,
     rather than waiting for the BGP hold-timer.
 
-## 2. Detection & Restoration Timelines
+---
+
+## 2. Architecture
+
+```mermaid
+---
+title: "AWS Architecture: DX Underlay + VPN Overlay"
+---
+graph LR
+    subgraph OnPrem["On-Premises"]
+        Cisco["Cisco IOS-XE<br/>AS 65000"]
+        FG["FortiGate"]
+    end
+    subgraph AWS["AWS"]
+        DX1["Direct Connect<br/>Virtual Interface<br/>Primary"]
+        DX2["Direct Connect<br/>Virtual Interface<br/>Secondary"]
+        TGW["Transit Gateway<br/>AS 64512"]
+        VPC["VPC"]
+    end
+    Cisco -- "BGP + BFD<br/>169.254.x.0/30" --> DX1
+    Cisco -- "BGP + BFD<br/>169.254.y.0/30" --> DX2
+    FG == "IPsec/IKEv2 Tunnel #1<br/>(via DX Primary)<br/>Overlay BGP" ==> TGW
+    FG == "IPsec/IKEv2 Tunnel #2<br/>(via DX Secondary)<br/>Overlay BGP" ==> TGW
+    DX1 --> TGW
+    DX2 --> TGW
+    TGW --> VPC
+    style DX1 fill:#90EE90
+    style DX2 fill:#FFB6C1
+```
+
+### Address Planning
+
+| Segment | Example Range | Notes |
+| --- | --- | --- |
+| **Direct Connect (Underlay)** | | |
+| DX Primary BGP | `169.254.0.0/30` | AWS side: `.1`, Customer side: `.2` |
+| DX Secondary BGP | `169.254.1.0/30` | AWS side: `.1`, Customer side: `.2` |
+| **VPN (Overlay — FortiGate to TGW)** | | |
+| Primary tunnel | `Tunnel1 — TGW private IP` | Via primary DX; negotiated IPs via IKE |
+| Secondary tunnel | `Tunnel2 — TGW private IP` | Via secondary DX; negotiated IPs via IKE |
+| **Routing** | | |
+| On-premises prefix | `10.0.0.0/8` | Advertised via DX underlay and VPN overlay |
+| AWS VPC CIDR | `10.128.0.0/16` | Advertised by TGW over both BGP sessions |
+
+---
+
+## 3. Detection & Restoration Timelines
 
 ### Underlay Failure (DX Fiber Cut)
 
@@ -56,7 +99,7 @@ timeline
         T=16s : Link-Down Failover triggers : BGP Session Killed : Routes Dropped
 ```
 
-## 3. Configuration
+## 4. Configuration
 
 ### A. Cisco IOS-XE (Underlay - Modern Address-Family)
 
@@ -124,7 +167,7 @@ config router bgp
 end
 ```
 
-## 4. Comparison Summary
+## 5. Comparison Summary
 
 | Metric | Default Settings | Optimized BGP Stack |
 | :--- | :--- | :--- |
@@ -134,7 +177,7 @@ end
 | **Security Standard** | None | **AES-256 / DH-21** |
 | **NPU Offload** | Disabled | **Enabled (Encryption acceleration)** |
 
-## 5. Verification & Troubleshooting
+## 6. Verification & Troubleshooting
 
 | Command | Platform | Purpose |
 | :--- | :--- | :--- |

@@ -1,24 +1,5 @@
 # BGP Stack Analysis: VPN Overlay over ExpressRoute
 
-## 0. Variables & Placeholders
-
-Throughout this guide, replace the following placeholders with your actual values:
-
-| Variable | Example | Description |
-| --- | --- | --- |
-| `LOCAL_AS` | `65000` | On-premises BGP Autonomous System number (Cisco IOS-XE) |
-| `VPN_GW_AS` | `65515` | Azure VPN Gateway custom BGP AS number |
-| `ER_PRIMARY_SUBNET` | `10.0.0.0/30` | Primary ExpressRoute private peering subnet |
-| `ER_SECONDARY_SUBNET` | `10.0.0.4/30` | Secondary ExpressRoute private peering subnet |
-| `MSEE_PRIMARY_IP` | `10.0.0.2` | Primary MSEE peer IP (customer side: `10.0.0.1`) |
-| `MSEE_SECONDARY_IP` | `10.0.0.6` | Secondary MSEE peer IP (customer side: `10.0.0.5`) |
-| `VPN_GW_PRIMARY_IP` | `172.16.0.2` | Azure VPN Gateway private IP (primary tunnel) |
-| `VPN_GW_SECONDARY_IP` | `172.16.0.6` | Azure VPN Gateway private IP (secondary tunnel) |
-| `APIPA_PRIMARY` | `169.254.21.2` | Primary tunnel APIPA on FortiGate |
-| `APIPA_SECONDARY` | `169.254.22.2` | Secondary tunnel APIPA on FortiGate |
-
----
-
 ## 1. Overview & Principles
 
 This architecture uses a layered protocol approach to provide **encrypted**,
