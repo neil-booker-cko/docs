@@ -260,6 +260,5 @@ Query with DNSSEC:
 
 ## Next Steps
 
-- See [DNS Theory & Design](../theory/dns.md)
-- Configure DNS: [Cisco DNS Configuration](../cisco/cisco_dns_ntp_config.md)
-- Review [Network Services](../application/network_services_overview.md)
+- Review [Application Protocols Overview](../application/index.md)
+- See [DNS Application Protocol Guide](../application/dns.md)

@@ -298,6 +298,6 @@ DHCPv6 operates similarly to DHCPv4 but uses:
 
 ## Next Steps
 
-- See [DHCP Theory & Design](../theory/dhcp.md)
-- Review [Network Services](../application/network_services_overview.md)
-- Configure DHCP: [Cisco DHCP](../cisco/cisco_dhcp_config.md), [FortiGate DHCP](../fortigate/fortigate_dhcp_config.md)
+- Review [Application Protocols Overview](../application/index.md)
+- See [DHCP Application Protocol Guide](../application/dhcp.md)
+- Configure DHCP Snooping: [Cisco DHCP Snooping & DAI](../cisco/cisco_dhcp_snooping.md)

@@ -232,6 +232,5 @@ system ID (lower wins).
 
 ## Next Steps
 
-- Read [Routing Protocols Comparison](../theory/routing_protocols.md) (IS-IS vs OSPF vs BGP)
-- See [Link-State Routing Theory](../theory/link_state_routing.md)
+- See [Routing Protocols Overview](../routing/index.md)
 - Configure IS-IS: [Cisco IS-IS](../cisco/cisco_isis_config.md)

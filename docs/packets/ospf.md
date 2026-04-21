@@ -255,6 +255,5 @@ Common reasons adjacency fails:
 
 ## Next Steps
 
-- Read [Routing Protocols Comparison](../theory/routing_protocols.md) (OSPF vs BGP vs EIGRP)
-- See [Dynamic Routing Theory](../theory/dynamic_routing.md) for general concepts
-- Configure OSPF: [Cisco OSPF](../cisco/cisco_ospf_config.md)
+- See [Routing Protocols Overview](../routing/index.md)
+- Configure OSPF: [Cisco OSPF Config](../cisco/cisco_ospf_config.md)

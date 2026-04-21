@@ -282,6 +282,5 @@ graph TD
 
 ## Next Steps
 
-- Read [BGP Theory & Design](../theory/bgp.md)
-- See [Routing Protocols Comparison](../theory/routing_protocols.md)
-- Configure BGP: [Cisco BGP](../cisco/cisco_bgp_config.md), [FortiGate BGP](../fortigate/fortigate_bgp_config.md)
+- See [Routing Protocols Overview](../routing/index.md)
+- Configure BGP: [Cisco BGP & iBGP Design](../cisco/cisco_bgp_ibgp.md), [FortiGate BGP](../fortigate/fortigate_bgp_config.md)
