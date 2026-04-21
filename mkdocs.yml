@@ -92,6 +92,7 @@ nav:
   - Fundamentals:
       - Theory:
           - Protocol Comparisons:
+              - IGPs vs EGPs: theory/igp_vs_egp.md
               - BGP vs BFD: theory/bgp_bfd_comparison.md
               - OSPF vs BFD: theory/ospf_bfd_comparison.md
               - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
