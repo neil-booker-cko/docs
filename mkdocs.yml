@@ -100,7 +100,12 @@ nav:
               - OSPF vs IS-IS: theory/ospf_vs_isis.md
               - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
               - NTP vs PTP: theory/ntp_vs_ptp.md
-              - HSRP vs VRRP: theory/hsrp_vs_vrrp.md
+              - CDP vs LLDP: theory/cdp_vs_lldp.md
+              - OSPF vs EIGRP: theory/ospf_vs_eigrp.md
+              - HSRP vs VRRP vs GLBP: theory/hsrp_vrrp_vs_glbp.md
+              - Static vs Dynamic Routing: theory/static_vs_dynamic_routing.md
+              - RADIUS vs TACACS+ vs LDAP: theory/radius_vs_tacacs_vs_ldap.md
+              - SNTP vs NTP: theory/sntp_vs_ntp.md
           - Foundations:
               - Physical Layer (L1): theory/physical_layer.md
               - Ethernet Evolution: theory/ethernet_evolution.md

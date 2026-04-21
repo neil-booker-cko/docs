@@ -25,4 +25,7 @@ config:
 
   # MD046/code-block-style: Allow both fenced and indented code blocks.
   MD046: false
+
+  # MD029/ol-prefix: Allow any ordered list prefix style (1, 2, 3 or 1., 2., 3. etc.)
+  MD029: false
 ...
