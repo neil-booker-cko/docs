@@ -163,16 +163,30 @@ nav:
               - STP / RSTP: packets/stp.md
               - LLDP: packets/lldp.md
               - CDP: packets/cdp.md
-          - Layer 3 — Network:
+              - LACP: packets/lacp.md
+          - Layer 2.5 — MPLS:
+              - MPLS: packets/mpls.md
+          - Layer 3 — Network & Routing:
               - IPv4: packets/ipv4.md
               - IPv6: packets/ipv6.md
               - ICMP: packets/icmp.md
               - GRE: packets/gre.md
               - VXLAN: packets/vxlan.md
+              - OSPF: packets/ospf.md
+              - BGP: packets/bgp.md
+              - IS-IS: packets/isis.md
+              - IGMP: packets/igmp.md
+              - VRRP: packets/vrrp.md
+              - HSRP: packets/hsrp.md
           - Layer 4 — Transport:
               - TCP: packets/tcp.md
               - UDP: packets/udp.md
               - BFD: packets/bfd.md
+          - Layer 7 — Application:
+              - NTP: packets/ntp.md
+              - PTP: packets/ptp.md
+              - DNS: packets/dns.md
+              - DHCP: packets/dhcp.md
   - Cisco & FortiGate:
       - Cisco:
           - Fundamentals:
