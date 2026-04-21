@@ -108,20 +108,16 @@ Destination: 224.0.0.2 (all-routers multicast address)
 
 ## IGMP in a Network
 
-```text
-Host 1 (wants 224.1.1.1)       Host 2 (wants 224.2.2.2)
-    |                              |
-    |-- IGMP Report (224.1.1.1) -->|
-    |                              |
-    |   [Router interface]         |-- IGMP Report (224.2.2.2)
-    |                              |
-    |<-- IGMP Query (general) ------|
-    |                              |
-    |-- IGMP Report (224.1.1.1) -->|
-    |                              |
-    |   (Router maintains group membership)
-    |   (Forwards 224.1.1.1 packets to Host 1 only)
-    |   (Forwards 224.2.2.2 packets to Host 2 only)
+```mermaid
+sequenceDiagram
+    participant Host1 as Host 1<br/>(wants 224.1.1.1)
+    participant Router as Router
+    participant Host2 as Host 2<br/>(wants 224.2.2.2)
+    Host1->>Router: IGMP Report (224.1.1.1)
+    Host2->>Router: IGMP Report (224.2.2.2)
+    Router->>Host1: IGMP Query (general)
+    Host1->>Router: IGMP Report (224.1.1.1)
+    Note over Router: Maintains group membership<br/>Forwards 224.1.1.1 to Host 1 only<br/>Forwards 224.2.2.2 to Host 2 only
 ```
 
 ---
@@ -140,11 +136,13 @@ Host 1 (wants 224.1.1.1)       Host 2 (wants 224.2.2.2)
 
 Managed switches can listen to IGMP and limit multicast flooding:
 
-```text
-Switch sees IGMP Report from Host A on Port 2:
-  - Host A: Join 224.1.1.1
-  - Switch learns: "Forward 224.1.1.1 to Port 2 only"
-  - Other ports don't receive 224.1.1.1 traffic (saves bandwidth)
+```mermaid
+flowchart TD
+    A["Switch sees IGMP Report<br/>from Host A on Port 2"]
+    B["Host A joins 224.1.1.1"]
+    C["Switch learns:<br/>Forward 224.1.1.1<br/>to Port 2 only"]
+    D["Other ports don't receive<br/>224.1.1.1 traffic<br/>saves bandwidth"]
+    A --> B --> C --> D
 ```
 
 ---

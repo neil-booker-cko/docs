@@ -53,20 +53,16 @@ takes over with minimal traffic loss.
 
 ## VRRP Election Process
 
-```text
-Router A (Priority 100)        Router B (Priority 50)
-        |                               |
-        | VRRP Advertisement --------->|
-        |   (Priority 100)             |
-        |                    [Compare priorities]
-        |                    B's priority 50 < A's 100
-        |<------ VRRP Advertisement ----|
-        |           (Priority 50, "I see A is better")
-        |
-    [Router A elected MASTER]
-    [Router B becomes BACKUP]
-
-    All hosts use VRRP VIP as gateway (points to Router A)
+```mermaid
+sequenceDiagram
+    participant RouterA as Router A<br/>(Priority 100)
+    participant RouterB as Router B<br/>(Priority 50)
+    RouterA->>RouterB: VRRP Advertisement<br/>(Priority 100)
+    Note over RouterB: Compare priorities<br/>50 < 100
+    RouterB->>RouterA: VRRP Advertisement<br/>(Priority 50)
+    Note over RouterA: A elected MASTER
+    Note over RouterB: B becomes BACKUP
+    Note over RouterA,RouterB: All hosts use VRRP VIP<br/>as gateway (Router A)
 ```
 
 ---
@@ -124,46 +120,41 @@ Backup ignores ARP for VRRP VIP.
 
 ## VRRP State Machine
 
-```text
-┌──────────────┐
-│   INITIALIZE │  (no advertisements sent)
-└──────────────┘
-        |
-        V
-┌──────────────────────────────────────┐
-│ Election: Compare Priority & VRID    │
-│ Higher priority = MASTER             │
-│ Lower priority = BACKUP              │
-└──────────────────────────────────────┘
-        |                       |
-        V                       V
-    ┌──────────┐           ┌──────────┐
-    │ MASTER   │           │ BACKUP   │
-    │ Send adv │           │ Wait for │
-    │ every 1s │           │ adv / 3s │
-    └──────────┘           └──────────┘
-        |                       |
-        |--- failure ---------->| (priority < advertised)
-        |                       | (no adv for 3s)
-        |<-- recovery ----------|
+```mermaid
+stateDiagram-v2
+    [*] --> INITIALIZE
+    INITIALIZE --> ELECTION: Start
+    ELECTION: Compare Priority & VRID<br/>Higher = MASTER<br/>Lower = BACKUP
+    ELECTION --> MASTER
+    ELECTION --> BACKUP
+
+    MASTER: Send adv every 1s
+    BACKUP: Wait for adv / 3s
+
+    MASTER --> BACKUP: Failure detected<br/>(priority < advertised)<br/>(no adv for 3s)
+    BACKUP --> MASTER: Recovery<br/>(higher priority advertised)
 ```
 
 ---
 
 ## VRRP VIP Ownership
 
-```text
-Scenario 1: Non-Owner Router (Backup)
-    eth0: 10.1.1.2/24 (Real IP)
-    VRRP VIP: 10.1.1.1 (Configured, not assigned to real interface)
-    Role: Potential MASTER but NOT owner
-    Priority: Can be 200
+```mermaid
+graph TD
+    subgraph Scenario1["Scenario 1: Non-Owner Router (Backup)"]
+        A["eth0: 10.1.1.2/24<br/>(Real IP)"]
+        B["VRRP VIP: 10.1.1.1<br/>(Configured, not on real interface)"]
+        C["Role: Potential MASTER<br/>Priority: 200"]
+    end
 
-Scenario 2: Owner Router (MASTER)
-    eth0: 10.1.1.1/24 (Real IP = VRRP VIP)
-    VRRP VIP: 10.1.1.1 (Same as interface)
-    Role: Always MASTER (priority 255, cannot be overridden)
-    Priority: 255 (automatic)
+    subgraph Scenario2["Scenario 2: Owner Router (MASTER)"]
+        D["eth0: 10.1.1.1/24<br/>(Real IP = VRRP VIP)"]
+        E["VRRP VIP: 10.1.1.1<br/>(Same as interface)"]
+        F["Role: Always MASTER<br/>Priority: 255 (automatic)"]
+    end
+
+    A --> B --> C
+    D --> E --> F
 ```
 
 **Owner always wins:** A router with VRRP VIP as a real interface IP cannot lose the MASTER role.
@@ -174,25 +165,32 @@ Scenario 2: Owner Router (MASTER)
 
 ### Active-Backup (Single VRRP Group)
 
-```text
-Router A: Priority 200 (MASTER initially)
-Router B: Priority 100 (BACKUP)
-
-If A fails → B becomes MASTER
-If A recovers → A becomes MASTER again (preempt enabled)
+```mermaid
+graph TD
+    A["Router A: Priority 200"]
+    B["Router B: Priority 100"]
+    A -->|Initially| MASTER["MASTER"]
+    B -->|Initially| BACKUP["BACKUP"]
+    MASTER -->|If A fails| X["B becomes MASTER"]
+    X -->|If A recovers| Y["A becomes MASTER<br/>(preempt enabled)"]
+    MASTER -.-> Y
 ```
 
 ### Active-Active (Multiple VRRP Groups)
 
-```text
-Router A: VRRP Group 1 (Priority 200) = MASTER
-          VRRP Group 2 (Priority 100) = BACKUP
+```mermaid
+graph TD
+    RA["Router A"]
+    RB["Router B"]
 
-Router B: VRRP Group 1 (Priority 100) = BACKUP
-          VRRP Group 2 (Priority 200) = MASTER
+    RA --> G1A["VRRP Group 1<br/>Priority 200<br/>= MASTER"]
+    RA --> G2A["VRRP Group 2<br/>Priority 100<br/>= BACKUP"]
 
-Load balancing: Traffic split between A (Group 1) and B (Group 2)
-Failover: Each takes over the other's group if needed
+    RB --> G1B["VRRP Group 1<br/>Priority 100<br/>= BACKUP"]
+    RB --> G2B["VRRP Group 2<br/>Priority 200<br/>= MASTER"]
+
+    G1A -.->|Load balancing| SPLIT["Traffic split between<br/>A Group 1 & B Group 2"]
+    G2B -.->|Failover| SPLIT
 ```
 
 ---

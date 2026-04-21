@@ -77,28 +77,18 @@ actively carry traffic.
 
 ## LACP Negotiation Process
 
-```text
-Device A (Switch)              Device B (Switch)
-    Port 1,2,3,4                   Port 1,2,3,4
-         |                               |
-    [LACP Init]                        |
-         | LACP PDUS ----------->      [LACP Init]
-         |    (Actor: Eth 1111, Ports 1-4)
-         |                             |
-         |                    [Compare Config]
-         |<---------- LACP PDUS ------  |
-         |             (Partner: Eth 2222, Ports 1-4)
-         |
-    [Config matches]
-    System Priority: 100 vs 200 (A wins, is Actor)
-    Actor System: A's MAC
-    Partner System: B's MAC
-    All 4 ports: COLLECTING + DISTRIBUTING = AGGREGATED
-         |<---------- LACP PDUS ------  |
-         |    (State: Sync + Collecting + Distributing)
-         |
-    [Link Aggregation Established]
-    All 4 ports carry traffic as single logical link
+```mermaid
+sequenceDiagram
+    participant DeviceA as Device A (Switch)<br/>Ports 1,2,3,4
+    participant DeviceB as Device B (Switch)<br/>Ports 1,2,3,4
+    Note over DeviceA: [LACP Init]
+    DeviceA->>DeviceB: LACP PDUs<br/>Actor: Eth 1111, Ports 1-4
+    Note over DeviceB: [Compare Config]
+    DeviceB->>DeviceA: LACP PDUs<br/>Partner: Eth 2222, Ports 1-4
+    Note over DeviceA: Config matches<br/>Priority: 100 vs 200 (A wins)<br/>A is Actor, B is Partner
+    Note over DeviceA,DeviceB: All ports: COLLECTING + DISTRIBUTING
+    DeviceB->>DeviceA: LACP PDUs<br/>State: Sync + Collecting + Distributing
+    Note over DeviceA,DeviceB: Link Aggregation Established<br/>All 4 ports carry traffic as single logical link
 ```
 
 ---

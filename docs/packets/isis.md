@@ -138,16 +138,22 @@ IS-IS supports **two-level hierarchy:**
 1. **Level 1 (L1):** Intra-area routing; routers form full adjacencies within area
 2. **Level 2 (L2):** Inter-area routing; backbone; connects all areas
 
-```text
-Area 01             Area 02
-  ┌─────┐             ┌─────┐
-  │ L1  │ Router      │ L1  │ Router
-  │ L2  │ ← IIH floods│ L2  │ ← IIH floods
-  │     │ L1 LSP      │     │ L2 LSP
-  └─────┘             └─────┘
-    | L2 Link            | L2 Link
-    └────────────────────┘
-       (Backbone, all L2)
+```mermaid
+graph TD
+    Area1["Area 01<br/>L1/L2 Router"]
+    Area2["Area 02<br/>L1/L2 Router"]
+
+    Area1 -->|L1 LSP<br/>IIH floods| A1Interior["L1 Intra-area<br/>Routing"]
+    Area1 -->|L2 LSP<br/>IIH floods| Backbone
+
+    Area2 -->|L1 LSP<br/>IIH floods| A2Interior["L1 Intra-area<br/>Routing"]
+    Area2 -->|L2 LSP<br/>IIH floods| Backbone
+
+    Backbone["Backbone<br/>L2 (Inter-area)<br/>All L2 Routers"]
+
+    style Area1 fill:#e1f5ff
+    style Area2 fill:#e1f5ff
+    style Backbone fill:#fff3e0
 ```
 
 **L1-L2 Router:** Exists in single area; participates in both L1 (intra-area) and L2
@@ -159,12 +165,17 @@ Area 01             Area 02
 
 ## IS-IS Neighbor States
 
-```text
-DOWN → INITIALIZING → UP
-  |        |          |
-  |        |          └─ Full LSP exchange, routes installable
-  |        └─ Hello received, awaiting confirmation
-  └─ No hello received
+```mermaid
+stateDiagram-v2
+    [*] --> DOWN: No hello received
+
+    DOWN --> INITIALIZING
+
+    INITIALIZING: Hello received<br/>awaiting confirmation
+
+    INITIALIZING --> UP
+
+    UP: Full LSP exchange<br/>routes installable
 ```
 
 On LAN, DIS is elected from neighbors with highest priority (default 64); tie-breaker is

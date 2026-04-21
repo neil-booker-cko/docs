@@ -140,15 +140,25 @@ Peer responds with all routes for that AFI/SAFI without teardown.
 
 ## BGP Session States
 
-```text
-IDLE → CONNECT → ACTIVE → OPENSENT → OPENCONFIRM → ESTABLISHED
-  |       |         |         |          |             |
-  |       |         |         |          |             └─ Full route exchange
-  |       |         |         |          └─ Awaiting Keepalive
-  |       |         |         └─ Sent Open, waiting for peer Open
-  |       |         └─ Retrying connection
-  |       └─ TCP connect in progress
-  └─ Down; ready to connect
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE: Down; ready to connect
+
+    IDLE --> CONNECT: TCP connect in progress
+
+    CONNECT --> ACTIVE: Retrying connection
+
+    ACTIVE --> OPENSENT: Send Open message
+
+    OPENSENT: Sent Open<br/>waiting for peer Open
+
+    OPENSENT --> OPENCONFIRM
+
+    OPENCONFIRM: Awaiting<br/>Keepalive
+
+    OPENCONFIRM --> ESTABLISHED
+
+    ESTABLISHED: Full route exchange<br/>active
 ```
 
 **ESTABLISHED:** Only state where routes are exchanged and traffic flows.
@@ -161,26 +171,27 @@ IDLE → CONNECT → ACTIVE → OPENSENT → OPENCONFIRM → ESTABLISHED
 
 Peers in different ASes; full routing table exchange; policy-driven.
 
-```text
-ISP1 (AS 65001) ←→ ISP2 (AS 65002)
-  (EBGP session over direct link or via upstream ISP)
-
-ISP1 advertises: 203.0.113.0/24 with AS_PATH [65001]
-ISP2 receives:   203.0.113.0/24 with AS_PATH [65001, 65002] (adds itself)
-ISP2 advertises: 203.0.113.0/24 with AS_PATH [65001, 65002] to rest of internet
+```mermaid
+sequenceDiagram
+    participant ISP1 as ISP1<br/>AS 65001
+    participant ISP2 as ISP2<br/>AS 65002
+    ISP1->>ISP2: Advertise 203.0.113.0/24<br/>AS_PATH [65001]
+    ISP2->>ISP2: Receive route<br/>Add self to AS_PATH
+    ISP2->>Internet: Advertise 203.0.113.0/24<br/>AS_PATH [65001, 65002]
 ```
 
 ### Internal BGP (IBGP)
 
 Peers within same AS; distributes external routes; must be fully meshed or use route reflectors.
 
-```text
-Router A (AS 65000, DC-A)  ←→ Router B (AS 65000, DC-B)
-         (IBGP session, shares EBGP-learned routes)
-
-A receives 203.0.113.0/24 from ISP (EBGP).
-A advertises to B via IBGP: 203.0.113.0/24 with AS_PATH [ISP_AS]
-(B uses A's local-pref, weight, etc. to decide path)
+```mermaid
+sequenceDiagram
+    participant A as Router A<br/>AS 65000 (DC-A)
+    participant ISP as ISP<br/>(EBGP)
+    participant B as Router B<br/>AS 65000 (DC-B)
+    ISP->>A: EBGP: 203.0.113.0/24
+    A->>B: IBGP: 203.0.113.0/24<br/>AS_PATH [ISP_AS]
+    Note over B: Use A's local-pref<br/>weight, path quality
 ```
 
 ---
@@ -206,33 +217,45 @@ A advertises to B via IBGP: 203.0.113.0/24 with AS_PATH [ISP_AS]
 
 Every router peers with every other router (N routers = N*(N-1)/2 sessions).
 
-```text
-3 routers: 3 IBGP sessions
-4 routers: 6 IBGP sessions
-10 routers: 45 IBGP sessions ← Becomes unwieldy
+```mermaid
+graph TD
+    A["3 routers:<br/>3 IBGP sessions"]
+    B["4 routers:<br/>6 IBGP sessions"]
+    C["10 routers:<br/>45 IBGP sessions<br/>Becomes unwieldy"]
 ```
 
 ### Route Reflector (Hierarchical)
 
 One reflector; other routers peer with it (hub-and-spoke within AS).
 
-```text
-Router A (RR)
-   |    \    \
-   |     \    \
-   B      C    D
+```mermaid
+graph TD
+    RR["Router A<br/>Route Reflector"]
+    B["Router B"]
+    C["Router C"]
+    D["Router D"]
 
-RR advertises external routes to B, C, D; no need for full mesh.
+    RR --> B
+    RR --> C
+    RR --> D
+
+    Note["RR advertises external routes<br/>to B, C, D; no full mesh needed"]
 ```
 
 ### Confederation (Very Large Networks)
 
 Divide AS into sub-ASes; reduces IBGP sessions further.
 
-```text
-AS 65000 = AS 65001 (sub-conf) + AS 65002 (sub-conf) + AS 65003 (sub-conf)
+```mermaid
+graph TD
+    CONF["AS 65000 (Confederation)"]
+    SUB1["AS 65001<br/>sub-conf"]
+    SUB2["AS 65002<br/>sub-conf"]
+    SUB3["AS 65003<br/>sub-conf"]
 
-Reduces IBGP sessions by grouping routers into smaller domains.
+    CONF --> SUB1 & SUB2 & SUB3
+
+    Note["Reduces IBGP sessions<br/>by grouping routers into<br/>smaller domains"]
 ```
 
 ---

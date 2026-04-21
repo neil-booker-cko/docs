@@ -53,65 +53,47 @@ for hosts using a virtual IP address.
 
 ## HSRP States
 
-```text
-┌──────────────┐
-│  INITIAL     │  (startup; no configuration loaded)
-└──────────────┘
-        |
-        V
-┌──────────────┐
-│    LEARN     │  (waiting for Active router's advertisement)
-└──────────────┘
-        |
-        V
-┌──────────────────┐      ┌──────────────┐
-│     LISTEN       │----->│    SPEAK     │
-│                  │      │              │
-│ (Listening for   │      │ (Active and  │
-│  Hello msgs)     │      │  Standby     │
-└──────────────────┘      │  determined; │
-        ^                 │  may become  │
-        |                 │  Active)     │
-        |                 └──────────────┘
-        |                        |
-        |                        V
-        |                 ┌──────────────┐
-        |                 │   STANDBY    │
-        |                 │              │
-        |                 │ (Ready to take│
-        |                 │  over if      │
-        |                 │  Active dies) │
-        |                 └──────────────┘
-        |                        |
-        |                        V
-        |                 ┌──────────────┐
-        |                 │    ACTIVE    │
-        |                 │              │
-        |                 │ (Primary router|
-        |                 │  forwarding   |
-        |<────────────────│  traffic,     │
-                          │  sending msgs)|
-                          └──────────────┘
+```mermaid
+stateDiagram-v2
+    [*] --> INITIAL
+    INITIAL --> LEARN: Startup
+
+    LEARN: Waiting for Active<br/>advertisement
+
+    LEARN --> LISTEN
+
+    LISTEN: Listening for<br/>Hello msgs
+
+    LISTEN --> SPEAK
+
+    SPEAK: Active & Standby<br/>determined
+
+    SPEAK --> STANDBY
+    SPEAK --> ACTIVE
+
+    STANDBY: Ready to take<br/>over if Active dies
+
+    STANDBY --> ACTIVE: Active fails
+
+    ACTIVE: Primary router<br/>forwarding traffic
+
+    ACTIVE --> LISTEN: Failure or<br/>handoff
 ```
 
 ---
 
 ## HSRP Election Process
 
-```text
-Router A (Priority 120)        Router B (Priority 100)
-        |                               |
-        | HSRP Hello (State SPEAK) --->|
-        |   (Priority 120)             |
-        |                    [Compare priorities]
-        |                    B's 100 < A's 120
-        |<--- HSRP Hello (State SPEAK)--|
-        |         (Priority 100)        |
-        |
-    [Router A elected ACTIVE]
-    [Router B becomes STANDBY]
-
-    All hosts use HSRP VIP as gateway (points to Router A's MAC)
+```mermaid
+sequenceDiagram
+    participant RouterA as Router A<br/>(Priority 120)
+    participant RouterB as Router B<br/>(Priority 100)
+    RouterA->>RouterB: HSRP Hello (State SPEAK)<br/>(Priority 120)
+    Note over RouterB: Compare priorities<br/>100 < 120
+    RouterB->>RouterA: HSRP Hello (State SPEAK)<br/>(Priority 100)
+    Note over RouterA: A elected ACTIVE
+    Note over RouterB: B becomes STANDBY
+    Note over RouterA,RouterB: All hosts use HSRP VIP<br/>as gateway (Router A's MAC)
 ```
 
 ---
@@ -140,24 +122,26 @@ Router A (Priority 120)        Router B (Priority 100)
 - If Active fails, Standby takes over and keeps ACTIVE role
 - Avoids flapping if Active is unstable
 
-```text
-Scenario: Preemption ENABLED
-T=0s: A (120) is ACTIVE, B (100) is STANDBY
-T=1s: A fails
-T=10s: B becomes ACTIVE
-T=5m: A recovers
-T=5m1s: A sees B is ACTIVE with lower priority
-        A sends COUP (takeover message)
-        A becomes ACTIVE, B becomes STANDBY
+```mermaid
+graph TD
+    subgraph PreemptEnabled["Scenario: Preemption ENABLED"]
+        E1["T=0s: A(120) ACTIVE, B(100) STANDBY"]
+        E2["T=1s: A fails"]
+        E3["T=10s: B becomes ACTIVE"]
+        E4["T=5m: A recovers"]
+        E5["T=5m1s: A sends COUP<br/>A becomes ACTIVE, B becomes STANDBY"]
+    end
 
-Scenario: Preemption DISABLED
-T=0s: A (120) is ACTIVE, B (100) is STANDBY
-T=1s: A fails
-T=10s: B becomes ACTIVE (stays ACTIVE)
-T=5m: A recovers
-T=5m1s: A sees B is ACTIVE; respects higher role
-        A becomes STANDBY
-        (B stays ACTIVE until manually changed or fails)
+    subgraph PreemptDisabled["Scenario: Preemption DISABLED"]
+        D1["T=0s: A(120) ACTIVE, B(100) STANDBY"]
+        D2["T=1s: A fails"]
+        D3["T=10s: B becomes ACTIVE"]
+        D4["T=5m: A recovers"]
+        D5["T=5m1s: A becomes STANDBY<br/>B stays ACTIVE"]
+    end
+
+    E1 --> E2 --> E3 --> E4 --> E5
+    D1 --> D2 --> D3 --> D4 --> D5
 ```
 
 ---

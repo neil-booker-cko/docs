@@ -118,22 +118,17 @@ Master responds with receive timestamp of Delay_Req.
 
 ## PTP Synchronization Process (Slave Perspective)
 
-```text
-Master                                      Slave
-  |                                          |
-  |-- Sync (T1) --------------------------->| (received at T2)
-  |   (software timestamp, no precision)   |
-  |                                          |
-  |<-- Delay_Req (T3) ---------------------| (slave wants RTT)
-  |   (received at T4)                      |
-  |                                          |
-  |-- Follow_Up (precise T1') ------------->| (hardware TX timestamp)
-  |-- Delay_Resp (T4') ------------------>| (hardware RX timestamp)
-  |                                          |
-  Slave calculates:                         |
-    Offset = ((T2 - T1') + (T4' - T3)) / 2  |
-    Delay = (T4 - T3) - (T2 - T1')         |
-    Adjusts clock by offset                |
+```mermaid
+sequenceDiagram
+    participant Master
+    participant Slave
+    Master->>Slave: Sync (T1)<br/>Software timestamp
+    Note over Slave: Received at T2
+    Slave->>Master: Delay_Req (T3)<br/>Request RTT measurement
+    Note over Master: Received at T4
+    Master->>Slave: Follow_Up<br/>Precise T1' (hardware TX)
+    Master->>Slave: Delay_Resp<br/>T4' (hardware RX)
+    Note over Slave: Calculate:<br/>Offset = ((T2-T1')+(T4'-T3))/2<br/>Delay = (T4-T3)-(T2-T1')<br/>Adjust clock by offset
 ```
 
 **Key advantage:** Hardware timestamps on Follow_Up and Delay_Resp provide
@@ -147,25 +142,27 @@ picosecond precision.
 
 Traditional mode: slave requests delay from master.
 
-```text
-        Master (Grandmaster)
-            |
-            | Sync/Follow_Up
-            | Delay_Resp
-            |
-        [Slave]
-            |
-        (Adjusts clock)
+```mermaid
+graph TD
+    GrandMaster["Master<br/>(Grandmaster)"]
+    Slave["Slave"]
+    GrandMaster -->|Sync/Follow_Up| Slave
+    GrandMaster -->|Delay_Resp| Slave
+    Slave -->|"(Adjusts clock)"| Slave
 ```
 
 ### Peer-to-Peer (P2P)
 
 Direct peer measurement; reduces hop latency; useful for daisy-chained networks.
 
-```text
-Device A ↔ Device B ↔ Device C
-  |        |          |
-  └────────┴──────────┘ (all measure peer delays)
+```mermaid
+graph LR
+    DeviceA["Device A"]
+    DeviceB["Device B"]
+    DeviceC["Device C"]
+    DeviceA <-->|Pdelay<br/>measurement| DeviceB
+    DeviceB <-->|Pdelay<br/>measurement| DeviceC
+    DeviceA -.->|Peer delay| DeviceC
 ```
 
 ---

@@ -112,41 +112,22 @@ ANSWER:
 
 ## DNS Resolution Process (Recursive)
 
-```text
-Client (resolver)
-    |
-    | Query: "What is 192.0.2.1 for www.example.com?"
-    |
-    V
-Recursive Resolver (ISP DNS / 8.8.8.8)
-    |
-    | Query: "Root nameserver, who handles .com?"
-    |
-    V
-Root Nameserver (.)
-    | Response: "Ask TLD server 192.0.2.3 for .com"
-    |
-    V
-TLD Nameserver (.com)
-    | Query: "Who handles example.com?"
-    |
-    V
-    | Response: "Ask nameserver 192.0.2.5 (authoritative for example.com)"
-    |
-    V
-Authoritative Nameserver (example.com)
-    | Query: "What is www.example.com?"
-    |
-    V
-    | Response: "A 93.184.216.34, TTL 3600"
-    |
-    V
-Recursive Resolver (cache + forward to client)
-    |
-    | Response: "A 93.184.216.34"
-    |
-    V
-Client
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Resolver as Recursive Resolver<br/>ISP DNS / 8.8.8.8
+    participant Root as Root Nameserver<br/>.
+    participant TLD as TLD Nameserver<br/>.com
+    participant Auth as Authoritative NS<br/>example.com
+
+    Client->>Resolver: Query: www.example.com?
+    Resolver->>Root: Query: who handles .com?
+    Root->>Resolver: Response: Ask TLD 192.0.2.3
+    Resolver->>TLD: Query: who handles example.com?
+    TLD->>Resolver: Response: Ask NS 192.0.2.5
+    Resolver->>Auth: Query: www.example.com?
+    Auth->>Resolver: Response: A 93.184.216.34
+    Resolver->>Client: Response: A 93.184.216.34<br/>TTL 3600
 ```
 
 ---

@@ -94,20 +94,14 @@ Example: `0x80000000` = 0.5 seconds
 
 Client sends request to server; server responds with timestamp data.
 
-```text
-Client                              Server
-  |                                  |
-  |-- Request (Mode 3) ------------->|
-  |   Originate=T1                   |
-  |                                  |
-  |<-- Response (Mode 4) ------------|
-  |     Originate=T1 (echo)          |
-  |     Receive=T2                   |
-  |     Transmit=T3                  |
-  |                                  |
-  (Client receives at T4)            |
-  Offset = ((T2-T1) + (T3-T4)) / 2   |
-  Delay = (T4-T1) - (T3-T2)          |
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server
+    Client->>Server: Request (Mode 3)<br/>Originate=T1
+    Note over Client: T1: Request sent
+    Server->>Client: Response (Mode 4)<br/>Originate=T1 (echo)<br/>Receive=T2<br/>Transmit=T3
+    Note over Client: T4: Response received<br/>Offset = ((T2-T1)+(T3-T4))/2<br/>Delay = (T4-T1)-(T3-T2)
 ```
 
 ### Symmetric Active/Passive (Modes 1 & 2)
@@ -116,8 +110,24 @@ Peer-to-peer synchronization; both devices can correct each other.
 
 ### Broadcast Mode (Mode 5)
 
-Server broadcasts time without client requests; useful in LAN segments (less
-accurate).
+Server broadcasts time without client requests; useful in LAN segments (less accurate).
+
+---
+
+## NTP Modes Overview
+
+```mermaid
+stateDiagram-v2
+    [*] --> ClientMode: Mode 3
+    [*] --> SymmetricActive: Mode 1
+    [*] --> SymmetricPassive: Mode 2
+    [*] --> BroadcastMode: Mode 5
+
+    ClientMode: Client Mode (3)<br/>Request/Response
+    SymmetricActive: Symmetric Active (1)<br/>Peer-to-Peer Sync
+    SymmetricPassive: Symmetric Passive (2)<br/>Peer-to-Peer Sync
+    BroadcastMode: Broadcast (5)<br/>LAN Distribution
+```
 
 ---
 

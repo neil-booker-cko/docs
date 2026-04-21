@@ -145,16 +145,33 @@ RouterA acknowledges each LSA received:
 
 ## OSPF Neighbor States
 
-```text
-DOWN → INIT → 2-WAY → EXSTART → EXCHANGE → LOADING → FULL
-  |      |       |        |         |         |       |
-  |      |       |        |         |         |       └─ Fully adjacent
-  |      |       |        |         |         └─ Downloading missing LSAs
-  |      |       |        |         └─ Exchanging DBDs
-  |      |       |        └─ Negotiating master/slave
-  |      |       └─ Bidirectional
-  |      └─ Heard Hello from neighbor
-  └─ No contact
+```mermaid
+stateDiagram-v2
+    [*] --> DOWN: No contact
+
+    DOWN --> INIT: Heard Hello
+
+    INIT --> INIT: Awaiting Hello back
+
+    INIT --> 2WAY: Bidirectional
+
+    2WAY --> EXSTART: P2P link or<br/>DR/BDR on broadcast
+
+    EXSTART: Negotiate<br/>master/slave
+
+    EXSTART --> EXCHANGE
+
+    EXCHANGE: Exchanging<br/>Database Descriptions
+
+    EXCHANGE --> LOADING
+
+    LOADING: Downloading<br/>missing LSAs
+
+    LOADING --> FULL
+
+    FULL: Fully adjacent<br/>route exchange ready
+
+    2WAY --> 2WAY: Non-DR/BDR<br/>on broadcast
 ```
 
 **Full adjacency** on point-to-point links; **Only DR/BDR** form Full adjacencies on broadcast

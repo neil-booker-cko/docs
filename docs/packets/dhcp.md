@@ -195,22 +195,28 @@ Server responds with DHCP ACK (IP not assigned, just other parameters).
 
 ## DHCP Lease Acquisition & Renewal
 
-```text
-T=0s: Client sends DISCOVER (broadcast)
-T=0.1s: Server responds with OFFER (includes lease time, e.g., 86400s)
-T=0.2s: Client sends REQUEST (accepting offer)
-T=0.3s: Server sends ACK (lease granted, configuration parameters)
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Server as DHCP Server
 
-═════════════════════ Lease Period (86400s = 24h) ═════════════════════
+    Note over Client,Server: Lease Acquisition
+    Client->>Server: T=0s: DISCOVER (broadcast)
+    Server->>Client: T=0.1s: OFFER (lease time 86400s)
+    Client->>Server: T=0.2s: REQUEST (accept offer)
+    Server->>Client: T=0.3s: ACK (lease granted)
 
-T=43200s (50% of lease): Client sends RENEW REQUEST (unicast to server)
-         Server responds ACK (lease extended)
+    Note over Client,Server: Lease Period (86400s = 24h)
 
-T=64800s (75% of lease): If RENEW fails, client sends REBIND (broadcast)
-         Any server responds with ACK (rebind successful)
+    Client->>Server: T=43200s (50%): RENEW REQUEST (unicast)
+    Server->>Client: ACK (lease extended)
 
-T=86400s (100% of lease): Lease expires
-         Client releases IP; sends DISCOVER for new address
+    Client->>Server: T=64800s (75%): REBIND (broadcast)<br/>if RENEW fails
+    Server->>Client: ACK (rebind successful)
+
+    Note over Client,Server: T=86400s (100%): Lease expires
+    Client->>Client: Release IP
+    Client->>Server: DISCOVER for new address
 ```
 
 ---

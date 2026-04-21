@@ -54,27 +54,20 @@ VPNs, and QoS optimization.
 
 Packets can have multiple labels (label stack); processed from top to bottom.
 
-```text
-Example: L3 VPN with Traffic Engineering
+```mermaid
+graph TD
+    A["Original IP packet:<br/>| IP | TCP | Data | ..."]
+    B["With MPLS label stack:<br/>| TE Label | VPN Label | Exp NULL | IP | TCP | Data |"]
+    C["TE Label: TC=3, S=0"]
+    D["VPN Label: TC=5, S=0"]
+    E["Exp NULL: S=1 bottom of stack"]
+    F["Forwarding Process:<br/>Router reads TE label for next hop"]
+    G["PE router pops TE label<br/>reads VPN label"]
+    H["VPN label lookup<br/>send to Customer VRF"]
 
-Original IP packet:
-+-----+-----+-----+-----+
-| IP  | TCP | Data| ... |
-+-----+-----+-----+-----+
-
-With MPLS label stack:
-+-------+-------+-------+-----+-----+-----+-----+
-| TE    | VPN   | Exp   | IP  | TCP | Data| ... |
-| Label | Label | NULL  |     |     |     |     |
-+-------+-------+-------+-----+-----+-----+-----+
-        ^       ^       ^
-        |       |       └── S=1 (bottom of stack)
-        |       └─────────── TC=5, S=0
-        └─────────────────── TC=3, S=0
-
-Forwarding: Router reads TE label → uses it for next hop selection
-            PE router pops TE label, reads VPN label
-            VPN label lookup → send to Customer VRF
+    A --> B
+    B --> C & D & E
+    F --> G --> H
 ```
 
 ---
@@ -83,42 +76,47 @@ Forwarding: Router reads TE label → uses it for next hop selection
 
 ### Ingress Router (Ingress Label Edge Router — ILER)
 
-```text
-Packet arrives:
-  1. Lookup destination IP in routing table
-  2. Find matching FEC (Forwarding Equivalence Class)
-  3. Determine outgoing label for this FEC
-  4. Push label onto packet
-  5. Forward to next-hop router
+```mermaid
+flowchart TD
+    A["Packet arrives"]
+    B["Lookup destination IP<br/>in routing table"]
+    C["Find matching FEC<br/>Forwarding Equivalence Class"]
+    D["Determine outgoing label"]
+    E["Push label onto packet"]
+    F["Forward to next-hop router"]
+    EX["Example:<br/>IP: 10.1.0.0/16 → FEC1 → Label 100"]
 
-Example:
-  IP: 10.1.0.0/16 → FEC1 → Label 100
-  All packets to 10.1.0.0/16 get label 100 pushed
+    A --> B --> C --> D --> E --> F
+    EX -.-> E
 ```
 
 ### Transit Router (Label Switching Router — LSR)
 
-```text
-Labeled packet arrives on interface:
-  1. Pop top label (MPLS forwarding table lookup)
-  2. Find label's outgoing port and next label
-  3. Push new label (swap) or pop (if S=1)
-  4. Forward to next-hop router
+```mermaid
+flowchart TD
+    A["Labeled packet arrives"]
+    B["Pop top label<br/>MPLS table lookup"]
+    C["Find outgoing port<br/>& next label"]
+    D["Label swap or pop<br/>if S=1"]
+    E["Forward to next-hop"]
+    EX["Examples:<br/>In 100 → Out 200: swap<br/>In 200 → Out NONE: pop"]
 
-Example:
-  In label: 100 → Out label: 200 (label swap)
-  In label: 200 → Out label: NONE (pop, IP forwarding)
+    A --> B --> C --> D --> E
+    EX -.-> D
 ```
 
 ### Egress Router (Egress Label Edge Router — ELER)
 
-```text
-Labeled packet arrives:
-  1. Pop last label (S=1)
-  2. Deliver packet to destination VRF/interface
+```mermaid
+flowchart TD
+    A["Labeled packet arrives"]
+    B["Pop last label S=1"]
+    C["IP destination lookup"]
+    D["Deliver to Customer<br/>VRF/interface"]
+    EX["Example:<br/>Label 100 → Pop<br/>→ IP lookup"]
 
-Example:
-  Label 100 → Pop → IP destination lookup → Customer interface
+    A --> B --> C --> D
+    EX -.-> B
 ```
 
 ---
@@ -127,20 +125,23 @@ Example:
 
 Pre-computed path from ingress to egress router.
 
-```text
-Topology:
-    R1 ------- R2 ------- R3 ------- R4
-   ILER       LSR        LSR        ELER
-    |          |          |          |
-    | Label 100| Label 200| Label 300|
-    +-----> +-----> +-----> +------>
+```mermaid
+graph LR
+    R1["R1<br/>ILER<br/>Push 100"]
+    R2["R2<br/>LSR<br/>Swap 100→200"]
+    R3["R3<br/>LSR<br/>Swap 200→300"]
+    R4["R4<br/>ELER<br/>Pop 300"]
+
+    R1 -->|Label 100| R2
+    R2 -->|Label 200| R3
+    R3 -->|Label 300| R4
+    R4 -->|Deliver to<br/>10.1.0.0/16| DEST["Destination"]
+
+    style R1 fill:#e1f5ff
+    style R4 fill:#fff3e0
+```
 
 LSP: R1 → R2 → R3 → R4 (for destination 10.1.0.0/16)
-    Label stack at R1: Push 100
-    Label stack at R2: Swap 100→200
-    Label stack at R3: Swap 200→300
-    Label stack at R4: Pop 300, deliver to 10.1.0.0/16
-```
 
 ---
 
@@ -162,48 +163,53 @@ LSP: R1 → R2 → R3 → R4 (for destination 10.1.0.0/16)
 
 Force traffic down specific path (not shortest path):
 
-```text
-Network:      R1
-              / \
-             /   \
-           R2     R3
-             \   /
-              \ /
-              R4
+```mermaid
+graph TD
+    R1["R1"]
+    R2["R2"]
+    R3["R3"]
+    R4["R4"]
 
-Shortest path R1→R2→R4: 2 hops
-Traffic Engineering LSP R1→R3→R4: 2 hops but different links (balanced)
+    R1 -->|Shortest 2 hops| R2
+    R2 -->|Best path| R4
+    R1 -->|TE LSP 2 hops| R3
+    R3 -->|Balanced links| R4
 
-BGP learns best path = R1→R2→R4
-MPLS TE forces R1→R3→R4
+    Note1["BGP: R1→R2→R4<br/>MPLS TE: R1→R3→R4"]
 ```
 
 ### 2. MPLS L3 VPN
 
 Customer VPN over service provider MPLS backbone:
 
-```text
-Customer A ----+
-               |
-            +--PE--+---LSP---+--PE--+
-            |  VPN |         |  VPN  |
-            +------+         +------+
-               |                |
-            Customer B ----+------+
+```mermaid
+graph TD
+    CustA["Customer A"]
+    CustB["Customer B"]
+    PE1["PE Router<br/>VPN Domain"]
+    PE2["PE Router<br/>VPN Domain"]
+    LSP["MPLS Backbone<br/>LSP Tunnel"]
+
+    CustA --> PE1
+    CustB --> PE2
+    PE1 --> LSP --> PE2
 ```
 
 ### 3. MPLS Pseudowires (L2 VPN)
 
 Tunnel Ethernet/Frame Relay over MPLS:
 
-```text
-Customer Ethernet ----+
-                      |
-                   +--PE--+---LSP---+--PE--+
-                   | PW   |         |  PW   |
-                   +------+         +------+
-                      |                |
-                   Customer Ethernet ----+
+```mermaid
+graph TD
+    CustEth1["Customer<br/>Ethernet"]
+    PE1["PE Router<br/>Pseudowire"]
+    PE2["PE Router<br/>Pseudowire"]
+    CustEth2["Customer<br/>Ethernet"]
+    LSP["MPLS LSP<br/>Tunnel"]
+
+    CustEth1 --> PE1
+    PE1 --> LSP --> PE2
+    PE2 --> CustEth2
 ```
 
 ---
