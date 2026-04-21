@@ -13,6 +13,10 @@ config:
   MD024:
     siblings_only: true
 
+  # MD029/ol-prefix: Allow any ordered list prefix style (1, 2, 3 or 1., 2., 3. etc.)
+  MD029:
+    style: one_or_ordered
+
   # MD033/no-inline-html: Allow specific tags like <br> for manual line breaks.
   MD033:
     allowed_elements:
@@ -25,7 +29,4 @@ config:
 
   # MD046/code-block-style: Allow both fenced and indented code blocks.
   MD046: false
-
-  # MD029/ol-prefix: Allow any ordered list prefix style (1, 2, 3 or 1., 2., 3. etc.)
-  MD029: false
 ...

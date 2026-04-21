@@ -283,7 +283,7 @@ In a hybrid Cisco + FortiGate architecture:
    cdp run  ! Keep for internal Cisco discovery
    ```
 
-2. **FortiGate side:** Enable LLDP only:
+1. **FortiGate side:** Enable LLDP only:
 
    ```text
    config system lldp-settings
@@ -291,7 +291,7 @@ In a hybrid Cisco + FortiGate architecture:
    end
    ```
 
-3. **Result:** Both Cisco and FortiGate devices see each other via LLDP. Cisco routers
+1. **Result:** Both Cisco and FortiGate devices see each other via LLDP. Cisco routers
    also see each other via CDP for richer Cisco-specific detail.
 
 ---
