@@ -5,37 +5,39 @@ a network domain. IS-IS routers flood topology information (Link State PDUs) sim
 is domain-agnostic and commonly used in ISP and service provider networks. Supports IPv4, IPv6, and
 fast convergence with BFD.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Data Link (Layer 2) and Network (Layer 3)
-- **Transport:** Directly on Link Layer (ISO 8348 / OSI Layer 2)
-- **ISO PDU Addressing:** Network Service Access Point (NSAP)
-- **Purpose:** Interior routing; hierarchical network design; multi-protocol support
-- **Versions:** ISO 10589 (original); RFC 5308 (IPv6 extensions)
-- **Hello interval:** 10 seconds (default)
-- **Dead interval (Holding time):** 30 seconds (default, 3 × Hello)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Data Link (Layer 2) and Network (Layer 3) |
+| **Transport** | Directly on Link Layer (ISO 8348) |
+| **ISO PDU Addressing** | NSAP (Network Service Access Point) |
+| **RFC/Standard** | ISO 10589, RFC 5308 (IPv6 extensions) |
+| **Purpose** | Interior routing; hierarchical design; multi-protocol |
+| **Default Hello Interval** | 10 seconds |
+| **Default Holding Time** | 30 seconds (3 × Hello) |
 
----
+## Packet Structure
 
-## IS-IS PDU Format (Header)
+### IS-IS PDU Format (Header)
 
 All IS-IS PDUs share a common header:
 
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Intradomain Routing Protocol Discriminator (NLPID)      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|          Header Length (HDR LEN)         |   Version Indicator |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|    System ID Length    |   PDU Type    |     Version Info     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                Maximum Area Address                         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```mermaid
+---
+title: "IS-IS PDU Header"
+---
+packet-beta
+0-7: "NLPID"
+8-15: "Header Length"
+16-23: "Version Indicator"
+24-31: "System ID Length"
+32-39: "PDU Type"
+40-47: "Version Info"
+48-55: "Maximum Area"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -46,8 +48,6 @@ All IS-IS PDUs share a common header:
 | **PDU Type** | 8 | 15=IIH (Hello), 17=LSP (Link State), 20=SNP (Sequence Number), etc. |
 | **Version Info** | 8 | Reserved; version 1 |
 | **Maximum Area** | 8 | Maximum number of areas (default 3) |
-
----
 
 ## IS-IS PDU Types
 

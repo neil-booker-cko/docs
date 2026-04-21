@@ -5,45 +5,41 @@ Border Gateway Protocol is a path-vector exterior gateway protocol used for inte
 preference, MED) to allow networks to make informed routing decisions based on policy and path
 characteristics, not just shortest distance.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Application/Network (Layer 3-4)
-- **Transport:** TCP port 179
-- **Purpose:** Inter-AS routing; policy-based path selection; route aggregation
-- **Versions:** BGPv4 (RFC 4271); BGP with MPLS VPN (RFC 4364)
-- **Typical use:** ISP-to-ISP, datacenter-to-cloud, enterprise edge routing
-- **Keepalive interval:** 60 seconds (default); Hold time 180 seconds
-- **Message types:** Open, Update, Keepalive, Notification, Route-Refresh
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Network/Application (Layer 3-4) |
+| **Transport** | TCP port 179 |
+| **RFC** | RFC 4271 (BGPv4), RFC 4364 (MPLS VPN) |
+| **Purpose** | Inter-AS routing; policy-based path selection |
+| **Typical Use** | ISP-to-ISP, datacenter-to-cloud, enterprise edge |
+| **Default Keepalive Interval** | 60 seconds |
+| **Default Hold Time** | 180 seconds |
 
----
+## Packet Structure
 
-## BGP Message Format (TCP Stream)
+### BGP Message Format (TCP Stream)
 
 All BGP messages start with a 19-byte header:
 
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                                 |
-+                                                                 +
-|                    Marker (16 bytes, all 1s)                 |
-+                                                                 +
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|          Length (2)          |     Type (1)    | [Payload]   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```mermaid
+---
+title: "BGP Message Header (19 bytes minimum)"
+---
+packet-beta
+0-127: "Marker (16 bytes, all 1s)"
+128-143: "Length"
+144-151: "Type"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bytes | Purpose |
 | --- | --- | --- |
 | **Marker** | 16 | All 1s (0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF); synchronization |
 | **Length** | 2 | Total message length (header + payload), 19-65535 bytes |
 | **Type** | 1 | Message type: 1=Open, 2=Update, 3=Notification, 4=Keepalive, 5=Route-Refresh |
-
----
 
 ## BGP Message Types
 

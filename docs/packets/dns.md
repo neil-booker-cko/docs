@@ -5,51 +5,44 @@ DNS operates on a distributed hierarchical database; client queries are recursiv
 through root nameservers, TLD servers, and authoritative nameservers. Critical for almost all
 internet-based applications.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Application (Layer 7)
-- **Transport:** UDP port 53 (queries/responses), TCP port 53 (zone transfers, large messages)
-- **Purpose:** Hostname to IP address translation; service discovery; mail routing
-- **Message types:** Query (QR=0), Response (QR=1)
-- **Common use:** Web browsing, email delivery, load balancing, cloud infrastructure
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Application (Layer 7) |
+| **Transport** | UDP port 53 (queries), TCP port 53 (zone transfers) |
+| **RFC** | RFC 1035 (DNS), RFC 4034 (DNSSEC) |
+| **Purpose** | Hostname to IP translation; service discovery; mail routing |
+| **Message Types** | Query (QR=0), Response (QR=1) |
+| **Common Use Cases** | Web browsing, email, load balancing, cloud infrastructure |
 
----
-
-## DNS Message Format
+## Packet Structure
 
 All DNS messages (query and response) share the same header and structure:
 
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                          Transaction ID                      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|QR|   OpCode    |AA|TC|RD|RA| Z |AD|CD|   Response Code       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      Question Count                         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                       Answer Count                          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Authority Count                          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Additional Count                         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                       Questions Section                     |
-|                                                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                       Answers Section                       |
-|                                                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Authority Section (NS records)           |
-|                                                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Additional Section                       |
-|                                                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```mermaid
+---
+title: "DNS Message Header (12 bytes fixed)"
+---
+packet-beta
+0-15: "Transaction ID"
+16: "QR"
+17-20: "OpCode"
+21: "AA"
+22: "TC"
+23: "RD"
+24: "RA"
+25: "Z"
+26: "AD"
+27: "CD"
+28-31: "Response Code"
+32-47: "Question Count"
+48-63: "Answer Count"
+64-79: "Authority Count"
+80-95: "Additional Count"
 ```
 
-### Header Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -68,8 +61,6 @@ All DNS messages (query and response) share the same header and structure:
 | **Answer Count** | 16 | Number of resource records (RRs) in answer section |
 | **Authority Count** | 16 | Number of NS records pointing to authority |
 | **Additional Count** | 16 | Number of RRs in additional section |
-
----
 
 ## DNS Query and Resolution
 

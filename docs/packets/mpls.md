@@ -4,27 +4,33 @@ Multiprotocol Label Switching is a forwarding mechanism that prepends a label st
 allowing fast label-based switching instead of IP routing table lookup. MPLS enables traffic engineering,
 VPNs, and QoS optimization.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Layer 2.5 (between Data Link and Network)
-- **Ethertype:** 0x8847 (MPLS unicast), 0x8848 (MPLS multicast)
-- **Purpose:** Fast label-based forwarding, traffic engineering, VPN tunneling
-- **Label range:** 0-1048575 (20-bit label field)
-- **Reserved labels:** 0-15
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Layer 2.5 (between Data Link and Network) |
+| **EtherType** | 0x8847 (MPLS unicast), 0x8848 (MPLS multicast) |
+| **RFC** | RFC 3031 (MPLS Architecture), RFC 3032 (MPLS Encapsulation) |
+| **Purpose** | Fast label-based forwarding, traffic engineering, VPN tunneling |
+| **Label Range** | 0-1048575 (20-bit label field) |
+| **Reserved Labels** | 0-15 |
 
+## Packet Structure
+
+### MPLS Label Stack Entry (Shim Header)
+
+```mermaid
 ---
-
-## MPLS Label Stack Entry (Shim Header)
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                Label (20 bits)        |TC |S|      TTL      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "MPLS Shim Header (32 bits)"
+---
+packet-beta
+0-19: "Label"
+20-22: "TC"
+23: "S"
+24-31: "TTL"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -48,8 +54,6 @@ VPNs, and QoS optimization.
 | **15** | Reserved | Reserved |
 | **16+** | Available | User labels (LSPs, VPNs, traffic engineering) |
 
----
-
 ## MPLS Label Stack
 
 Packets can have multiple labels (label stack); processed from top to bottom.
@@ -69,8 +73,6 @@ graph TD
     B --> C & D & E
     F --> G --> H
 ```
-
----
 
 ## MPLS Forwarding Process
 
@@ -118,8 +120,6 @@ flowchart TD
     A --> B --> C --> D
     EX -.-> B
 ```
-
----
 
 ## MPLS LSP (Label Switched Path)
 

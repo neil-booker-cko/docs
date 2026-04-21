@@ -4,29 +4,32 @@ Internet Group Management Protocol manages multicast group membership. Hosts use
 routers which multicast groups they want to receive. Routers use IGMP to track and forward
 multicast traffic only to interested segments.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Network (Layer 3)
-- **IP Protocol Number:** 2
-- **Purpose:** Multicast group membership management
-- **Versions:** IGMPv1 (RFC 1112), IGMPv2 (RFC 2236), IGMPv3 (RFC 3376)
-- **Typical use:** Video streaming, IPTV, stock tickers, service discovery
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Network (Layer 3) |
+| **IP Protocol Number** | 2 |
+| **RFC** | RFC 3376 (IGMPv3), RFC 2236 (IGMPv2), RFC 1112 (IGMPv1) |
+| **Purpose** | Multicast group membership management |
+| **Common Use Cases** | Video streaming, IPTV, stock tickers, service discovery |
 
+## Packet Structure
+
+### IGMPv2 Packet Format (Most Common)
+
+```mermaid
 ---
-
-## IGMPv2 Packet Format (Most Common)
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      Type         |    Max Resp Time  |         Checksum      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Group Address (32 bits)                    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "IGMPv2 Packet"
+---
+packet-beta
+0-7: "Type"
+8-15: "Max Resp Time"
+16-31: "Checksum"
+32-63: "Group Address"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -34,8 +37,6 @@ multicast traffic only to interested segments.
 | **Max Resp Time** | 8 | Max time (in 1/10 sec) hosts should wait before responding |
 | **Checksum** | 16 | IGMP message checksum |
 | **Group Address** | 32 | IPv4 multicast address (224.0.0.0/4 range) |
-
----
 
 ## IGMP Message Types
 
@@ -81,8 +82,6 @@ Group Address: 224.1.1.1 (the group being left)
 Destination: 224.0.0.2 (all-routers multicast address)
 ```
 
----
-
 ## IGMP Multicast Address Ranges
 
 | Range | Purpose | Example |
@@ -91,8 +90,6 @@ Destination: 224.0.0.2 (all-routers multicast address)
 | **224.0.1.0 – 224.0.1.255** | Globally assigned; RFC standard | 224.0.1.39 (ntp.mcast), 224.0.1.60 (sap.mcast) |
 | **224.1.0.0 – 238.255.255.255** | Globally scoped multicast | Video streams, application-specific |
 | **239.0.0.0 – 239.255.255.255** | Administrative scoped; not forwarded off-site | Building/campus only |
-
----
 
 ## IGMPv1 vs IGMPv2 vs IGMPv3
 
@@ -103,8 +100,6 @@ Destination: 224.0.0.2 (all-routers multicast address)
 | **Group-specific query** | No | Yes | Yes |
 | **Source filtering** | No | No | Yes (include/exclude sources) |
 | **Compatibility** | Oldest | Modern | Newest (backward-compatible) |
-
----
 
 ## IGMP in a Network
 
@@ -120,17 +115,13 @@ sequenceDiagram
     Note over Router: Maintains group membership<br/>Forwards 224.1.1.1 to Host 1 only<br/>Forwards 224.2.2.2 to Host 2 only
 ```
 
----
-
-## Common IGMP Issues
+## Notes & Common Issues
 
 | Issue | Cause | Fix |
 | --- | --- | --- |
 | **Multicast not reaching host** | Router doesn't know about group membership | Check if IGMP queries are sent; verify host joins group |
 | **Excessive multicast traffic** | Switch flooding multicast to all ports | Enable IGMP snooping on managed switches |
 | **Hosts leaving group slowly** | IGMPv1 timeout; router waits 60+ seconds | Upgrade to IGMPv2/v3; check query timing |
-
----
 
 ## IGMP Snooping (Switch Level)
 
@@ -145,15 +136,11 @@ flowchart TD
     A --> B --> C --> D
 ```
 
----
-
 ## References
 
 - RFC 3376: Internet Group Management Protocol, Version 3 (IGMPv3)
 - RFC 2236: Internet Group Management Protocol, Version 2 (IGMPv2)
 - RFC 1112: Host Extensions for IP Multicasting (IGMPv1)
-
----
 
 ## Next Steps
 

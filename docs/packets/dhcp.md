@@ -5,53 +5,42 @@ parameters (gateway, DNS servers, lease duration) to client hosts. DHCP reduces 
 configuration effort and provides centralized IP address management, making it essential for
 enterprise and service provider networks.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Application (Layer 7)
-- **Transport:** UDP port 67 (server), UDP port 68 (client)
-- **Purpose:** Automatic IP address assignment; network configuration distribution
-- **Versions:** DHCPv4 (RFC 2131), DHCPv6 (RFC 3315)
-- **Typical lease duration:** 24 hours (enterprise); shorter for mobile environments
-- **Common use:** Desktop clients, printers, IoT devices, cloud instances
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Application (Layer 7) |
+| **Transport** | UDP port 67 (server), UDP port 68 (client) |
+| **RFC** | RFC 2131 (DHCPv4), RFC 3315 (DHCPv6) |
+| **Purpose** | Automatic IP assignment; network configuration distribution |
+| **Typical Lease Duration** | 24 hours (enterprise); shorter for mobile |
+| **Common Use Cases** | Desktops, printers, IoT devices, cloud instances |
 
+## Packet Structure
+
+```mermaid
 ---
-
-## DHCP Message Format
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Op    |   Htype    |   Hlen    |    Hops     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Transaction ID                       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|           Secs              |              Flags              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Client IP Address                    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Your IP Address                      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Server IP Address                    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Relay Agent IP Address               |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Client Hardware Address              |
-|                        (16 bytes, typically 6 for MAC)       |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                     Server Host Name (64)                    |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      Boot File Name (128)                    |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Options (variable length)                 |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "DHCP Message (Minimum 236 bytes fixed)"
+---
+packet-beta
+0-7: "Op"
+8-15: "Htype"
+16-23: "Hlen"
+24-31: "Hops"
+32-63: "Transaction ID"
+64-79: "Secs"
+80-95: "Flags"
+96-127: "Client IP"
+128-159: "Your IP"
+160-191: "Server IP"
+192-223: "Relay Agent IP"
+224-351: "Client MAC"
+352-863: "Server Name"
+864-1887: "Boot File"
+1888-2047: "Options (variable)"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bytes | Purpose |
 | --- | --- | --- |
@@ -70,8 +59,6 @@ enterprise and service provider networks.
 | **Server Name** | 64 | DHCP server hostname (optional) |
 | **Boot File** | 128 | Boot file name (PXE, TFTP info) |
 | **Options** | Variable | DHCP options (subnet mask, gateway, DNS, lease time, etc.) |
-
----
 
 ## DHCP Message Types (Options)
 

@@ -4,100 +4,71 @@ Precision Time Protocol provides sub-microsecond clock synchronization for time-
 in local networks. PTP is used in data centers, high-frequency trading, telecom, and industrial automation
 where nanosecond-level accuracy is critical.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Application (Layer 7), but uses hardware timestamps at L2/L1
-- **Transport:** UDP ports 319 (events), 320 (general); also Ethernet type 0x88F7
-- **Purpose:** Sub-microsecond clock synchronization (hardware-assisted)
-- **Versions:** PTPv1 (IEEE 1588-2002), PTPv2 (IEEE 1588-2008)
-- **Typical accuracy:** 1-100 nanoseconds (with hardware support)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Application (Layer 7), with L2/L1 hardware timestamps |
+| **Transport Protocol** | UDP ports 319 (events), 320 (general); Ethernet 0x88F7 |
+| **RFC/Standard** | IEEE 1588-2008 (PTPv2), IEEE 1588-2002 (PTPv1) |
+| **Typical Accuracy** | 1-100 nanoseconds (with hardware support) |
+| **Common Use Cases** | High-frequency trading, telecom, data centers, industrial automation |
 
+## Packet Structure
+
+### PTPv2 Sync Message (Master → Slave)
+
+```mermaid
 ---
-
-## PTP vs NTP
-
-| Property | NTP | PTP |
-| --- | --- | --- |
-| **Accuracy** | 1-50 ms | 1-100 ns |
-| **Scope** | Wide area networks | Local networks (LAN) |
-| **Hardware assist** | Software-only | Requires hardware timestamps |
-| **Overhead** | Low (polling every 1024s) | Higher (frequent sync/follow-up) |
-| **Complexity** | Simple | Complex |
-| **Use case** | Logging, BGP timers | Trading, telecom, motion control |
-
+title: "PTPv2 Sync Message Header"
 ---
-
-## PTPv2 Packet Format (Event Messages)
-
-### Sync Message (Master → Slave)
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| transportSpecific |   messageType  |         reserved          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|       versionPTP  |         messageLength                      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|    domainNumber   |        reserved       |      flags        |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      correctionField (64 bits)                |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         reserved32                             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  ClockIdentity (64 bits)                       |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      sourcePortNumber             |     sequenceId             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|        controlField               |    logMessageInterval      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                   originTimestamp (64 bits)                    |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+packet-beta
+0-3: "transportSpecific"
+4-7: "messageType"
+8-15: "reserved"
+16-23: "versionPTP"
+24-39: "messageLength"
+40-47: "domainNumber"
+48-55: "reserved"
+56-63: "flags"
+64-127: "correctionField"
+128-159: "reserved32"
+160-223: "clockIdentity"
+224-239: "sourcePortNumber"
+240-255: "sequenceId"
+256-271: "controlField"
+272-279: "logMessageInterval"
+280-343: "originTimestamp"
 ```
 
 ### Follow_Up Message (Master → Slave, after Sync)
 
 Contains precise timestamp of the Sync message transmission (hardware-captured).
 
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| [Header as above]                                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                     preciseOriginTimestamp                     |
-|                          (64 bits)                             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      [TLV extensions]                          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-```
-
 ### Delay_Req Message (Slave → Master)
 
 Slave requests round-trip delay measurement.
-
-```text
-[Common header as above]
-|                     originTimestamp (64 bits)                  |
-|                      (slave's TX timestamp)                    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-```
 
 ### Delay_Resp Message (Master → Slave)
 
 Master responds with receive timestamp of Delay_Req.
 
-```text
-[Common header as above]
-|                      receiveTimestamp (64 bits)               |
-|                       (master RX of Delay_Req)                |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-```
+## Field Reference (Common Header)
 
----
+| Field | Bits | Description |
+| --- | --- | --- |
+| **transportSpecific** | 4 | PTP transport specification |
+| **messageType** | 4 | Message type (0=Sync, 1=Delay_Req, 2=Pdelay_Req, etc.) |
+| **versionPTP** | 4 | PTP version (2 for PTPv2) |
+| **messageLength** | 16 | Total message length in bytes |
+| **domainNumber** | 8 | PTP domain (0-127) |
+| **flags** | 8 | Control flags (leap second, frequency traceable, etc.) |
+| **correctionField** | 64 | Cumulative correction for residence time |
+| **clockIdentity** | 64 | Originating clock's unique identity |
+| **sourcePortNumber** | 16 | Port number on source device |
+| **sequenceId** | 16 | Sequence number for this message |
+| **controlField** | 8 | Control field (0=Sync, 1=Delay_Resp, 2=Follow_Up, etc.) |
+| **logMessageInterval** | 8 | Log2 of mean time between messages |
 
 ## PTPv2 Message Types
 
@@ -113,8 +84,6 @@ Master responds with receive timestamp of Delay_Req.
 | **Announce (0x0B)** | Master → All | Master availability; priority |
 | **Signaling (0x12)** | Both directions | Request/grant subscriptions |
 | **Management (0x0D)** | Both directions | Administrative queries |
-
----
 
 ## PTP Synchronization Process (Slave Perspective)
 
@@ -133,8 +102,6 @@ sequenceDiagram
 
 **Key advantage:** Hardware timestamps on Follow_Up and Delay_Resp provide
 picosecond precision.
-
----
 
 ## PTP Modes
 
@@ -165,8 +132,6 @@ graph LR
     DeviceA -.->|Peer delay| DeviceC
 ```
 
----
-
 ## PTP Clock Classes & Grandmaster Selection
 
 | Class | Accuracy | Source | Example |
@@ -181,8 +146,6 @@ graph LR
 **Grandmaster Selection:** Grandmasters (masters) are elected based on best clock
 class, accuracy, and priority.
 
----
-
 ## PTP Hardware Support
 
 To achieve nanosecond accuracy, PTP requires:
@@ -196,8 +159,6 @@ Modern enterprise switches and NICs include PTP support:
 - Cisco switches: `ptp server` / `ptp client`
 - Mellanox NICs: DPDK integration for PTP
 - Intel/Broadcom NICs: Firmware support for hardware timestamps
-
----
 
 ## Ethernet-Based PTP (Layer 2)
 
@@ -216,9 +177,7 @@ Advantages:
 - Deterministic timestamps (no ARP, DHCP, etc.)
 - Can synchronize network infrastructure itself
 
----
-
-## Common Issues
+## Notes & Common Issues
 
 | Issue | Cause | Fix |
 | --- | --- | --- |
@@ -227,17 +186,12 @@ Advantages:
 | **Slave won't sync** | Clock class mismatch or priority | Verify Grandmaster election and domain |
 | **Asymmetric delay** | Network switch without PTP support | Deploy PTP-aware switches (transparent clock) |
 
----
-
 ## References
 
 - IEEE 1588-2008: Precision Clock Synchronization Protocol
-- RFC 5905: NTP Version 4 (for comparison)
-
----
 
 ## Next Steps
 
-- Read [NTP](ntp.md) for wide-area synchronization
-- See [NTP vs PTP](../theory/ntp_vs_ptp.md) comparison
-- Configure PTP on your switches/routers (vendor-specific)
+- Read [NTP](ntp.md) for wide-area clock synchronization
+- See [NTP vs PTP](../theory/ntp_vs_ptp.md) comparison for deployment decisions
+- Configure PTP on enterprise switches and routers (vendor-specific guides)

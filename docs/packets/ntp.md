@@ -4,49 +4,42 @@ Network Time Protocol synchronizes clocks across networked devices. NTP is criti
 logging, cryptographic operations (certificate validation), BGP timers, and security event
 correlation across a network.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Application (Layer 7)
-- **Transport:** UDP port 123
-- **Purpose:** Clock synchronization with millisecond accuracy
-- **Versions:** NTPv3 (RFC 1305), NTPv4 (RFC 5905)
-- **Typical accuracy:** 1-50 ms (LAN), 100+ ms (WAN)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Application (Layer 7) |
+| **Transport Protocol** | UDP port 123 |
+| **RFC** | RFC 5905 (NTPv4), RFC 1305 (NTPv3) |
+| **Purpose** | Clock synchronization with millisecond accuracy |
+| **Typical Accuracy** | 1-50 ms (LAN), 100+ ms (WAN) |
+| **Common Use Cases** | Logging, PKI, BGP timers, security event correlation |
 
+## Packet Structure
+
+The NTP packet is fixed at 48 bytes (384 bits) for basic messages, plus optional authentication.
+
+```mermaid
 ---
-
-## NTP Packet Format
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|LI | VN  |Mode |    Stratum     |     Poll      |  Precision    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                          Root Delay                            |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                       Root Dispersion                          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                     Reference Identifier                       |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                                 |
-|                   Reference Timestamp (64 bits)               |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                                 |
-|                   Originate Timestamp (64 bits)               |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                                 |
-|                    Receive Timestamp (64 bits)                |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                                                                 |
-|                   Transmit Timestamp (64 bits)                |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "NTP Packet (NTPv4)"
+---
+packet-beta
+0-1: "LI"
+2-4: "VN"
+5-7: "Mode"
+8-15: "Stratum"
+16-23: "Poll"
+24-31: "Precision"
+32-63: "Root Delay"
+64-95: "Root Dispersion"
+96-127: "Reference Identifier"
+128-191: "Reference Timestamp"
+192-255: "Originate Timestamp"
+256-319: "Receive Timestamp"
+320-383: "Transmit Timestamp"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -85,8 +78,6 @@ Example: `0x80000000` = 0.5 seconds
 | **2** | One hop from stratum 1 | 10-100 ms | Time server synced from stratum 1 |
 | **3+** | Multiple hops | 100+ ms | Corporate time servers, cloud instances |
 | **16** | Unsynchronized | — | No valid source; cannot be used |
-
----
 
 ## NTP Modes & Operation
 
@@ -129,8 +120,6 @@ stateDiagram-v2
     BroadcastMode: Broadcast (5)<br/>LAN Distribution
 ```
 
----
-
 ## Common NTP Configurations
 
 ### Query NTP Server (Client Mode)
@@ -155,8 +144,6 @@ Root Dispersion: 0 ms (stratum 1) or error bound
 Reference ID: "GPS " (ASCII) for stratum 1 GPS receivers
 ```
 
----
-
 ## Leap Seconds
 
 NTP warns of upcoming leap seconds (added to UTC for Earth rotation corrections).
@@ -169,8 +156,6 @@ NTP warns of upcoming leap seconds (added to UTC for Earth rotation corrections)
 | `3` | Unsynchronized; leap second status unknown |
 
 Devices receiving LI=1 should add 1 second after the current minute ends.
-
----
 
 ## NTP Authentication (NTPv4)
 
@@ -186,9 +171,7 @@ ntp key 1 md5 "SharedSecret123"
 ntp trusted-key 1
 ```
 
----
-
-## Common Issues
+## Notes & Common Issues
 
 | Issue | Cause | Detection |
 | --- | --- | --- |
@@ -197,15 +180,11 @@ ntp trusted-key 1
 | **Stratum degradation** | Primary source down; fallback to secondary | Stratum increases over time |
 | **Broadcast storms** | Multiple broadcast servers on same LAN | Excessive NTP traffic; desync |
 
----
-
 ## References
 
 - RFC 5905: NTP Version 4 Protocol and Algorithms
 - RFC 1305: NTP Version 3 Specification (obsolete)
 - NIST: Network Time Protocol
-
----
 
 ## Next Steps
 

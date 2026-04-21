@@ -5,41 +5,39 @@ topology information to build a complete map of the network, then calculate shor
 Dijkstra's algorithm. Supports fast convergence, equal-cost multipath (ECMP), and hierarchical
 network design with areas.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Network (Layer 3)
-- **IP Protocol Number:** 89
-- **Destination IP:** 224.0.0.5 (all OSPF routers), 224.0.0.6 (all DR/BDR)
-- **Purpose:** Dynamic routing; fast convergence; ECMP; hierarchical topology
-- **Versions:** OSPFv2 (IPv4, RFC 2328), OSPFv3 (IPv6, RFC 5340)
-- **Hello interval:** 10 seconds (default, depends on network type)
-- **Dead interval:** 40 seconds (default, 4 × Hello)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Network (Layer 3) |
+| **IP Protocol Number** | 89 |
+| **RFC** | RFC 2328 (OSPFv2), RFC 5340 (OSPFv3) |
+| **Destination IP** | 224.0.0.5 (all OSPF), 224.0.0.6 (all DR/BDR) |
+| **Purpose** | Dynamic routing; fast convergence; hierarchical topology |
+| **Default Hello Interval** | 10 seconds (depends on network type) |
+| **Default Dead Interval** | 40 seconds (4 × Hello) |
 
+## Packet Structure
+
+### OSPFv2 Packet Format (IPv4)
+
+```mermaid
 ---
-
-## OSPFv2 Packet Format (IPv4)
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Version |      Type        |        Packet Length           |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                         Router ID                            |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                          Area ID                             |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|           Checksum            |  AU Type     |   Auth Data   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    Authentication (64 bits)                  |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|              Packet-Specific Data (varies by type)           |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "OSPFv2 Common Header"
+---
+packet-beta
+0-7: "Version"
+8-15: "Type"
+16-31: "Packet Length"
+32-63: "Router ID"
+64-95: "Area ID"
+96-111: "Checksum"
+112-119: "AU Type"
+120-127: "Auth Data"
+128-191: "Authentication"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -51,8 +49,6 @@ network design with areas.
 | **Checksum** | 16 | Packet checksum (not including authentication field) |
 | **AU Type** | 8 | Authentication type: 0=None, 1=Simple (plaintext), 2=MD5 |
 | **Auth Data** | 64 | Authentication data (password or MD5 key info) |
-
----
 
 ## OSPF Packet Types
 

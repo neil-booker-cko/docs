@@ -4,36 +4,41 @@ Hot Standby Router Protocol is Cisco's proprietary gateway redundancy protocol. 
 standby router that takes over if the active (primary) router fails, providing transparent failover
 for hosts using a virtual IP address.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Network (Layer 3)
-- **IP Protocol Number:** UDP port 1985
-- **Destination IP:** 224.0.0.2 (all routers)
-- **Purpose:** Gateway redundancy and failover
-- **Versions:** HSRPv1 (RFC 2281), HSRPv2 (RFC 3768 via Cisco IOS)
-- **Advertisement interval:** 3 seconds (default)
-- **Holdtime:** 10 seconds (default)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Network (Layer 3) |
+| **Transport** | UDP port 1985 |
+| **RFC** | RFC 2281 (HSRPv1), RFC 3768 (HSRPv2) |
+| **Destination IP** | 224.0.0.2 (all routers) |
+| **Purpose** | Gateway redundancy and failover (Cisco proprietary) |
+| **Default Hello Interval** | 3 seconds |
+| **Default Hold Time** | 10 seconds |
 
+## Packet Structure
+
+### HSRPv1 Packet Format (UDP Port 1985)
+
+```mermaid
 ---
-
-## HSRPv1 Packet Format (UDP Port 1985)
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|Version| Op Code |  State  |   Hello Time  |  Hold Time     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  Priority | Group | Reserved |      Checksum              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                      Virtual IP Address                      |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|             Authentication Data (optional, 8 bytes)          |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "HSRPv1 Packet"
+---
+packet-beta
+0-3: "Version"
+4-7: "Op Code"
+8-15: "State"
+16-23: "Hello Time"
+24-31: "Hold Time"
+32-39: "Priority"
+40-47: "Group"
+48-55: "Reserved"
+56-71: "Checksum"
+72-103: "Virtual IP"
+104-167: "Auth Data (optional)"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -80,8 +85,6 @@ stateDiagram-v2
     ACTIVE --> LISTEN: Failure or<br/>handoff
 ```
 
----
-
 ## HSRP Election Process
 
 ```mermaid
@@ -95,8 +98,6 @@ sequenceDiagram
     Note over RouterB: B becomes STANDBY
     Note over RouterA,RouterB: All hosts use HSRP VIP<br/>as gateway (Router A's MAC)
 ```
-
----
 
 ## HSRP Priority and Preemption
 
@@ -144,8 +145,6 @@ graph TD
     D1 --> D2 --> D3 --> D4 --> D5
 ```
 
----
-
 ## HSRP Timers
 
 | Timer | Default | Meaning |
@@ -160,8 +159,6 @@ graph TD
 Hello: 1 second, Hold Time: 3 seconds → ~3 second failover
 Hello: 100ms, Hold Time: 300ms → sub-second failover (Cisco IOS 12.3+)
 ```
-
----
 
 ## HSRP Virtual MAC Address
 
@@ -179,8 +176,6 @@ All routers in group use same MAC address.
 Active router "owns" the MAC (responds to ARP requests).
 Standby ignores ARP for HSRP VIP.
 ```
-
----
 
 ## HSRP Messages
 
@@ -208,9 +203,7 @@ Time.
 | **Authentication** | Plaintext/MD5 | Plaintext/MD5/SHA |
 | **Multicast** | 224.0.0.2 | 224.0.0.102 (v2-specific) |
 
----
-
-## Common HSRP Issues
+## Notes & Common Issues
 
 | Issue | Cause | Fix |
 | --- | --- | --- |
@@ -219,14 +212,10 @@ Time.
 | **Rapid state changes** | Flapping Active router; priority conflicts | Stabilize router; check link quality |
 | **HSRP VIP unreachable** | HSRP not enabled; MAC not owned by Active | Verify HSRP running and Active elected |
 
----
-
 ## References
 
 - RFC 2281: Cisco Hot Standby Router Protocol (HSRPv1)
 - Cisco IOS documentation: HSRP, HSRPv2
-
----
 
 ## Next Steps
 

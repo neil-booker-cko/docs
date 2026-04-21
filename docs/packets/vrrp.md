@@ -4,38 +4,40 @@ Virtual Router Redundancy Protocol provides gateway redundancy by allowing multi
 to share a virtual IP address. VRRP automatically elects a Master router; if it fails, a Backup
 takes over with minimal traffic loss.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Network (Layer 3)
-- **IP Protocol Number:** 112
-- **Destination IP:** 224.0.0.18 (all VRRP routers)
-- **Purpose:** Gateway redundancy and failover
-- **Versions:** VRRPv2 (IPv4, RFC 3768), VRRPv3 (IPv4/IPv6, RFC 5798)
-- **Advertisement interval:** 1 second (default)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Network (Layer 3) |
+| **IP Protocol Number** | 112 |
+| **RFC** | RFC 5798 (VRRPv3), RFC 3768 (VRRPv2) |
+| **Destination IP** | 224.0.0.18 (all VRRP routers) |
+| **Purpose** | Gateway redundancy and automatic failover |
+| **Default Advertisement Interval** | 1 second |
 
+## Packet Structure
+
+### VRRPv2 Packet Format
+
+```mermaid
 ---
-
-## VRRPv2 Packet Format
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|Version| Type  |   Virtual Rtr ID   |  Priority    | Count IP |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|       Auth Type        |   Adver Int    |   Checksum        |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    IP Address (VRRP VIP)                     |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                    IP Address (Optional, repeat)             |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Authentication Data (optional, 8 bytes, deprecated)        |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "VRRPv2 Packet"
+---
+packet-beta
+0-3: "Version"
+4-7: "Type"
+8-15: "VRID"
+16-23: "Priority"
+24-31: "Count IP"
+32-39: "Auth Type"
+40-47: "Adver Int"
+48-63: "Checksum"
+64-95: "IP Address 1"
+96-127: "IP Address 2"
+128-191: "Auth Data (optional)"
 ```
 
-### Field Descriptions
+## Field Reference
 
 | Field | Bits | Purpose |
 | --- | --- | --- |
@@ -48,8 +50,6 @@ takes over with minimal traffic loss.
 | **Adver Int** | 8 | Advertisement interval in seconds |
 | **Checksum** | 16 | VRRP packet checksum |
 | **IP Address** | 32 | Virtual IP (VRRP VIP) or secondary addresses |
-
----
 
 ## VRRP Election Process
 
@@ -65,8 +65,6 @@ sequenceDiagram
     Note over RouterA,RouterB: All hosts use VRRP VIP<br/>as gateway (Router A)
 ```
 
----
-
 ## Priority Values
 
 | Priority | Role | Meaning |
@@ -77,8 +75,6 @@ sequenceDiagram
 | **0** | Disabled | Router stops participating in VRRP group |
 
 **Owner:** A router configured with the VRRP VIP as a real interface IP is the "owner" (priority 255).
-
----
 
 ## VRRP Timers
 
@@ -99,8 +95,6 @@ T=3s: Master Down Interval expires → Backup becomes MASTER
       Traffic flows resume
 ```
 
----
-
 ## VRRP MAC Address
 
 Virtual MAC derived from VRID:
@@ -115,8 +109,6 @@ All routers in group use same MAC; ARP resolves VRRP VIP to this MAC.
 Master router "owns" the MAC (responds to ARP).
 Backup ignores ARP for VRRP VIP.
 ```
-
----
 
 ## VRRP State Machine
 
@@ -134,8 +126,6 @@ stateDiagram-v2
     MASTER --> BACKUP: Failure detected<br/>(priority < advertised)<br/>(no adv for 3s)
     BACKUP --> MASTER: Recovery<br/>(higher priority advertised)
 ```
-
----
 
 ## VRRP VIP Ownership
 
@@ -158,8 +148,6 @@ graph TD
 ```
 
 **Owner always wins:** A router with VRRP VIP as a real interface IP cannot lose the MASTER role.
-
----
 
 ## Common Deployment Patterns
 
@@ -193,8 +181,6 @@ graph TD
     G2B -.->|Failover| SPLIT
 ```
 
----
-
 ## VRRP vs HSRP vs GLBP
 
 | Feature | VRRP | HSRP | GLBP |
@@ -206,9 +192,7 @@ graph TD
 | **IPv6 support** | VRRPv3 yes | No | No |
 | **Complexity** | Low | Low | Higher |
 
----
-
-## Common Issues
+## Notes & Common Issues
 
 | Issue | Cause | Fix |
 | --- | --- | --- |
@@ -217,14 +201,10 @@ graph TD
 | **Rapid flapping** | Preempt enabled; priorities keep changing | Disable preempt or stabilize priorities |
 | **VRRP VIP unreachable** | Master's MAC not responding to ARP | Verify VRRP enabled and running |
 
----
-
 ## References
 
 - RFC 5798: Virtual Router Redundancy Protocol (VRRPv3)
 - RFC 3768: Virtual Router Redundancy Protocol (VRRPv2)
-
----
 
 ## Next Steps
 

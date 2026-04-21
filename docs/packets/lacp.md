@@ -4,58 +4,58 @@ Link Aggregation Control Protocol negotiates and maintains link aggregation (bon
 devices. LACP ensures that only compatible ports form an aggregation group, preventing misconfiguration
 and enabling dynamic load balancing.
 
-## Overview
+## Quick Reference
 
-- **Layer:** Data Link (Layer 2)
-- **Ethernet Type:** 0x8809 (Slow Protocols)
-- **Subtype:** 0x01 (LACP)
-- **Purpose:** Negotiate and monitor link aggregation
-- **Destination MAC:** 01:80:C2:00:00:02 (all-LACPDUs)
-- **Interval:** Fast (1 LACP/sec) or Slow (30 LACP/min)
+| Property | Value |
+| --- | --- |
+| **OSI Layer** | Data Link (Layer 2) |
+| **Ethernet Type** | 0x8809 (Slow Protocols) |
+| **LACP Subtype** | 0x01 |
+| **RFC/Standard** | IEEE 802.3ad, IEEE 802.1AX |
+| **Destination MAC** | 01:80:C2:00:00:02 (all-LACPDUs) |
+| **Transmission Interval** | Fast (1 LACP/sec) or Slow (30 LACP/min) |
 
+## Packet Structure
+
+```mermaid
 ---
-
-## LACP PDU Format
-
-```text
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  Subtype (0x01)  |        Version (0x01)        |   TLV Type  |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  TLV Length (20) |        Actor System Priority              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                  Actor System ID (MAC - 6 bytes)             |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|     Actor Key (2)    |        Actor Port Priority (2)         |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|       Actor Port Number (2)    |    Actor State (1)   |  rsv  |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  TLV Type (0x02)  | TLV Length (20) | Partner System Priority |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                 Partner System ID (MAC - 6 bytes)            |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      Partner Key (2)    |    Partner Port Priority (2)        |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|      Partner Port Number (2)  |   Partner State (1)  |  rsv   |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|  TLV Type (0x03)  | TLV Length (16) |  Collector Max Delay    |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                          Reserved (12 bytes)                  |
-|                                                                 |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+title: "LACP PDU (Type-Length-Value Structure)"
+---
+packet-beta
+0-7: "Subtype"
+8-15: "Version"
+16-23: "TLV Type (0x01)"
+24-31: "TLV Length (20)"
+32-47: "Actor Sys Priority"
+48-95: "Actor System ID"
+96-111: "Actor Key"
+112-127: "Actor Port Priority"
+128-143: "Actor Port Number"
+144-151: "Actor State"
+152-159: "Reserved"
 ```
 
-### TLV (Type-Length-Value) Entries
+## Field Reference
+
+Actor and Partner Information TLVs contain the following structure:
+
+| Field | Bits | Description |
+| --- | --- | --- |
+| **Subtype** | 8 | 0x01 for LACP |
+| **Version** | 8 | 0x01 (current version) |
+| **Actor/Partner System Priority** | 16 | Lower value preferred |
+| **Actor/Partner System ID** | 48 | MAC address of the system |
+| **Actor/Partner Key** | 16 | Aggregation group identifier |
+| **Actor/Partner Port Priority** | 16 | Lower value preferred within aggregation |
+| **Actor/Partner Port Number** | 16 | Physical port identifier |
+| **Actor/Partner State** | 8 | Activity, Timeout, Aggregation, Sync, Collecting, Distributing flags |
+
+## TLV (Type-Length-Value) Entries
 
 1. **Actor Information TLV (0x01):** Describes this device's port/system
 2. **Partner Information TLV (0x02):** Describes peer's port/system
 3. **Collector Information TLV (0x03):** Flow collection capabilities
 4. **Terminator TLV (0x00):** End of LACP PDU (optional)
-
----
 
 ## Actor/Partner State Bits
 
@@ -73,8 +73,6 @@ and enabling dynamic load balancing.
 **Aggregated status:** Both Collecting AND Distributing bits must be 1 for a port to
 actively carry traffic.
 
----
-
 ## LACP Negotiation Process
 
 ```mermaid
@@ -90,8 +88,6 @@ sequenceDiagram
     DeviceB->>DeviceA: LACP PDUs<br/>State: Sync + Collecting + Distributing
     Note over DeviceA,DeviceB: Link Aggregation Established<br/>All 4 ports carry traffic as single logical link
 ```
-
----
 
 ## Key Configuration Parameters
 
@@ -125,8 +121,6 @@ Ports 1-4: Key 1 (form LAG together)
 Ports 5-8: Key 2 (form separate LAG)
 ```
 
----
-
 ## LACP Timeouts
 
 | Parameter | Active | Passive |
@@ -139,8 +133,6 @@ Ports 5-8: Key 2 (form separate LAG)
 
 **Passive:** Only respond to peer's LACP. Saves bandwidth but slower convergence.
 
----
-
 ## Common LACP States
 
 | State | Collecting | Distributing | Status |
@@ -150,8 +142,6 @@ Ports 5-8: Key 2 (form separate LAG)
 | **Standby** | ✗ | ✗ | Not carrying traffic; waiting for active port failure |
 | **Individual** | ✗ | ✗ | Port cannot aggregate (mismatched system/key) |
 | **Expired** | ✗ | ✗ | Timer expired; no LACP PDUs received |
-
----
 
 ## Load Balancing Across LAG Ports
 
@@ -168,8 +158,6 @@ Frame C: Src 10.0.0.3 → Dst 10.1.1.2, Port 1 → Eth1 (same dest, but differen
 
 (Most switches use source/dest MAC and IP for hash; L4 ports optional)
 
----
-
 ## LACP vs Static Link Aggregation
 
 | Feature | LACP (Dynamic) | Static (Manual) |
@@ -181,9 +169,7 @@ Frame C: Src 10.0.0.3 → Dst 10.1.1.2, Port 1 → Eth1 (same dest, but differen
 | **Complexity** | Slightly higher CPU | Lower overhead |
 | **Compatibility** | Both devices must support LACP | Some older devices don't support LACP |
 
----
-
-## Common Issues
+## Notes & Common Issues
 
 | Issue | Cause | Fix |
 | --- | --- | --- |
@@ -191,14 +177,10 @@ Frame C: Src 10.0.0.3 → Dst 10.1.1.2, Port 1 → Eth1 (same dest, but differen
 | **LACP PDUs not exchanged** | One side set to Passive + both sides Passive | Set at least one side to Active |
 | **Unequal load distribution** | Hash algorithm imbalance | Some flows use one port; depends on source/dest IPs |
 
----
-
 ## References
 
 - IEEE 802.3ad: Link Aggregation
 - IEEE 802.1AX: Link Aggregation Control Protocol (LACP)
-
----
 
 ## Next Steps
 
