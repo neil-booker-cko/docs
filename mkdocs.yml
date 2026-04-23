@@ -292,11 +292,16 @@ nav:
           - Cisco IOS-XE Upgrade: operations/cisco_upgrade.md
           - FortiGate Firmware Upgrade: operations/fortigate_upgrade.md
           - Pre/Post Change Verification: operations/change_verification.md
+          - BGP Best Practices: operations/bgp_best_practices.md
           - BGP Troubleshooting: operations/bgp_troubleshooting.md
+          - OSPF Best Practices: operations/ospf_best_practices.md
           - OSPF Troubleshooting: operations/ospf_troubleshooting.md
-          - Config Backup & Restore: operations/config_backup.md
+          - Gateway Redundancy Design: operations/gateway_redundancy_design.md
+          - BFD Best Practices: operations/bfd_best_practices.md
+          - Link Aggregation Best Practices: operations/link_aggregation_best_practices.md
+          - IPsec VPN Best Practices: operations/ipsec_vpn_best_practices.md
           - IPsec VPN Troubleshooting: operations/ipsec_vpn_troubleshooting.md
-          - IPsec Best Practices: operations/ipsec_best_practices.md
+          - Config Backup & Restore: operations/config_backup.md
           - Security Hardening: operations/security_hardening.md
       - Reference:
           - Overview: reference/index.md
