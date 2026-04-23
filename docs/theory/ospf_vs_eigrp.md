@@ -129,9 +129,10 @@ EIGRP is composable by default:
 
 ```text
 Metric = 256 × [(K1 × BW + (K2 × BW / (256 − Load)) + K3 × Delay + (K4 × Reliability / (256 − Load))) / (K5 × Reliability + K6)]
-```text
+```
 
 Where:
+
 - **K1 (bandwidth):** Default = 1
 - **K2 (load):** Default = 0 (disabled, prevents oscillations)
 - **K3 (delay):** Default = 1
@@ -141,13 +142,14 @@ In practice, EIGRP default metric simplifies to:
 
 ```text
 Metric = 256 × (Bandwidth + Delay) / (10^7)
-```text
+```
 
 Which incorporates both **bandwidth and delay** in a single metric. This makes EIGRP more
 intuitive for path selection: latency-sensitive traffic naturally prefers lower-delay
 paths.
 
 **Example:**
+
 - Path A: 10 Mbps, 10ms delay → metric ≈ 25,600 + 10,240 = 35,840
 - Path B: 1 Mbps, 1ms delay → metric ≈ 256,000 + 1,024 = 257,024
 
@@ -169,6 +171,7 @@ OSPF convergence depends on:
 **Total default convergence:** ~30–180 seconds
 
 **Tuning OSPF for fast convergence:**
+
 - Reduce hello/dead timers: `ip ospf hello-interval 1` (1 second) and `ip ospf dead-interval
   4` (4 seconds)
 - Use BFD (Bidirectional Forwarding Detection) for sub-second failure detection
@@ -184,6 +187,7 @@ EIGRP convergence is **two-tier:**
    depending on topology and query propagation.
 
 **Tuning EIGRP for sub-second convergence:**
+
 - Configure multiple paths / ensure feasible successors exist
 - Use `timers active-time 0` to disable active timeout (but risk permanent queries)
 - Use BFD to detect failures in < 300ms
@@ -205,16 +209,19 @@ OSPF introduces **hierarchy** as a fundamental concept:
 - **NSSA (Not-So-Stubby Area):** Can inject external routes locally via type 7 LSAs
 
 Multi-area OSPF requires careful planning:
+
 - Area boundaries must be between routers (ABRs)
 - Hierarchical design is a requirement, not optional
 - Misconfigurations are easy: OSPF will work, but inefficiently
 
 **Operators love OSPF because:**
+
 - The SPF tree is deterministic and debuggable
 - Link-state updates mean every router knows the full picture
 - Troubleshooting is visual: `show ip ospf database` shows exactly why paths were chosen
 
 **Operators dislike OSPF because:**
+
 - Multi-area design is mandatory for scale — too much planning for small networks
 - SPF computation and large LSDBs consume CPU on older hardware
 - Convergence tuning requires understanding timers, LSA generation delays, and SPF
@@ -230,12 +237,14 @@ EIGRP is simpler at design time but requires understanding the DUAL algorithm:
 - **Feasible successors:** Must be understood to predict convergence behaviour
 
 **Operators love EIGRP because:**
+
 - Flat design; no multi-area hierarchy required
 - Sub-second convergence with feasible successors
 - Lower LSDB size and memory consumption (distance-vector summaries vs link-state flooding)
 - Easier initial configuration for branch offices and hub-and-spoke
 
 **Operators dislike EIGRP because:**
+
 - Cisco proprietary (though RFC 7868 exists, third-party support is limited)
 - DUAL algorithm is less intuitive; "why did the route go here?" requires understanding
   advertised distance and feasibility
