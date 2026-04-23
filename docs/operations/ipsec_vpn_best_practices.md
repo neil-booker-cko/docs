@@ -1111,7 +1111,6 @@ Step 3: Verify continuity
 
 - [IPsec & IKE Theory](../theory/ipsec.md)
 - [IPsec VPN Troubleshooting](ipsec_vpn_troubleshooting.md)
-- [IPsec Best Practices](ipsec_best_practices.md) (already exists; separate document)
 - [Cisco IPsec VPN Configuration](../cisco/ipsec-vpn-minimal.md)
 - [FortiGate IPsec Configuration](../fortigate/ipsec-vpn-minimal.md)
 - [BFD Best Practices](bfd_best_practices.md) (for failover integration)

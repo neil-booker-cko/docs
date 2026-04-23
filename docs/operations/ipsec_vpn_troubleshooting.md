@@ -586,6 +586,6 @@ diagnose vpn ike log list
 ## Next Steps
 
 - [IPsec & IKE](../theory/ipsec.md) — Detailed protocol theory
-- [IPsec Best Practices](ipsec_best_practices.md) — Security hardening
+- [IPsec VPN Best Practices](ipsec_vpn_best_practices.md) — Security hardening and configuration
 - [FortiGate Third-Party VPN](../fortigate/fortigate_third_party_vpn.md) — Device-specific config
 - [AWS Third-Party VPN](../aws/aws_third_party_vpn.md) — Cloud VPN setup
