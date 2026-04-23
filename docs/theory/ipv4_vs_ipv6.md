@@ -41,14 +41,43 @@ and operational differences between them matter for design and troubleshooting.
 
 ### IPv4 Header Fields (20 bytes minimum)
 
-`Version(4)` `IHL(4)` `DSCP(6)` `ECN(2)` `Total Length(16)` `Identification(16)`
-`Flags(3)[DF/MF]` `Fragment Offset(13)` `TTL(8)` `Protocol(8)` `Header Checksum(16)`
-`Source IP(32)` `Destination IP(32)` `Options(variable)`
+```mermaid
+---
+title: "IPv4 Header (20 bytes minimum)"
+---
+packet-beta
+0-3: "Version"
+4-7: "IHL"
+8-13: "DSCP"
+14-15: "ECN"
+16-31: "Total Length"
+32-47: "Identification"
+48-50: "Flags"
+51-63: "Fragment Offset"
+64-71: "TTL"
+72-79: "Protocol"
+80-95: "Header Checksum"
+96-127: "Source IP Address"
+128-159: "Destination IP Address"
+160-191: "Options (if IHL > 5)"
+```
 
 ### IPv6 Header Fields (40 bytes fixed)
 
-`Version(4)` `Traffic Class(8)` `Flow Label(20)` `Payload Length(16)` `Next Header(8)`
-`Hop Limit(8)` `Source IP(128)` `Destination IP(128)`
+```mermaid
+---
+title: "IPv6 Header (40 bytes fixed)"
+---
+packet-beta
+0-3: "Version"
+4-11: "Traffic Class"
+12-31: "Flow Label"
+32-47: "Payload Length"
+48-55: "Next Header"
+56-63: "Hop Limit"
+64-191: "Source Address (128 bits)"
+192-319: "Destination Address (128 bits)"
+```
 
 ### Key simplifications in IPv6
 
@@ -146,24 +175,18 @@ randomised IIDs that rotate periodically to prevent tracking.
 
 ## Dual-Stack Operation
 
-Both protocols run simultaneously. Each interface carries an IPv4 address and one or
-more
+Both protocols run simultaneously. Each interface carries an IPv4 address and one or more
 IPv6 addresses (at minimum a link-local). Applications connect via whichever protocol
 resolves successfully. RFC 6555 (Happy Eyeballs) defines the mechanism: attempt both
-IPv4
-and IPv6 connections concurrently; use whichever completes first.
+IPv4 and IPv6 connections concurrently; use whichever completes first.
 
 ---
 
 ## Notes
 
 - IPv6 link-local addresses (`fe80::/10`) are mandatory and used as next-hops for
-routing
-
-routing
-
-  protocol adjacencies. OSPFv3, IS-IS, and MP-BGP neighbours typically peer over
-  link-local addresses when running IPv6.
+  routing protocol adjacencies. OSPFv3, IS-IS, and MP-BGP neighbours typically peer
+  over link-local addresses when running IPv6.
 
 - Cisco IOS-XE: `ipv6 unicast-routing` enables IPv6 forwarding globally.
   `ipv6 address <prefix/len> eui-64` auto-generates the IID from the interface MAC.
