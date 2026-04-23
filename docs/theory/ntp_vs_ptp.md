@@ -88,9 +88,25 @@ and jitter using a clock filter and selection algorithm.
 
 ### PTP — Best Master Clock Algorithm (BMCA)
 
-PTP clocks elect a Grandmaster automatically using the BMCA, comparing:
-`priority1` → `clockClass` → `clockAccuracy` → `offsetScaledLogVariance` →
-`priority2` → `clockIdentity` (lower = better at each step).
+PTP clocks elect a Grandmaster automatically using the BMCA. Each comparison attribute is
+evaluated in order: if values differ, the lower wins; if equal, move to the next attribute:
+
+```mermaid
+flowchart TD
+    START["Two clocks announce:<br/>Compare attributes in order"] --> P1{priority1<br/>equal?}
+    P1 -->|No| WIN["Lower value<br/>becomes Grandmaster"]
+    P1 -->|Yes| CL{clockClass<br/>equal?}
+    CL -->|No| WIN
+    CL -->|Yes| CA{clockAccuracy<br/>equal?}
+    CA -->|No| WIN
+    CA -->|Yes| OS{offsetScaledLogVariance<br/>equal?}
+    OS -->|No| WIN
+    OS -->|Yes| P2{priority2<br/>equal?}
+    P2 -->|No| WIN
+    P2 -->|Yes| CI{clockIdentity<br/>equal?}
+    CI -->|No| WIN
+    CI -->|Yes| TIE["Undefined<br/>(should not occur)"]
+```
 
 Clocks in the domain form a spanning tree rooted at the Grandmaster. Boundary Clocks
 segment the domain and present a local master to downstream slaves, reducing
