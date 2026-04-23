@@ -27,20 +27,20 @@ An **Autonomous System (AS)** is a network under a single administrative control
 unified routing policy to the Internet. Each AS is assigned a unique 16-bit (now 32-bit) AS number
 (ASN).
 
-```text
-AS 65001 (ISP A)          AS 65002 (ISP B)
-  ┌──────────────┐          ┌──────────────┐
-  │ R1 ─── R2    │          │ R3 ─── R4    │
-  │  │OSPF│      │          │  │OSPF│      │
-  │  └────┘      │          │  └────┘      │
-  └──────────────┘          └──────────────┘
-         │ BGP                     │
-         └─────── (EGP Link) ─────┘
+```mermaid
+graph LR
+    subgraph A["AS 65001 (ISP A)"]
+        R1["R1"] --- R2["R2"]
+    end
+    subgraph B["AS 65002 (ISP B)"]
+        R3["R3"] --- R4["R4"]
+    end
+    R2 -- "eBGP<br/>(EGP Link)" --> R3
+```
 
 Within AS 65001: OSPF distributes routes
 Within AS 65002: OSPF distributes routes
 Between ASes: BGP exchanges reachability
-```
 
 ---
 
@@ -70,17 +70,21 @@ lowest-cost path to reach destinations.
 
 ### Example: OSPF Within an AS
 
-```text
-AS 65001 Network
-  R1 (Core)
-  ├─ OSPF Link-State Database (LSDB): All routers, all links
-  ├─ Dijkstra SPF: Calculate shortest path tree
-  └─ Routing Table: Dest → Next-Hop (cost metric)
+```mermaid
+graph LR
+    LSDB["OSPF Link-State<br/>Database<br/>(All routers, all links)"]
+    SPF["Dijkstra<br/>SPF<br/>(Shortest Path Tree)"]
+    RT["Routing Table<br/>(Dest → Next-Hop)"]
+    LSDB --> SPF
+    SPF --> RT
+```
 
-R1's perspective:
-  10.1.1.0/24 via 10.0.0.2 (cost 20)     [via R2]
-  10.2.0.0/24 via 10.0.0.3 (cost 50)     [via R3]
-  10.3.0.0/24 via 10.0.0.2 (cost 70)     [via R2→R4]
+R1's routing perspective:
+
+```text
+10.1.1.0/24 via 10.0.0.2 (cost 20)     [via R2]
+10.2.0.0/24 via 10.0.0.3 (cost 50)     [via R3]
+10.3.0.0/24 via 10.0.0.2 (cost 70)     [via R2→R4]
 
 IGP chooses: Always use the lowest-cost path
 ```
@@ -117,18 +121,25 @@ routes with its neighbors (peers).
 
 ### Example: BGP Between ASes
 
-```text
-AS 65001                          AS 65002
-  R1 (eBGP speaker)                R3 (eBGP speaker)
-    │                                │
-    └────────── eBGP ───────────────┘
+```mermaid
+graph LR
+    subgraph A["AS 65001"]
+        R1["R1<br/>(eBGP speaker)"]
+    end
+    subgraph B["AS 65002"]
+        R3["R3<br/>(eBGP speaker)"]
+    end
+    R1 -- "eBGP" --> R3
+```
 
 R1 advertises to R3: "AS 65001 can reach 10.1.0.0/16"
-  BGP Path Attributes:
-    AS_PATH: [65001]
-    NEXT_HOP: 10.0.1.1 (R1's address)
-    LOCAL_PREF: 100 (R1's preference)
-    MED: 50 (preferred entry point)
+
+```text
+BGP Path Attributes:
+  AS_PATH: [65001]
+  NEXT_HOP: 10.0.1.1 (R1's address)
+  LOCAL_PREF: 100 (R1's preference)
+  MED: 50 (preferred entry point)
 
 R3's decision:
   "I learned about 10.1.0.0/16 from AS 65001 (AS_PATH: 65001)
@@ -155,28 +166,27 @@ R3's decision:
 
 ### Typical Enterprise Architecture
 
-```text
-Internal Network (AS 65001)        Internet
-     ┌────────────────┐
-     │  R1 ─ R2 ─ R3  │ (OSPF)
-     │  │OSPF│        │
-     │  └────┘        │
-     └────────────────┘
-         │ BGP
-         │
-     ┌───────────┐
-     │ ISP (BGP) │ ──── Internet (BGP)
-     └───────────┘
+```mermaid
+graph TD
+    subgraph A["AS 65001 (Internal)"]
+        R1["R1"] --- R2["R2"] --- R3["R3"]
+    end
+    ISP["ISP<br/>(AS 64512)"]
+    INET["Internet<br/>(BGP mesh)"]
+    A -- "eBGP" --> ISP
+    ISP -- "BGP" --> INET
+```
 
 Inside AS 65001:
-  - OSPF distributes all 10.0.0.0/8 prefixes
-  - All routers know full topology
+
+- OSPF distributes all 10.0.0.0/8 prefixes
+- All routers know full topology
 
 At boundary (R3 or eBGP speaker):
-  - BGP advertises 10.0.0.0/8 to ISP
-  - BGP learns default route or full table from ISP
-  - BGP policies filter/prioritize routes
-```
+
+- BGP advertises 10.0.0.0/8 to ISP
+- BGP learns default route or full table from ISP
+- BGP policies filter/prioritize routes
 
 ---
 
@@ -202,61 +212,66 @@ Routes flow across ASes through this chain:
 
 ### Scenario 1: Enterprise with Single ISP
 
-```text
-Enterprise AS 65001             ISP AS 64512
-┌──────────────────┐          ┌──────────────┐
-│ R1 ─ R2 ─ R3 ─ R4│          │ ISP1 ─ ISP2  │
-│  OSPF interior   │          │ OSPF interior│
-│  BGP to ISP      │          │ BGP to peers │
-└──────────────────┘          └──────────────┘
-         │ eBGP                     │
-         └─────────────────────────┘
+```mermaid
+graph LR
+    subgraph E["Enterprise AS 65001"]
+        R1["R1"] --- R2["R2"] --- R3["R3"] --- R4["R4"]
+    end
+    subgraph I["ISP AS 64512"]
+        ISP1["ISP1"] --- ISP2["ISP2"]
+    end
+    E -- "eBGP" --> I
+```
 
 Enterprise routing:
-  - OSPF: All internal routes (cost-based)
-  - BGP: One eBGP session to ISP (receive default route + learned routes)
-  - Policy: Accept all ISP routes; advertise corporate summarized prefix
-```
+
+- OSPF: All internal routes (cost-based)
+- BGP: One eBGP session to ISP (receive default route + learned routes)
+- Policy: Accept all ISP routes; advertise corporate summarized prefix
 
 ### Scenario 2: Enterprise with Dual ISP (Redundancy)
 
-```text
-         ┌─ ISP A (AS 64512) ─┐
-         │                    │
-┌────────┼────────┐      ┌────┴────────┐
-│Enterprise AS 65001│    │Internet     │
-│ R1 ─ R2 ─ R3      │    │(BGP mesh)   │
-│  OSPF: Internal   │    └─────────────┘
-│  BGP: eBGP to ISPs│        │
-└────────┬────────┘      ┌────┴────────┐
-         │ eBGP          │             │
-         └─ ISP B (AS 64513) ─┘
+```mermaid
+graph TD
+    INET["Internet<br/>(BGP mesh)"]
+    subgraph E["Enterprise AS 65001"]
+        R1["R1"] --- R2["R2"] --- R3["R3"]
+    end
+    ISPA["ISP A<br/>(AS 64512)"]
+    ISPB["ISP B<br/>(AS 64513)"]
+    E -- "eBGP<br/>(primary)" --> ISPA
+    E -- "eBGP<br/>(backup)" --> ISPB
+    ISPA --> INET
+    ISPB --> INET
+```
 
 Enterprise routing:
-  - OSPF: Internal (10.0.0.0/8)
-  - BGP session 1: ISP A (AS 64512)
-  - BGP session 2: ISP B (AS 64513)
-  - Policy: Prefer ISP A (local-pref 200 vs ISP B 100)
-  - Failover: If ISP A down, automatic failover to ISP B via BGP
-```
+
+- OSPF: Internal (10.0.0.0/8)
+- BGP session 1: ISP A (AS 64512)
+- BGP session 2: ISP B (AS 64513)
+- Policy: Prefer ISP A (local-pref 200 vs ISP B 100)
+- Failover: If ISP A down, automatic failover to ISP B via BGP
 
 ### Scenario 3: Multi-AS Enterprise (Merger/Acquisition)
 
-```text
-Company A (AS 65001)       Company B (AS 65002)
-┌──────────────────┐      ┌──────────────────┐
-│ OSPF: Internal   │      │ OSPF: Internal   │
-│ BGP: eBGP        │      │ BGP: eBGP        │
-└──────────────────┘      └──────────────────┘
-         │ eBGP (connects merged entities)
-         └─────────────────┘
+```mermaid
+graph LR
+    subgraph A["Company A<br/>(AS 65001)"]
+        A1["Router A<br/>(OSPF + eBGP)"]
+    end
+    subgraph B["Company B<br/>(AS 65002)"]
+        B1["Router B<br/>(OSPF + eBGP)"]
+    end
+    A1 -- "eBGP<br/>(connected)" --> B1
+```
 
 Each company:
-  - Runs OSPF internally
-  - Runs BGP to peer with other company
-  - Can now share routes while maintaining internal routing autonomy
-  - Policies define what's advertised/learned between companies
-```
+
+- Runs OSPF internally
+- Runs BGP to peer with other company
+- Can now share routes while maintaining internal routing autonomy
+- Policies define what's advertised/learned between companies
 
 ---
 
