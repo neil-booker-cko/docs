@@ -196,7 +196,7 @@ lldp run
 interface GigabitEthernet0/0/1
  lldp transmit
  lldp receive
-```text
+```
 
 ### Disable CDP and Enable LLDP
 
@@ -211,7 +211,7 @@ lldp run
 
 ! Verify LLDP is active
 show lldp neighbors
-```text
+```
 
 ### Display Neighbor Information
 
@@ -232,7 +232,7 @@ show lldp neighbors detail
 ! Capabilities    : Router
 ! Software Version: Cisco IOS-XE Software, Version 17.6.1
 ! Hold time       : 180 seconds (CDP) or 120 seconds (LLDP)
-```text
+```
 
 ---
 
@@ -243,7 +243,7 @@ option for neighbor discovery on FortiGate.
 
 ### Enable LLDP on FortiGate
 
-```text
+```fortios
 ! Enable LLDP
 config system lldp-settings
  set status enable
@@ -254,11 +254,11 @@ diagnose netlink lldp
 
 ! List neighbors discovered via LLDP
 diag netlink lldp summary
-```text
+```
 
 ### Display LLDP Neighbor Information
 
-```text
+```fortios
 ! Show LLDP neighbors on all interfaces
 diag netlink lldp summary
 
@@ -270,7 +270,7 @@ diag netlink lldp summary
 !   System Name: R1.example.com
 !   System Capability: Router
 !   Management IP: 192.0.2.1
-```text
+```
 
 ### Heterogeneous Discovery Scenario
 
@@ -283,15 +283,15 @@ In a hybrid Cisco + FortiGate architecture:
    cdp run  ! Keep for internal Cisco discovery
    ```
 
-1. **FortiGate side:** Enable LLDP only:
+2. **FortiGate side:** Enable LLDP only:
 
-   ```text
+   ```fortios
    config system lldp-settings
     set status enable
    end
    ```
 
-1. **Result:** Both Cisco and FortiGate devices see each other via LLDP. Cisco routers
+3. **Result:** Both Cisco and FortiGate devices see each other via LLDP. Cisco routers
    also see each other via CDP for richer Cisco-specific detail.
 
 ---
@@ -328,7 +328,7 @@ show lldp neighbors | include R2
 ! 2. Neighbor device powered off
 ! 3. Discovery protocol disabled on that interface
 ! 4. TTL/hold time expired (refresh expected in < 60 seconds for CDP, < 30 for LLDP)
-```text
+```
 
 ### Security Implications
 
@@ -341,6 +341,7 @@ routers. However:
   untrusted users).
 
 - **Mitigation:** Disable on untrusted interfaces:
+
   ```ios
   interface Gi0/0/X
    no cdp enable
