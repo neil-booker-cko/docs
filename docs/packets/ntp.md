@@ -59,13 +59,31 @@ packet-beta
 
 ### Fixed-Point Format
 
-Timestamps use fixed-point representation:
+Timestamps use fixed-point representation (32 fractional bits = 233 picoseconds precision).
 
-- **64-bit:** 32-bit seconds + 32-bit fraction (32 fractional bits = 233 picoseconds
-  precision)
-- **32-bit delays:** 16-bit seconds + 16-bit fraction
+**64-bit Timestamp (Reference, Originate, Receive, Transmit):**
 
-Example: `0x80000000` = 0.5 seconds
+```mermaid
+---
+title: "NTP 64-bit Timestamp Format"
+---
+packet-beta
+0-31: "Seconds since<br/>1900-01-01 00:00:00 UTC"
+32-63: "Fractional seconds<br/>(2^-32 per bit)"
+```
+
+**32-bit Delay Format (Root Delay, Root Dispersion):**
+
+```mermaid
+---
+title: "NTP 32-bit Delay Format (Fixed-Point)"
+---
+packet-beta
+0-15: "Seconds<br/>(integer part)"
+16-31: "Fractional seconds<br/>(2^-16 per bit)"
+```
+
+**Example:** `0x80000000` = 0.5 seconds (bit 31 = 2^-1)
 
 ---
 
