@@ -109,14 +109,34 @@ router bgp 65001
 
 **Lists:**
 
-- Ordered lists: use `1.`, `2.`, `3.` (auto-renumbering works automatically)
+- Ordered lists: use `1.` for all items (not `1.`, `2.`, `3.` — see "always 1" below)
 - Unordered lists: use `-` (hyphens only; no `*` or `+`)
-- **Never** insert blank lines between consecutive list items — this breaks the list
-- Blank line after a list is OK; required before next paragraph or heading
+- **Never** insert blank lines between list items (ordered or unordered) — breaks the list
+- Blank line after entire list is OK; required before next paragraph or heading
 - List items spanning multiple lines: indent continuation with 2 spaces
 - Nested lists: indent sub-items with 2 spaces, starting on new line
 
-**List Example — Correct:**
+**Ordered List — Always Use `1.` (not manual numbering):**
+
+Use this (markdown auto-increments during render):
+
+```text
+1. First item
+1. Second item
+1. Third item
+```
+
+Not this (manual numbering creates git diffs on reorder):
+
+```text
+1. First item
+2. Second item
+3. Third item
+```
+
+The "always 1" method keeps diffs clean when reordering or inserting items.
+
+**List Example — Correct (unordered):**
 
 ```text
 - Item 1
