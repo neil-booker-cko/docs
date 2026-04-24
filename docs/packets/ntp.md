@@ -63,24 +63,27 @@ Timestamps use fixed-point representation (32 fractional bits = 233 picoseconds 
 
 **64-bit Timestamp (Reference, Originate, Receive, Transmit):**
 
-```mermaid
----
-title: "NTP 64-bit Timestamp Format"
----
-packet-beta
-0-31: "Seconds since<br/>1900-01-01 00:00:00 UTC"
-32-63: "Fractional seconds<br/>(2^-32 per bit)"
+```text
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                          Seconds                              |
+|                    (since 1900-01-01 UTC)                     |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                     Seconds Fraction                          |
+|              (2^-32 per bit = 233 picoseconds)                |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
 **32-bit Delay Format (Root Delay, Root Dispersion):**
 
-```mermaid
----
-title: "NTP 32-bit Delay Format (Fixed-Point)"
----
-packet-beta
-0-15: "Seconds<br/>(integer part)"
-16-31: "Fractional seconds<br/>(2^-16 per bit)"
+```text
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|          Seconds (integer)         |    Seconds Fraction      |
+|                                    |   (2^-16 per bit)        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
 **Example:** `0x80000000` = 0.5 seconds (bit 31 = 2^-1)
