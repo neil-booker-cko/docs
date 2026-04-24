@@ -299,7 +299,7 @@ router ospf 1
 ! And vice versa
 router eigrp 100
  redistribute ospf 1 metric 1000 100 255 1 1500
-```text
+```
 
 **Risks:** Routing loops, metric mismatches, asymmetric paths.
 
@@ -314,7 +314,7 @@ router ospf 1
 
 router eigrp 100
  ! Leave default AD = 90
-```text
+```
 
 Gradually de-advertise EIGRP prefixes; once all traffic flows through OSPF, shut down
 EIGRP.
@@ -345,7 +345,7 @@ router ospf 1
 interface Gi0/0/1
  ip address 10.0.1.1 255.255.255.0
  ip ospf cost 100
-```text
+```
 
 ### OSPF Multi-Area
 
@@ -360,7 +360,7 @@ router ospf 1
 
 ! Inject external route
  default-information originate metric 1000 metric-type 1
-```text
+```
 
 ### EIGRP Autonomous System
 
@@ -375,7 +375,7 @@ router eigrp 100
 interface Gi0/0/1
  bandwidth 1000000  ! 1 Mbps (for metric calculation)
  delay 100  ! tens of microseconds
-```text
+```
 
 ### EIGRP with Summarization
 
@@ -389,7 +389,7 @@ interface Gi0/0/10
 
 ! Verify
 show ip eigrp topology | include Summary
-```text
+```
 
 ---
 
@@ -444,15 +444,11 @@ show ip eigrp topology | include Summary
 
 - **RFC 7868:** EIGRP was open-sourced in 2013 as RFC 7868. However, only Cisco has a
   complete, mature implementation. Juniper and others have limited EIGRP support.
-
 - **Administrative Distance:** OSPF has AD 110 (lower is better). EIGRP has AD 90. If
   both run simultaneously, EIGRP routes win. This matters during migrations.
-
 - **DUAL algorithm:** The Diffusing Update Algorithm (DUAL) is Cisco's proprietary
   contribution. It ensures loop-free convergence without requiring full topology knowledge
   — an elegant algorithm but not universally adopted.
-
 - **BFD integration:** Both OSPF and EIGRP can integrate with BFD for sub-second failure
   detection, independent of protocol timers.
-
 - For detailed IGP comparison across three protocols, see [EIGRP vs OSPF vs RIP](igp_comparison.md).

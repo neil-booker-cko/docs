@@ -63,7 +63,7 @@ graph LR
         R2b["R2 (Priority 100)<br/>Now Active<br/>Takes VIP"] -->|Forwards traffic| VIP2
         R3b["R3 (Priority 90)<br/>Standby"] -->|Monitors| VIP2
     end
-```text
+```
 
 ### VRRP: Master/Backup Gateway Redundancy
 
@@ -86,7 +86,7 @@ graph LR
         R1b["R1 recovers<br/>Priority 110 > 100"] -->|Becomes Master<br/>Preempts R2| VIP2
         R2b["R2 is demoted to Backup"] -->|Monitors| VIP2
     end
-```text
+```
 
 ### GLBP: Active/Active Load Balancing
 
@@ -107,7 +107,7 @@ graph LR
         AVG3["R3<br/>AVG 3<br/>Forwards for VIP"] -->|Responds: MAC-3| Host3["Host 3<br/>Learns MAC-3<br/>Routes via R3"]
         AVG4["R4<br/>AVG 4<br/>Forwards for VIP"] -->|Responds: MAC-4| Host4["Host 4<br/>Learns MAC-4<br/>Routes via R4"]
     end
-```text
+```
 
 **Key difference:** GLBP requires router **weighting** — administrators assign relative
 weights to each router to control how many hosts are directed to each. If R1 has weight
@@ -157,7 +157,7 @@ Host 2 → VIP (10.0.1.1) → ARP Resolution → Virtual MAC (00:00:5E:00:01:XX)
 Host 3 → VIP (10.0.1.1) → ARP Resolution → Virtual MAC (00:00:5E:00:01:XX)
 
 All traffic flows through the single Active router.
-```text
+```
 
 **Load balancing workaround:** Run **multiple HSRP/VRRP groups**, each with different
 active routers:
@@ -165,7 +165,7 @@ active routers:
 ```text
 Group 1: R1 Active, R2 Standby  (for VLAN 10, VIP 10.0.1.1)
 Group 2: R2 Active, R1 Standby  (for VLAN 20, VIP 10.0.2.1)
-```text
+```
 
 This requires per-VLAN configuration and careful tuning. Not practical for hundreds of
 VLANs.
@@ -180,7 +180,7 @@ Host 1 → VIP (10.0.1.1) → ARP → MAC-1 (R1's virtual MAC) → Traffic via R
 Host 2 → VIP (10.0.1.1) → ARP → MAC-2 (R2's virtual MAC) → Traffic via R2
 Host 3 → VIP (10.0.1.1) → ARP → MAC-3 (R3's virtual MAC) → Traffic via R3
 Host 4 → VIP (10.0.1.1) → ARP → MAC-4 (R4's virtual MAC) → Traffic via R4
-```text
+```
 
 GLBP uses **Round-Robin or Weighted** ARP responses to distribute hosts:
 
@@ -200,7 +200,7 @@ T=0s: Active (R1) fails
 T=3-10s: Hold timer expires on Standby (R2)
 T=10s: R2 becomes Active, sends gratuitous ARP
 T=11s: Hosts update ARP cache with new MAC for VIP
-```text
+```
 
 **Result:** ~10 seconds of traffic loss (default timers).
 
@@ -211,7 +211,7 @@ T=0s: Master (R1) fails
 T=3s: Master_Down timer expires on Backup (R2)
 T=3s: R2 becomes Master, sends VRRP Advertisement
 T=4s: Hosts update ARP caches
-```text
+```
 
 **Result:** ~3 seconds of traffic loss (faster than HSRP due to default timers).
 
@@ -223,7 +223,7 @@ T=3-10s: Hold timer expires on other routers
 T=10s: Next router becomes new AVF for AVG-1
        Hosts using MAC-1 see brief loss
        Hosts using MAC-2, MAC-3, MAC-4 unaffected
-```text
+```
 
 **Result:** Only hosts using the failed AVG's MAC see loss. Other hosts continue through
 other AVGs. More graceful degradation than HSRP/VRRP.
@@ -295,7 +295,7 @@ If two gateways are configured with HSRP/VRRP, one is always idle:
 ```text
 R1 (Active) — 1 Gbps utilised, 0% available
 R2 (Standby) — 0 Gbps utilised, 1 Gbps wasted
-```text
+```
 
 To use both routers, admins must configure **multiple groups** (one per VLAN). This is
 operationally messy for large networks.
@@ -311,7 +311,7 @@ R2 weight 50 (but has 10 Gbps capacity)
 
 Result: Both routers receive equal traffic despite R2's higher capacity.
 Fix: Set R1 weight 50, R2 weight 500 to match capacity ratios.
-```text
+```
 
 ### BFD Integration
 
@@ -323,7 +323,7 @@ sub-second convergence.
 ! Enable BFD on an interface
 interface Gi0/0/1
  bfd interval 300 min_rx 300 multiplier 3
-```text
+```
 
 ---
 
@@ -343,7 +343,7 @@ interface Gi0/0/1
 
  ! Verify
  ! show standby brief
-```text
+```
 
 ### VRRP (Simple Master/Backup)
 
@@ -359,7 +359,7 @@ interface Gi0/0/1
 
  ! Verify
  ! show vrrp brief
-```text
+```
 
 ### GLBP (Active/Active Load Balancing)
 
@@ -381,7 +381,7 @@ interface Gi0/0/1
  ! Verify
  ! show glbp brief
  ! show glbp 1 forwarders
-```text
+```
 
 ---
 
@@ -395,14 +395,11 @@ interface Gi0/0/1
   upstream failures and trigger failover even if the gateway interface is still up. This
   is critical in hub-and-spoke designs where a gateway's uplink can fail independent of
   the gateway interface.
-
 - **Multiple groups for load balancing:** If GLBP is not available (non-Cisco environment),
   admins can simulate active/active by configuring multiple VRRP groups with different
   masters. This is complex and not recommended for more than 2–3 groups.
-
 - **Virtual MAC addresses are deterministic:** Both HSRP and VRRP generate the virtual MAC
   from the group number. This means the MAC is predictable and does not change, which is
   why hosts cache it in ARP. GLBP generates 4 MACs (one per AVG) from the same group number.
-
 - **RFC references:** HSRP is Cisco proprietary (no RFC). VRRP is RFC 5798 (v3) / RFC 3768
   (v2). GLBP is Cisco proprietary (no RFC).

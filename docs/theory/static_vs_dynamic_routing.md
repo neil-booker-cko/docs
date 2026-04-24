@@ -51,7 +51,7 @@ A static route entry consists of:
 ip route 10.0.0.0 255.255.0.0 192.168.1.1  ! Send traffic for 10.0.0.0/16 via 192.168.1.1
 ip route 172.16.0.0 255.255.0.0 Gi0/0/1    ! Send traffic for 172.16.0.0/16 via Gi0/0/1
 ip route 0.0.0.0 0.0.0.0 203.0.113.1       ! Default route: anything not matched → send to ISP
-```text
+```
 
 ### Advantages of Static Routing
 
@@ -203,7 +203,7 @@ simplicity and resilience.
 Branch-A(static)  ISP-1        Branch-B(static)
                   |
                ISP-2
-```text
+```
 
 - **Core:** OSPF or BGP among core routers
 - **Edge:** Static routes at branch offices pointing to HQ
@@ -221,7 +221,7 @@ router ospf 1
 ! Primary route via OSPF (AD 110)
 ! If OSPF fails, use static backup (AD 200)
 ip route 192.168.0.0 255.255.0.0 10.0.0.254 200
-```text
+```
 
 If the OSPF path to `192.168.0.0/16` fails (peer down, link failure), the static route
 with higher AD (200) becomes active.
@@ -235,7 +235,7 @@ ip route 0.0.0.0 0.0.0.0 203.0.113.1
 ! Internal routes are dynamic (automatically learned)
 router ospf 1
  network 10.0.0.0 0.0.0.255 area 0
-```text
+```
 
 Internal traffic is routed via OSPF; external (Internet) traffic goes via the static
 default route.
@@ -265,7 +265,7 @@ interface Gi0/0/1
 ! OSPF uses BFD for immediate failure detection
 router ospf 1
  timers throttle spf 50 200 5000  ! SPF computation tuning
-```text
+```
 
 With BFD, convergence can be < 1 second; without it, default OSPF convergence is 30+ seconds.
 
@@ -281,7 +281,7 @@ With BFD, convergence can be < 1 second; without it, default OSPF convergence is
            Branch-A        Branch-B      Branch-C
         (static route     (static route  (static route
          to HQ)            to HQ)         to HQ)
-```text
+```
 
 - **HQ:** Dynamic routing (OSPF/EIGRP) among core routers
 - **Branches:** Static default routes pointing to HQ gateway
@@ -295,7 +295,7 @@ With BFD, convergence can be < 1 second; without it, default OSPF convergence is
      ┃ ╲    ╱ ┃
      ┃  ╲  ╱  ┃
      R4 ━━━━ R3
-```text
+```
 
 - All routers run OSPF or EIGRP
 - Every router can reach every other router via multiple paths
@@ -309,7 +309,7 @@ With BFD, convergence can be < 1 second; without it, default OSPF convergence is
       HUB-A HUB-B HUB-C
        /|\   /|\   /|\
       Branch nodes (static to nearest hub)
-```text
+```
 
 - Hubs run dynamic routing among themselves
 - Branches use static routes to the nearest hub
@@ -330,7 +330,7 @@ ip route 10.0.0.0 255.255.0.0 10.0.1.1
 
 ! Verify
 show ip route static
-```text
+```
 
 ### Dynamic Routing (OSPF)
 
@@ -347,7 +347,7 @@ interface Gi0/0/1
 show ip ospf neighbors
 show ip ospf database
 show ip route ospf
-```text
+```
 
 ### Hybrid: Dynamic + Static
 
@@ -365,7 +365,7 @@ ip route 0.0.0.0 0.0.0.0 203.0.113.1 200  ! AD 200; static is last resort
 ! Verify
 show ip route
 show ip route summary
-```text
+```
 
 ### Backup Route (OSPF + Static Failover)
 
@@ -379,7 +379,7 @@ ip route 192.168.0.0 255.255.0.0 10.0.0.254 200
 
 ! Verify: show ip route 192.168.0.0 should show OSPF route first
 show ip route 192.168.0.0
-```text
+```
 
 ---
 
