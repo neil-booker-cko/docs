@@ -83,19 +83,17 @@ packet-beta
 NTP uses a 64-bit fixed-point timestamp: 32 bits of seconds since **1 January 1900
 00:00:00 UTC** and 32 bits of sub-second fraction.
 
-```text
-
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                          Seconds                              |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|                     Seconds Fraction                          |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```mermaid
+---
+title: "NTP Timestamp Format (64-bit)"
+---
+packet-beta
+0-31: "Seconds<br/>(since 1900-01-01 00:00:00 UTC)"
+32-63: "Seconds Fraction<br/>(2^-32 per bit)"
 ```
 
-Resolution is approximately 232 picoseconds. The 32-bit seconds field rolls over
-roughly every 136 years (next rollover: 7 February 2036).
+Resolution is approximately 232 picoseconds (one bit = 233 ps). The 32-bit seconds
+field rolls over roughly every 136 years (next rollover: 7 February 2036).
 
 ---
 
