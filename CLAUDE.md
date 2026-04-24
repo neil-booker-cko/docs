@@ -11,19 +11,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
+**Primary (Zensical — 7x faster builds):**
+
 ```bash
-# Start local preview server
-uv run mkdocs serve
+# Start local preview server (rebuilds on file change)
+uv run zensical serve
 
 # Build static site (generates site/ directory)
-uv run mkdocs build
+uv run zensical build
+```
 
+**Legacy (MkDocs — still supported for 12+ months):**
+
+```bash
+# Alternative: use MkDocs if needed
+uv run mkdocs serve
+uv run mkdocs build
+```
+
+**Utilities:**
+
+```bash
 # Run pre-commit hooks manually
 pre-commit run --all-files
 
 # Update dependencies
 uv sync --all-groups
 ```
+
+**Why Zensical:** 7x faster builds (0.89s vs 10.68s). Built by Material for MkDocs team,
+supports mkdocs.yml natively. See [ZENSICAL_MIGRATION.md](ZENSICAL_MIGRATION.md) for details.
 
 ## Key Configuration Files
 

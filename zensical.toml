@@ -1,0 +1,39 @@
+# Zensical Configuration
+# This is an alternative to mkdocs.yml for Zensical 0.0.36+
+# Zensical still supports reading mkdocs.yml natively, but this format
+# is recommended for future versions (zensical.toml will be the default).
+
+[project]
+site_name = "Network Engineering Reference"
+site_description = "Protocol packet formats, routing design, vendor implementation guides, and quick-reference cheat sheets for network engineers."
+site_url = "https://network-engineering.example.com/"
+repo_url = "https://github.com/user/network-engineering-docs"
+copyright = "Copyright &copy; 2024 Network Engineering Reference. All rights reserved."
+docs_dir = "docs"
+site_dir = "site"
+use_directory_urls = true
+dev_addr = "localhost:8000"
+
+[project.theme]
+# Theme variant: "modern" or "classic"
+# modern = default Material for MkDocs-like theme
+# classic = legacy theme
+variant = "modern"
+
+# Color palette configuration
+[project.theme.palette]
+# Light mode (default)
+[[project.theme.palette.light]]
+scheme = "default"
+primary = "indigo"
+accent = "indigo"
+
+# Dark mode
+[[project.theme.palette.dark]]
+scheme = "slate"
+primary = "indigo"
+accent = "indigo"
+
+# Navigation structure is defined in mkdocs.yml nav section
+# Zensical will read and honor the mkdocs.yml nav if present.
+# For now, keep using mkdocs.yml for the nav structure.
