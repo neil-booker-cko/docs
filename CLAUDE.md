@@ -45,12 +45,12 @@ docs/
 ├── aws/             # AWS architecture and VPN/BGP designs
 ├── azure/           # Azure ExpressRoute architecture
 ├── gcp/             # GCP Cloud Interconnect architecture
-├── equinix/         # Equinix Fabric Cloud Router (FCR) and multi-cloud interconnect
+├── equinix/         # Equinix Fabric Cloud Router (FCR) and multi-cloud
 ├── operations/      # Troubleshooting, upgrades, change verification
 ├── routing/         # Routing protocols (BGP, OSPF, EIGRP, RIP, IGRP)
 ├── application/     # Application protocols (DNS, SSH, SNMP, NetFlow, etc.)
-├── packets/         # Packet header formats (Ethernet, IPv4/v6, TCP/UDP, BFD, etc.)
-└── reference/       # Quick-reference tables (IP ranges, ports, ICMP types, MTU, etc.)
+├── packets/         # Packet header formats (Ethernet, IPv4/v6, TCP/UDP, etc.)
+└── reference/       # Quick-reference tables (IP ranges, ports, ICMP, MTU)
 ```
 
 ## Content Guidelines
@@ -74,6 +74,75 @@ docs/
 
 **Architecture Diagrams:** Use Mermaid (supported via `pymdownx.superfences`) for flowcharts, sequence
 diagrams, and architecture layouts.
+
+## Markdown Formatting Standards
+
+**Code Blocks:**
+
+- Always close code blocks with exactly 3 backticks: ` ``` ` (never ` ```text ` or ` ```ios `)
+- Opening backticks may have a language tag: ` ```ios `, ` ```fortios `, ` ```mermaid `, ` ```bash `
+- Closing backticks must be bare: ` ``` ` — never include language identifiers
+- Language tags: `ios` (Cisco IOS-XE), `fortios` (FortiOS), `bash` (shell), `text` (plaintext output)
+- Each code block must have exactly one closing fence; never nest code blocks
+- Blank line before code block opening (unless immediately after a heading)
+- Blank line after code block closing (unless at end of section)
+
+**Code Block Example — Correct:**
+
+```ios
+router bgp 65001
+ address-family ipv4
+  neighbor 192.0.2.1 activate
+ exit-address-family
+!
+```
+
+**Code Block Example — Wrong (closing fence has language tag):**
+
+The following has an error that prevents rendering:
+
+```text
+router bgp 65001
+ address-family ipv4
+```ios
+```
+
+**Lists:**
+
+- Ordered lists: use `1.`, `2.`, `3.` (auto-renumbering works automatically)
+- Unordered lists: use `-` (hyphens only; no `*` or `+`)
+- **Never** insert blank lines between consecutive list items — this breaks the list
+- Blank line after a list is OK; required before next paragraph or heading
+- List items spanning multiple lines: indent continuation with 2 spaces
+- Nested lists: indent sub-items with 2 spaces, starting on new line
+
+**List Example — Correct:**
+
+```text
+- Item 1
+- Item 2
+- Item 3
+
+Next paragraph here.
+```
+
+**List Example — Wrong (blank lines break the list):**
+
+```text
+- Item 1
+
+- Item 2
+- Item 3
+```
+
+**Common Issues to Avoid:**
+
+| Issue | Symptom | Fix |
+| --- | --- | --- |
+| Closing fence with language tag | Backticks appear in HTML | Replace ` ```ios `, ` ```text ` with ` ``` ` |
+| Blank lines in list | List breaks into separate lists | Remove blank lines between items |
+| Missing blank line before code block | Parser confusion | Add blank line before opening backticks |
+| Indentation in code blocks | Content as inline code | Use 0-indent; flush left |
 
 ## Pre-Commit Workflow
 
