@@ -318,7 +318,127 @@ aaa group server tacacs+ TACACS-SERVERS
 
 Router tries servers in order: 192.0.2.10 → 192.0.2.11 → 192.0.2.12 → local fallback.
 
-## 12. Troubleshooting
+## 12. Management VRF Configuration
+
+In production networks, the management interface is often on a separate VRF for isolation and
+security. AAA queries (TACACS+/RADIUS) must be configured to reach the authentication server
+via the correct routing table.
+
+### TACACS+ with Management VRF
+
+```ios
+aaa new-model
+aaa authentication login default group TACACS-MGMT local
+aaa authorization exec default group TACACS-MGMT local
+
+aaa group server tacacs+ TACACS-MGMT
+  server 10.0.0.100
+  server 10.0.0.101
+  ip tacacs source-interface Loopback0 vrf management
+  timeout 10
+
+tacacs server TAC-PRIMARY
+  address ipv4 10.0.0.100 vrf management
+  key SHARED_SECRET_123
+  timeout 10
+
+tacacs server TAC-SECONDARY
+  address ipv4 10.0.0.101 vrf management
+  key SHARED_SECRET_123
+  timeout 10
+
+username fallback privilege 15 secret LOCAL_FALLBACK_PASSWORD
+
+line vty 0 4
+  login authentication default
+  transport input ssh
+```
+
+**Key Settings:**
+
+- **ip tacacs source-interface Loopback0 vrf management** — Ensure the source IP for TACACS+
+  queries comes from management VRF, not default VRF
+- **address ipv4 10.0.0.100 vrf management** — Server lookup uses management VRF routing table
+- **timeout 10** — Increase timeout slightly; cross-VRF lookups may be slower
+
+### RADIUS with Management VRF
+
+```ios
+aaa new-model
+aaa authentication login default group RADIUS-MGMT local
+
+aaa group server radius RADIUS-MGMT
+  server 10.0.0.50
+  ip radius source-interface Loopback0 vrf management
+  timeout 5
+
+radius server RAD-PRIMARY
+  address ipv4 10.0.0.50 vrf management
+  key RADIUS_SHARED_SECRET
+  timeout 5
+```
+
+### Source Interface Considerations
+
+When using management VRF, the source interface must:
+
+1. **Exist in the management VRF** — If you use `source-interface Loopback0`, that loopback must
+   be in the management VRF or dual-homed
+2. **Be reachable from the server** — The server must be able to return traffic to the source IP
+
+#### Option A: Loopback in Management VRF
+
+```ios
+interface Loopback0
+  vrf forwarding management
+  ip address 10.1.1.1 255.255.255.255
+```
+
+#### Option B: Physical Management Interface as Source
+
+```ios
+aaa group server tacacs+ TACACS-MGMT
+  server 10.0.0.100
+  ip tacacs source-interface GigabitEthernet0/0/0 vrf management
+```
+
+### Testing Management VRF Connectivity
+
+Before applying AAA config, verify the server is reachable from the management VRF:
+
+```ios
+! Ping server using management VRF
+ping 10.0.0.100 vrf management
+
+! Verify route exists in management VRF
+show ip route vrf management
+
+! Check TCP connectivity on TACACS+ port (49)
+telnet 10.0.0.100 49 vrf management
+```
+
+### Fallback to Local Auth with Isolated Management VRF
+
+If the management VRF is completely isolated (no route to the TACACS+ server), always
+configure a local fallback user:
+
+```ios
+username emergency privilege 15 secret EMERGENCY_PASSWORD
+```
+
+When TACACS+ is unreachable, this account provides out-of-band access via console/SSH if the
+management interface is also isolated.
+
+### Common Issues with Management VRF
+
+| Issue | Cause | Fix |
+| --- | --- | --- |
+| "TACACS server unreachable" | Server not reachable via management VRF | Verify route with `show ip route vrf management`; ping server |
+| Source IP unreachable | Source interface not in management VRF | Use interface in management VRF or dual-home loopback |
+| Intermittent auth failures | Timeout too short for cross-VRF latency | Increase timeout to 10-15 seconds |
+| AAA fails, no fallback | Local user not configured | Configure `username fallback privilege 15 secret PASSWORD` |
+
+## 14. Troubleshooting
 
 ### Debug AAA Authentication
 
@@ -381,7 +501,7 @@ aaa group server tacacs+ TACACS-SERVERS
 end
 ```
 
-## 13. Best Practices
+## 14. Best Practices
 
 ✅ **Do:**
 
@@ -402,7 +522,7 @@ end
 - Use default privilege 15 for all users
 - Enable AAA on console without local fallback
 
-## 14. Examples
+## 15. Examples
 
 ### Example 1: Small Network (Local Only)
 
@@ -474,7 +594,7 @@ line console 0
   login authentication LOCAL-AUTH
 ```
 
-## 15. Verification Commands
+## 16. Verification Commands
 
 ```ios
 show aaa methods
