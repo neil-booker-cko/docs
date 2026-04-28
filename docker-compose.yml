@@ -17,7 +17,7 @@ services:
     networks:
       - traefik
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.docs.entrypoints=websecure"
       - "traefik.http.routers.docs.tls=true"
       - "traefik.http.routers.docs.tls.certresolver=CERT_RESOLVER"   # <- your resolver name
-      - "traefik.http.services.docs.loadbalancer.server.port=80"
+      - "traefik.http.services.docs.loadbalancer.server.port=8080"
 
 networks:
   traefik:

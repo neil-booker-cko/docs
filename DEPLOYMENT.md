@@ -86,6 +86,6 @@ The `Dockerfile` pins `uv` and `nginx` to specific versions. To upgrade:
 | Component | Location | How to update |
 | --- | --- | --- |
 | `uv` | `Dockerfile` line 4 | Replace version tag, e.g. `uv:0.11.3` → `uv:x.y.z` |
-| `nginx` | `Dockerfile` line 14 | Replace version tag, e.g. `nginx:1.29.7-alpine` → `nginx:x.y.z-alpine` |
+| `nginx` | `Dockerfile` stage 2 | Uses `nginxinc/nginx-unprivileged:stable-alpine` — rebuilt weekly with security patches; no action needed |
 | Pre-commit hooks | `.pre-commit-config.yaml` | Run `pre-commit autoupdate` |
 | Python deps | `uv.lock` | Run `uv sync --upgrade` |

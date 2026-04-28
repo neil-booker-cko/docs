@@ -13,7 +13,7 @@ COPY . .
 RUN uv run zensical build
 
 # Stage 2: serve with nginx
-FROM nginx:1.30.0-alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
 COPY --from=builder /build/site /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
