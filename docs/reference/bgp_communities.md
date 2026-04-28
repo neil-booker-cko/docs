@@ -137,6 +137,7 @@ Example: `64500:1:100` — AS 64500, action 1 (blackhole), prefix tag 100.
 Tag outbound routes with NO_EXPORT:
 
 ```ios
+
 route-map RM-TAG-NO-EXPORT permit 10
  set community no-export
 ```
@@ -172,7 +173,6 @@ router bgp 65000
 Add a community tag on routes advertised to a peer:
 
 ```ios
-
 route-map RM-PEER-OUT permit 10
  set community 65000:200 additive
 ```

@@ -114,6 +114,7 @@ ingress.
 Mark VoIP traffic EF and all other traffic Best Effort at an ingress interface:
 
 ```ios
+
 class-map match-any VOIP-BEARER
  match protocol rtp audio
 !

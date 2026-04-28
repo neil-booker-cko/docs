@@ -63,8 +63,7 @@ A 2000-byte datagram forwarded over a 1500-byte MTU link splits into two fragmen
 | 2 | 540 bytes | 20 bytes | 520 bytes | 0 | 185 (1480 ÷ 8) |
 
 Each fragment carries a full 20-byte IP header. Fragmentation increases per-packet
-overhead
-and stresses reassembly buffers at the destination.
+overhead and stresses reassembly buffers at the destination.
 
 ---
 
@@ -76,21 +75,12 @@ path before sending large packets.
 ### How It Works
 
 1. The source sets DF=1 on all outgoing packets.
-2. If an intermediate router cannot forward the packet without fragmenting it, the
-router
-
-router
-
-    discards the packet and returns **ICMP Type 3 Code 4** (Fragmentation Needed) to the
-    source. The message includes the next-hop MTU in the Type-Specific field.
-
-3. The source reduces its effective packet size to the advertised MTU and retransmits.
-4. The process repeats until the packet traverses the full path without triggering a
-Fragmentation
-
-Fragmentation
-
-    Needed response.
+1. If an intermediate router cannot forward the packet without fragmenting it, the
+    router discards the packet and returns **ICMP Type 3 Code 4** (Fragmentation
+    Needed) to the source. The message includes the next-hop MTU in the Type-Specific field.1
+1. The source reduces its effective packet size to the advertised MTU and retransmits.
+1. The process repeats until the packet traverses the full path without triggering a
+    Fragmentation Needed response.
 
 ### PMTUD Failure
 
@@ -101,26 +91,20 @@ is dropped:
 - The source never learns that the path cannot support large packets.
 - TCP sessions using large packets stall silently.
 - Small packets (e.g. ACKs, SYN/SYN-ACK) succeed; large transfers (file downloads, SCP,
-
     HTTPS with large payloads) hang indefinitely.
-
 - The symptom is sometimes called "black hole routing."
 
 Mitigation: permit ICMP Type 3 (all codes) on all firewall policies, or use TCP MSS
-clamping
-as a workaround.
+clamping as a workaround.
 
 ---
 
 ## TCP MSS Clamping
 
 When PMTUD cannot be relied upon — because ICMP is blocked or tunnel endpoints do not
-generate
-ICMP — routers can clamp the **TCP MSS** (Maximum Segment Size) option in SYN and
-SYN-ACK
-packets. This limits the maximum TCP segment size negotiated during the handshake,
-preventing
-oversized packets from entering the network.
+generate ICMP — routers can clamp the **TCP MSS** (Maximum Segment Size) option in SYN and
+SYN-ACK packets. This limits the maximum TCP segment size negotiated during the handshake,
+preventing oversized packets from entering the network.
 
 ### Recommended MSS Values
 
@@ -137,6 +121,7 @@ oversized packets from entering the network.
 Cisco IOS — clamp MSS on a tunnel interface:
 
 ```ios
+
 interface Tunnel0
  ip tcp adjust-mss 1380
 ```
@@ -179,34 +164,15 @@ must be able to forward packets of at least this size without fragmentation.
 ## Notes
 
 - **Jumbo frames must be configured end-to-end.** Any link in the path that does not support
-
-jumbo frames will silently drop oversized packets. Confirm MTU on every hop before
-enabling
-    jumbo frames.
-
+    jumbo frames will silently drop oversized packets. Confirm MTU on every hop before
+    enabling jumbo frames.
 - **Always configure MTU symmetrically** on both ends of a tunnel. Asymmetric MTU causes
-
     one-directional fragmentation issues that are difficult to diagnose.
-
 - **FortiGate VTI MTU** is set in the tunnel interface config: `set mtu 1500`. TCP MSS
-clamping
-
-clamping
-
-    is available per-interface or per-policy.
-
+    clamping is available per-interface or per-policy.
 - **Cisco IOS:** `ip mtu <bytes>` sets the IP MTU on an interface (may differ from the
-interface
-
-interface
-
-    hardware MTU). `ip tcp adjust-mss <bytes>` clamps TCP MSS on SYN packets transiting
-    the interface.
-
+    interface hardware MTU). `ip tcp adjust-mss <bytes>` clamps TCP MSS on SYN packets
+    transiting the interface.
 - PMTUD black holes are a common cause of unexplained TCP stalls on VPN and tunnel
-deployments.
-
-deployments.
-
-When troubleshooting, test with progressively smaller ping sizes: `ping -s 1400 -M do
-    <destination>` on Linux.
+    deployments. When troubleshooting, test with progressively smaller ping sizes:
+    `ping -s 1400 -M do <destination>` on Linux.
