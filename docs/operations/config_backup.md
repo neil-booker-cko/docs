@@ -24,15 +24,14 @@ consistent naming convention that includes the hostname and date.
 
 ### Archive (Automated Scheduled Backup)
 
-The `archive` feature writes a copy of the configuration to a remote server on a
+The `archive` feature writes timestamped copies of the configuration to local flash on a
 configurable interval and on every `copy running-config startup-config`.
 
 ```ios
-
 archive
- path tftp://10.0.0.100/configs/$h-$t    ! $h = hostname, $t = timestamp
- maximum 10
- time-period 1440                          ! Archive every 24 hours (minutes)
+ path flash:backup/$h-$t    ! $h = hostname, $t = timestamp
+ maximum 14
+ time-period 1440          ! Archive every 24 hours (minutes)
  write-memory
 ```
 
@@ -40,31 +39,33 @@ archive
 `copy run start` is executed — useful for ensuring every deliberate change is
 captured.
 
-The `maximum` value controls how many archive files are retained on the remote server
-path before older files are overwritten.
+The `maximum` value controls how many archive files are retained on local flash before
+older files are overwritten. Plan space accordingly: `maximum 14` retains ~2 weeks of
+daily backups.
+
+**Note on storage:** Local archive is fast and reliable, but provides no protection against
+hardware failure. Regularly copy archived backups to an off-box location (TFTP, SCP, or git)
+to meet compliance and disaster recovery requirements. See
+[Off-Box Storage](#off-box-storage) below.
 
 ### EEM — Event-Driven Backup on Config Change
 
-For environments where the archive feature is not available or a syslog-based trigger
-is preferred:
+For additional event-driven backups on every configuration change:
 
 ```ios
-
 event manager applet BACKUP-ON-CHANGE
  event syslog pattern "SYS-5-CONFIG_I"
  action 1.0 cli command "enable"
- action 2.0 cli command "copy running-config tftp://10.0.0.100/configs/$h-backup.cfg"
+ action 2.0 cli command "copy running-config flash:backup/emergency-$(time)"
 ```
 
 The `SYS-5-CONFIG_I` syslog message is generated any time the running configuration
-is modified. This applet fires on every configuration change and overwrites a single
-backup file per device.
+is modified. This applet fires on every configuration change.
 
 !!! note
-    The EEM applet above overwrites the same filename on each trigger. For a
-    timestamped archive on every change, use the `archive` method instead, or extend
-    the EEM applet to generate a dynamic filename using `$_syslog_msg` or a
-    date/time variable.
+    The `archive` method (above) is recommended over EEM for regular backups as it
+    provides built-in timestamp support and maximum retention management. Use EEM for
+    event-driven emergency captures that supplement the regular archive schedule.
 
 ### NETCONF / RESTCONF API Export
 
@@ -72,7 +73,6 @@ On platforms running IOS-XE 16.6 or later with RESTCONF enabled, the full device
 configuration can be retrieved programmatically:
 
 ```text
-
 GET /restconf/data/Cisco-IOS-XE-native:native
 ```
 
@@ -84,37 +84,37 @@ storage in version control or a network management system. See
 
 ## Cisco IOS-XE Restore
 
-### Restore from TFTP
+### Restore from Flash (Local Archive)
+
+List available backups and restore from local archive:
 
 ```ios
-
-copy tftp: running-config
-copy tftp: startup-config
-```
-
-`copy tftp: running-config` merges the backup into the current running configuration
-— existing configuration that is not in the backup file is not removed.
-
-`copy tftp: startup-config` replaces the startup configuration, then reload the
-device for a clean apply.
-
-```ios
-
+dir flash:backup/
+copy flash:backup/router-20260428.180000 startup-config
 reload
 ```
 
-!!! warning
-    Merging a backup into the running configuration with `copy tftp: running-config`
-    can leave stale configuration in place — interfaces, ACLs, or routing statements
-    that were deleted in the backup file will remain. For a clean restore, copy to
-    startup-config and reload.
-
-### Restore from Flash
+`copy ... startup-config` replaces the startup configuration. Reload applies the restored
+configuration cleanly. For a non-disruptive merge into the running config:
 
 ```ios
+copy flash:backup/router-20260428.180000 running-config
+```
 
-copy flash:backup-2026-04-07.cfg running-config
-copy flash:backup-2026-04-07.cfg startup-config
+!!! warning
+    Merging a backup into the running configuration (`copy ... running-config`) is
+    non-disruptive but can leave stale configuration in place — interfaces, ACLs, or
+    routing statements that were deleted in the backup file will remain. For a clean
+    restore, copy to startup-config and reload.
+
+### Restore from TFTP or SCP
+
+If the local backup is corrupted or unavailable, restore from an off-box copy:
+
+```ios
+copy tftp: startup-config
+copy scp: startup-config
+reload
 ```
 
 ---
@@ -124,7 +124,6 @@ copy flash:backup-2026-04-07.cfg startup-config
 ### CLI Backup
 
 ```fortios
-
 execute backup config tftp <filename> <server-ip>
 ```
 
@@ -134,7 +133,6 @@ This produces a full configuration file in FortiOS `.conf` format.
 recoverable form):
 
 ```fortios
-
 execute backup config tftp <filename> <server-ip> <encryption-password>
 ```
 
@@ -152,7 +150,6 @@ FortiOS automation stitches can trigger a configuration backup on a schedule wit
 relying on external tools:
 
 ```fortios
-
 config system automation-trigger
     edit "daily-backup-trigger"
         set trigger-type scheduled
@@ -184,7 +181,6 @@ backup file per run.
 ### CLI Restore
 
 ```fortios
-
 execute restore config tftp <filename> <server-ip>
 ```
 
@@ -234,10 +230,8 @@ Backups must be stored off the device on at least one of the following:
 
 - **TFTP or SCP server** — simple and widely supported; suitable for automated
   archive destinations
-
 - **Network management system** — Cisco DNA Center and FortiManager both include
   configuration backup and compliance features with version history
-
 - **Version control** — IOS-XE and FortiGate configurations are text files; storing
   them in git provides a full change history with diffs and commit messages, making
   auditing straightforward
