@@ -34,14 +34,14 @@ to a log file.
 | --- | --- |
 | `show version` | IOS-XE version, hostname, uptime |
 | `show ip interface brief` | Interface names, IP addresses, line/protocol state |
-| `show interfaces &#124; include (line&#124;errors&#124;input&#124;output)` | Error counters per interface |
+| `show interfaces \| include (line\|errors\|input\|output)` | Error counters per interface |
 | `show ip route summary` | Route count per protocol (connected, static, OSPF, BGP) |
 | `show ip bgp summary` | BGP peer addresses, state, Up/Down timer, prefixes received |
 | `show ip ospf neighbor` | OSPF neighbour IDs, state (expect FULL), interface |
 | `show bfd neighbors` | BFD session state and peer addresses |
 | `show standby brief` / `show vrrp brief` | Active/standby gateway role and virtual IP state |
 | `show ip nat translations total` | Total NAT translation count |
-| `show processes cpu sorted &#124; head 20` | Top processes by CPU; record overall CPU% |
+| `show processes cpu sorted \| head 20` | Top processes by CPU; record overall CPU% |
 | `show platform resources` | Memory and CPU utilisation summary |
 
 !!! note
@@ -75,39 +75,22 @@ management
 ## Change Window Procedure
 
 1. Run all baseline commands from the Cisco IOS-XE and/or FortiGate tables above. Save
-the
-
-the
-
-    full output to the change record.
-
+    the full output to the change record.
 1. Note the exact start time of the change.
 1. Implement the change.
 1. Note the exact end time of the change.
 1. Run the same baseline commands again in the same order.
 1. Compare pre- and post-change output:
-
-- Route counts should match, or differ only as expected (e.g., a new static route was
-  added intentionally)
-  added intentionally)
-  - No new interface errors or err-disabled ports
-  - All BGP and OSPF neighbours re-established with matching prefix counts
-  - CPU and memory have returned to baseline levels
-  - Session/NAT counts are in the expected range
-
+    - Route counts should match, or differ only as expected (e.g., a new static route was
+        added intentionally)
+    - No new interface errors or err-disabled ports
+    - All BGP and OSPF neighbours re-established with matching prefix counts
+    - CPU and memory have returned to baseline levels
+    - Session/NAT counts are in the expected range
 1. Perform an application or service test relevant to the change (ping, traceroute,
-application
-
-application
-
-    login, traffic flow test).
-
+    application login, traffic flow test).
 1. If all checks pass, close the change. If issues are found, follow the rollback
-triggers
-
-triggers
-
-    table below.
+    triggers table below.
 
 ---
 
@@ -138,7 +121,7 @@ them as rollback triggers unless the root cause is immediately identified and re
 
 | Symptom | Likely cause | Recommended action |
 | --------- | ------------- | ------------------- |
-| BGP peer(s) remain down after change | Route map, AS path filter, prefix limit, or ACL misconfiguration | Check `show ip bgp neighbor <peer> &#124; include BGP` for error messages; review applied route maps |
+| BGP peer(s) remain down after change | Route map, AS path filter, prefix limit, or ACL misconfiguration | Check `show ip bgp neighbor <peer> \| include BGP` for error messages; review applied route maps |
 | OSPF neighbour missing or stuck in EXSTART/EXCHANGE | MTU mismatch, area type mismatch, authentication misconfiguration | Verify MTU consistency; check `show ip ospf interface` on both sides |
 | Interface error counters increasing post-change | Physical layer issue, duplex mismatch, or cable fault | Check `show interfaces <if>` for input/output errors, CRC, and giants |
 | CPU sustained above 80% after change | Routing loop, excessive route churn, or process leak | Check `show processes cpu sorted`; look for route flapping in `show ip route` |
