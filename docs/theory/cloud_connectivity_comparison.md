@@ -224,6 +224,54 @@ flowchart TD
 
 ---
 
+## Newer Services & Management Plane Tools
+
+### AWS Cloud WAN
+
+**Cloud WAN** (launched 2022) is AWS's managed global WAN service that sits above Transit Gateway.
+Rather than manually peering TGWs across regions, Cloud WAN provides a central policy engine (Core
+Network Policy — a JSON document) that defines network segments and routing. Attachments include
+VPCs, TGWs, SD-WAN (via Connect), and Direct Connect. Cloud WAN is increasingly the recommended
+approach for new multi-region deployments; legacy TGW multi-region peering is being superseded.
+
+| Aspect | Cloud WAN |
+| --- | --- |
+| **Model** | Managed global WAN with centralized policy (JSON) |
+| **Policy language** | Core Network Policy (JSON document; declarative) |
+| **Core concept** | Network Segments (isolated routing domains; like VRFs) |
+| **Attachments** | VPCs, TGWs, SD-WAN (Connect), on-prem (DX or VPN via TGW) |
+| **Multi-region routing** | Native — no manual TGW peering required |
+| **Monitoring** | CloudWatch + integrated visualization in AWS console |
+| **Cost model** | Per attachment + per GB (similar to TGW) |
+
+### Azure Virtual Network Manager (AVNM)
+
+**AVNM** (generally available 2023) is Azure's centralized management plane for VNet topology and
+security policies at scale. It complements Virtual WAN (vWAN handles on-prem + branch; AVNM manages
+VNet-to-VNet topology). AVNM uses **Network Groups** (logical groupings of VNets) and **Connectivity
+Configurations** to deploy hub-and-spoke or mesh topologies without manually creating individual
+peerings. Under the hood, it still uses VNet peering; AVNM is an orchestration layer.
+
+| Aspect | AVNM |
+| --- | --- |
+| **Model** | Management plane for VNet topology and security policy |
+| **Scope** | VNet-to-VNet connectivity; orthogonal to vWAN |
+| **Core concepts** | Network Groups (logical VNet sets); Connectivity Configs (hub-spoke/mesh) |
+| **Topology options** | Hub-and-Spoke, Mesh, or Hybrid |
+| **Security policies** | Security Admin Configs (NSG rules applied across Network Groups at scale) |
+| **Deployment** | Infrastructure-as-Code friendly (JSON or Bicep) |
+| **Interaction with vWAN** | Complementary — vWAN for on-prem; AVNM for VNet topology |
+
+### GCP Context
+
+GCP has no direct equivalent to AVNM. **Network Connectivity Center (NCC)** already serves both roles:
+it's the managed hub for on-prem connectivity (like vWAN) and supports VPC spokes natively. For
+VNet topology management at scale, GCP relies on native global VPC peering (automatic, no
+configuration) and NCC for hub-and-spoke topologies with on-prem. A direct management plane layer
+for VPC topology is not necessary given global VPC peering defaults.
+
+---
+
 ## References
 
 - [AWS Direct Connect Setup](../aws/aws_direct_connect_setup.md)
