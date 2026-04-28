@@ -3,8 +3,7 @@ name = "network-resilience-library"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "mkdocs-material>=9.5",
-    "mkdocs-minify-plugin>=0.8.0",
+    "zensical>=0.0.36",
 ]
 
 [dependency-groups]

@@ -4,14 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-**Network Resilience Library** is a MkDocs-based technical documentation site for network engineering
- focusing on sub-second failover and hybrid-cloud connectivity. Content covers Cisco IOS-XE, Fortinet
- FortiGate, cloud providers (AWS, Azure, GCP), and Equinix Fabric Cloud Router for multi-cloud
- interconnection.
+**Network Resilience Library** is a Zensical-based technical documentation site for network engineering
+focusing on sub-second failover and hybrid-cloud connectivity. Content covers Cisco IOS-XE, Fortinet
+FortiGate, cloud providers (AWS, Azure, GCP), and Equinix Fabric Cloud Router for multi-cloud
+interconnection.
 
 ## Development Commands
-
-**Primary (Zensical — 7x faster builds):**
 
 ```bash
 # Start local preview server (rebuilds on file change)
@@ -19,14 +17,6 @@ uv run zensical serve
 
 # Build static site (generates site/ directory)
 uv run zensical build
-```
-
-**Legacy (MkDocs — still supported for 12+ months):**
-
-```bash
-# Alternative: use MkDocs if needed
-uv run mkdocs serve
-uv run mkdocs build
 ```
 
 **Utilities:**
@@ -39,8 +29,8 @@ pre-commit run --all-files
 uv sync --all-groups
 ```
 
-**Why Zensical:** 7x faster builds (0.89s vs 10.68s). Built by Material for MkDocs team,
-supports mkdocs.yml natively. See [ZENSICAL_MIGRATION.md](ZENSICAL_MIGRATION.md) for details.
+Site configuration is in `mkdocs.yml` (read natively by Zensical). See
+[ZENSICAL_MIGRATION.md](ZENSICAL_MIGRATION.md) for background on the migration.
 
 ## Key Configuration Files
 
@@ -49,8 +39,7 @@ supports mkdocs.yml natively. See [ZENSICAL_MIGRATION.md](ZENSICAL_MIGRATION.md)
 | `mkdocs.yml` | Site structure, theme config, markdown extensions |
 | `.markdownlint-cli2.yaml` | Markdown linting rules (100 char line length, code blocks/tables unlimited, H1 requirement, duplicate headings allowed in different sections) |
 | `.pre-commit-config.yaml` | Automated checks: file hygiene, Python formatting (Ruff), markdown linting |
-| `hooks.py` | MkDocs hook to minify HTML output (removes leading whitespace) |
-| `pyproject.toml` | Dependencies (mkdocs-material, minify plugin) and Python config |
+| `pyproject.toml` | Dependencies (zensical) and Python config |
 
 ## Documentation Structure
 

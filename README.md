@@ -15,7 +15,7 @@ Cisco IOS-XE, Fortinet FortiGate, and AWS environments.
 ## Local Preview
 
 ```bash
-uv run mkdocs serve
+uv run zensical serve
 ```
 
 Then open `http://127.0.0.1:8000`.

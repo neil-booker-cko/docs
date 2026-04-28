@@ -1,8 +1,8 @@
 # Deployment
 
-This repo builds and serves a static MkDocs site via an nginx container, with Traefik
-as the SSL-terminating reverse proxy. CI/CD rebuilds and pushes the image on every push
-to `main`; Watchtower handles rolling updates on the host.
+This repo builds and serves a static site (built with Zensical) via an nginx container,
+with Traefik as the SSL-terminating reverse proxy. CI/CD rebuilds and pushes the image
+on every push to `main`; Watchtower handles rolling updates on the host.
 
 ---
 
@@ -40,7 +40,7 @@ Run with Compose (requires Traefik network to exist):
 docker compose up -d
 ```
 
-The MkDocs site is built inside the container at build time — no local `uv run mkdocs build`
+The site is built inside the container at build time — no local `uv run zensical build`
 required.
 
 ---
