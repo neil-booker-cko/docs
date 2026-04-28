@@ -64,6 +64,90 @@ Complete all items before beginning the upgrade.
 
 ---
 
+## Device Prerequisites & Configuration
+
+Before performing an upgrade, configure the device to support secure, high-speed file transfers and
+modern authentication practices.
+
+### SCP Account & Privilege Level
+
+**Critical:** The account used for SCP file transfers must have **privilege level 15**. This applies
+whether using a local account or TACACS+ authenticated user.
+
+```ios
+! Verify account privilege (run after login as the user who will do SCP)
+show privilege
+```
+
+If the user is at privilege level 1 or 7, SCP operations will fail with "Permission denied". Either:
+
+1. **Local service account (recommended for automated/scripted transfers):**
+
+```ios
+username scp_upgrade privilege 15 secret <strong-password>
+```
+
+1. **TACACS+ user configuration** — in `/etc/tac_plus.conf`, ensure the user profile returns
+privilege 15:
+
+```text
+user = <username> {
+    login = tacacs
+    service = shell {
+        set priv-lvl = 15
+    }
+    enable = tacacs {
+        set priv-lvl = 15
+    }
+}
+```
+
+### AAA & SSH Configuration
+
+Modern IOS-XE requires AAA for proper authentication and SSH access:
+
+```ios
+aaa new-model
+
+! SSH/SCP authentication (TACACS+ primary, local fallback)
+aaa authentication login default tacacs+ local
+
+! Exec authorization (TACACS+ primary, local fallback)
+aaa authorization exec default tacacs+ local
+
+! Console access (local only — prevents lockout if TACACS+ is down)
+aaa authentication login console local
+
+! Enable SSH for SCP transfers
+ip ssh version 2
+ip scp server enable
+```
+
+### TCP & SSH Tuning for SCP Performance
+
+Optimize TCP and SSH for high-speed file transfers:
+
+```ios
+! SSH window size (increase from default 2048)
+ip ssh window-size 65536
+
+! TCP window size (for negotiated TCP window scaling)
+ip tcp window-size 65536
+
+! Enable TCP Path MTU Discovery (prevents fragmentation)
+ip tcp path-mtu-discovery
+
+! TCP keepalives (prevents timeout on large transfers)
+service tcp-keepalives-in
+service tcp-keepalives-out
+```
+
+!!! note
+    Window sizes of 65536 balance performance and memory usage. For very high-speed
+    networks (10+ Gbps), 131072 is possible but uses more memory. Start with 65536.
+
+---
+
 ## File Transfer: TFTP vs SCP
 
 ### TFTP (Legacy)
@@ -94,6 +178,12 @@ SCP (Secure Copy Protocol) uses SSH and is faster (~50-200 Mbps with tuning):
 ```ios
 copy scp://username@10.0.0.1/path/to/image.bin flash: vrf management
 ```
+
+!!! warning
+    **Prerequisite:** The user account must have **privilege level 15**. See
+    [Device Prerequisites & Configuration](#device-prerequisites--configuration) above
+    for setup instructions. If using TACACS+, the account privilege level is the most
+    common reason SCP fails even when SSH exec login works.
 
 **Pros:**
 
