@@ -91,38 +91,20 @@ Types
 
 ## Notes
 
-- **Never block ICMPv4 Type 3 Code 4** at firewalls. This message carries the next-hop
-MTU
-
-MTU
-
-and is required for Path MTU Discovery (PMTUD). Blocking it causes TCP sessions using
-large packets to hang silently — small packets succeed but large file transfers stall.
+- **Never block ICMPv4 Type 3 Code 4** at firewalls. This message carries the next-hop MTU
+  and is required for Path MTU Discovery (PMTUD). Blocking it causes TCP sessions using
+  large packets to hang silently — small packets succeed but large file transfers stall.
 
 - **Type 11 Code 0 (TTL Expired)** is what traceroute relies on. Blocking it prevents
-traceroute
-
-traceroute
-
-    from identifying intermediate hops but does not affect data plane forwarding.
+  traceroute from identifying intermediate hops but does not affect data plane forwarding.
 
 - **ICMPv6 is essential for IPv6 operation.** NDP (Types 133–137) replaces ARP entirely.
+  Blocking ICMPv6 breaks address resolution, router discovery, and SLAAC — IPv6
+  connectivity will fail. Never apply blanket ICMPv6 block rules.
 
-Blocking ICMPv6 breaks address resolution, router discovery, and SLAAC — IPv6
-connectivity
-    will fail. Never apply blanket ICMPv6 block rules.
+- **Minimum recommended firewall ICMP permit (inbound and outbound):** Type 0 (Echo Reply),
+  Type 3 (Destination Unreachable — all codes, especially Code 4), Type 8 (Echo Request),
+  Type 11 (Time Exceeded).
 
-- **Minimum recommended firewall ICMP permit (inbound and outbound):** Type 0 (Echo
-Reply),
-
-Reply),
-
-Type 3 (Destination Unreachable — all codes, especially Code 4), Type 8 (Echo Request),
-    Type 11 (Time Exceeded).
-
-- **Source Quench (Type 4)** must not be generated (RFC 6633). Any received Source
-Quench
-
-Quench
-
-    messages should be silently discarded.
+- **Source Quench (Type 4)** must not be generated (RFC 6633). Any received Source Quench
+  messages should be silently discarded.
