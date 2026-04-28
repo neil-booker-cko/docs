@@ -13,7 +13,10 @@ COPY . .
 RUN uv run zensical build
 
 # Stage 2: serve with nginx
-FROM nginxinc/nginx-unprivileged:stable-alpine
+# Option A: Docker Hardened Images — distroless, signed SBOM, SLSA L3, requires dhi.io login
+FROM dhi.io/nginx:1.30-debian12
+# Option B: Official nginx unprivileged — Alpine, non-root, no auth required, weekly CVE patches
+# FROM nginxinc/nginx-unprivileged:stable-alpine
 
 COPY --from=builder /build/site /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
