@@ -258,6 +258,7 @@ nav:
           - VPN & Tunneling:
               - Third-Party VPN: fortigate/fortigate_third_party_vpn.md
   - Cloud Architecture:
+      - Cloud Connectivity Comparison: theory/cloud_connectivity_comparison.md
       - AWS:
           - Direct Connect Setup: aws/aws_direct_connect_setup.md
           - BGP Stack (Flagship): aws/bgp_stack_vpn_over_dx.md
