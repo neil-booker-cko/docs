@@ -46,19 +46,15 @@ Reject.
 
 **RADIUS flow:**
 
-```text
-NAS (e.g., Wi-Fi AP)      RADIUS Server (e.g., ISE)
-        |                          |
-        | Access-Request          |
-        | (username + password)   |
-        |------------------------>|
-        |                          | (validate credentials)
-        |    Access-Accept         |
-        | (reply attributes)       |
-        |<-------------------------|
-        |                          |
-        | (assign VLAN/QoS)        |
-```text
+```mermaid
+sequenceDiagram
+    participant NAS as NAS<br/>(Wi-Fi AP)
+    participant RADIUS as RADIUS Server<br/>(ISE)
+    NAS->>RADIUS: Access-Request<br/>(username + password)
+    RADIUS->>RADIUS: validate credentials
+    RADIUS->>NAS: Access-Accept<br/>(reply attributes)
+    NAS->>NAS: assign VLAN/QoS
+```
 
 **Packet structure:**
 
@@ -68,7 +64,7 @@ ID (1 byte): Matches request to response
 Length (2 bytes): Total packet length
 Authenticator (16 bytes): MD5(code + id + length + attributes + shared_secret)
 Attributes (variable): TLV-encoded user and policy attributes
-```text
+```
 
 **Examples of attributes:**
 
@@ -89,28 +85,20 @@ switches) rather than network access.
 
 **TACACS+ flow:**
 
-```text
-Admin (SSH)         Device (e.g., Router)      TACACS+ Server
-        |                    |                         |
-        | SSH login          |                         |
-        |-------------------->|                        |
-        |                    | AUTHEN packet          |
-        |                    | (username/password)   |
-        |                    |---------------------->|
-        |                    |                        | (validate)
-        |                    |  AUTHEN status         |
-        |                    |<----------------------|
-        |                    | AUTHOR packet          |
-        |                    | (request privilege)   |
-        |                    |---------------------->|
-        |                    |                        | (check policy)
-        |                    |  AUTHOR response       |
-        |                    | (allow/deny/commands) |
-        |                    |<----------------------|
-        | SSH session        |                         |
-        | (priv 15 access)   |                         |
-        |-------------------->|                         |
-```text
+```mermaid
+sequenceDiagram
+    participant Admin as Admin<br/>(SSH)
+    participant Device as Device<br/>(Router)
+    participant TACACS as TACACS+<br/>Server
+    Admin->>Device: SSH login
+    Device->>TACACS: AUTHEN packet<br/>(username/password)
+    TACACS->>TACACS: validate
+    TACACS->>Device: AUTHEN status
+    Device->>TACACS: AUTHOR packet<br/>(request privilege)
+    TACACS->>TACACS: check policy
+    TACACS->>Device: AUTHOR response<br/>(allow/deny/commands)
+    Device->>Admin: SSH session<br/>(priv 15 access)
+```
 
 **Key difference from RADIUS:** TACACS+ separates authentication (login), authorisation
 (what the user can do), and accounting (command logging) into distinct packet types.
@@ -130,7 +118,7 @@ Header (12 bytes):
 Body (variable):
   Encrypted with shared secret (RC4 or similar)
   Type-specific fields (AUTHEN/AUTHOR/ACCNTZ)
-```text
+```
 
 **Authorisation granularity:** TACACS+ allows **per-command authorisation**. An admin
 can be restricted to specific commands:
@@ -139,7 +127,7 @@ can be restricted to specific commands:
 permit command = "show ip route"
 permit command = "ping"
 deny command = "*"  ! All other commands denied
-```text
+```
 
 This level of granularity is not available in standard RADIUS.
 
@@ -179,35 +167,29 @@ dc=example,dc=com (root)
     └── cn=switch-1
         ├── ipHostNumber=10.0.1.2
         └── description=HQ switch
-```text
+```
 
 **LDAP authentication (BIND):**
 
-```text
-Client                LDAP Server
-    |                     |
-    | BIND request        |
-    | (DN + password)    |
-    |-------------------->|
-    |                     | (validate password)
-    | BIND response       |
-    | (success/failure)  |
-    |<--------------------|
-```text
+```mermaid
+sequenceDiagram
+    participant Client
+    participant LDAP as LDAP Server
+    Client->>LDAP: BIND request<br/>(DN + password)
+    LDAP->>LDAP: validate password
+    LDAP->>Client: BIND response<br/>(success/failure)
+```
 
 **LDAP query (after authentication):**
 
-```text
-Client                LDAP Server
-    |                     |
-    | SEARCH request      |
-    | (base DN, filter)  |
-    |-------------------->|
-    |                     | (query directory)
-    | SEARCH response     |
-    | (user attributes)  |
-    |<--------------------|
-```text
+```mermaid
+sequenceDiagram
+    participant Client
+    participant LDAP as LDAP Server
+    Client->>LDAP: SEARCH request<br/>(base DN, filter)
+    LDAP->>LDAP: query directory
+    LDAP->>Client: SEARCH response<br/>(user attributes)
+```
 
 **Typical use case:** A network device authenticates a user via LDAP, then queries the
 directory to retrieve group membership and apply policies.
@@ -217,7 +199,7 @@ Device: "User alice is logging in. Let me bind to LDAP with her credentials."
 LDAP: "OK, alice is authenticated. Here are her attributes: memberOf=[Engineering,
 VPN-Users]"
 Device: "Alice is in the VPN-Users group. I'll apply VPN-specific policies."
-```text
+```
 
 ---
 
@@ -244,7 +226,7 @@ server. Other attributes are not encrypted.
 
 ```text
 User-Password = MD5(shared_secret + request_auth) XOR (password)
-```text
+```
 
 This is not strong encryption by modern standards but provides basic confidentiality.
 
@@ -291,10 +273,11 @@ FreeIPA, Apple Open Directory). Often used as the backing store for RADIUS/TACAC
 A RADIUS server is typically a dedicated appliance or software (Cisco ISE, FreeRADIUS,
 NPS) that authenticates against a local database or LDAP directory.
 
-```text
-NAS ----RADIUS----> RADIUS Server ----LDAP----> Directory
-(WiFi AP)                (ISE)           (AD / OpenLDAP)
-```text
+```mermaid
+graph LR
+    A["NAS<br/>(Wi-Fi AP)"] -->|RADIUS| B["RADIUS Server<br/>(ISE)"]
+    B -->|LDAP| C["Directory<br/>(AD / OpenLDAP)"]
+```
 
 The RADIUS server receives credentials from the NAS and validates them against a backend
 (local database or LDAP directory).
@@ -304,10 +287,11 @@ The RADIUS server receives credentials from the NAS and validates them against a
 Like RADIUS, TACACS+ is typically a dedicated server (Cisco ACS, Fortinet FortiAuthenticator,
 etc.) that can backend to LDAP or a local database.
 
-```text
-Device ----TACACS+----> TACACS+ Server ----LDAP----> Directory
-(Router)          (ACS)           (AD)
-```text
+```mermaid
+graph LR
+    A["Device<br/>(Router)"] -->|TACACS+| B["TACACS+ Server<br/>(ACS)"]
+    B -->|LDAP| C["Directory<br/>(AD)"]
+```
 
 ### LDAP Backend
 
@@ -316,15 +300,16 @@ directly for user attributes and group membership. Authentication can be via LDA
 (password validation) or by checking group membership against other credentials (e.g.,
 RADIUS username).
 
-```text
-Device ----LDAP (BIND + SEARCH)----> Directory
-(Router)                      (Active Directory)
-
-Flow:
-1. BIND with username/password
-2. Search for groups user belongs to
-3. Apply policies based on group membership
-```text
+```mermaid
+sequenceDiagram
+    participant Device as Device<br/>(Router)
+    participant AD as Active Directory
+    Device->>AD: BIND (username/password)
+    AD->>Device: BIND response (success)
+    Device->>AD: SEARCH (groups)
+    AD->>Device: SEARCH response (group membership)
+    Device->>Device: Apply policies based on groups
+```
 
 ---
 
@@ -337,18 +322,16 @@ Flow:
 A user connects to a wireless network. The access point (NAS) challenges the user for
 credentials, then sends them to a RADIUS server for validation.
 
-```text
-User ----Wi-Fi----> AP (NAS)
-      (SSID + WPA2)
-                    AP ----RADIUS----> ISE / FreeRADIUS
-                                      |
-                                      LDAP query
-                                      |
-                                      Active Directory
-```text
+```mermaid
+graph LR
+    A["User<br/>(Wi-Fi)"] -->|SSID + WPA2| B["AP (NAS)"]
+    B -->|RADIUS| C["ISE /<br/>FreeRADIUS"]
+    C -->|LDAP| D["Active Directory"]
+```
 
 **Configuration on AP:**
-```text
+
+```ios
 aaa new-model
 radius server isep
  address ipv4 192.168.1.100 auth-port 1812
@@ -359,7 +342,7 @@ aaa authorization exec default group radius local
 
 interface Gi0/0
  ip address 10.0.1.1 255.255.255.0
-```text
+```
 
 ### Scenario 2: Device Administration (SSH/Console to Routers)
 
@@ -376,10 +359,11 @@ Engineer ----SSH----> Router
                                             Policy enforcement
                                             |
                                             (user can run: show, ping, no config)
-```text
+```
 
 **Configuration on Router:**
-```text
+
+```ios
 aaa new-model
 tacacs server ACS
  address ipv4 192.168.1.200
@@ -394,7 +378,7 @@ line vty 0 15
  login authentication default
  authorization commands 0 default
  authorization commands 15 default
-```text
+```
 
 ### Scenario 3: Enterprise User Directory
 
@@ -404,23 +388,32 @@ A company wants a single user repository: Active Directory. All devices (routers
 switches, firewalls, etc.) authenticate against AD. Some devices use RADIUS (e.g., APs
 via ISE which backs to AD); others use LDAP directly.
 
-```text
-Wi-Fi AP ----RADIUS----> ISE ----LDAP----> Active Directory
-Router A ----LDAP -----> Active Directory
-Firewall B ----TACACS+----> ACS ----LDAP----> Active Directory
-```text
+```mermaid
+graph LR
+    A["Wi-Fi AP"] -->|RADIUS| B["ISE"]
+    C["Router A"] -->|LDAP| D["Active<br/>Directory"]
+    E["Firewall B"] -->|TACACS+| F["ACS"]
+    B -->|LDAP| D
+    F -->|LDAP| D
+```
 
 ### Scenario 4: Hybrid (RADIUS + TACACS+)
 
 Large enterprises often use:
+
 - **RADIUS** for network access (wireless, VPN, 802.1X)
 - **TACACS+** for device administration (router, switch CLI)
 - **LDAP** (Active Directory) as the backing directory
 
-```text
-User ----[Wi-Fi]----> AP ----RADIUS----> ISE ----LDAP----> AD
-Engineer ----[SSH]----> Router ----TACACS+----> ACS ----LDAP----> AD
-```text
+```mermaid
+graph LR
+    U["User<br/>(Wi-Fi)"] -->|Wi-Fi| AP["AP"]
+    E["Engineer<br/>(SSH)"] -->|SSH| R["Router"]
+    AP -->|RADIUS| ISE["ISE"]
+    R -->|TACACS+| ACS["ACS"]
+    ISE -->|LDAP| AD["Active<br/>Directory"]
+    ACS -->|LDAP| AD
+```
 
 ---
 
@@ -444,7 +437,7 @@ Engineer ----[SSH]----> Router ----TACACS+----> ACS ----LDAP----> AD
 
 ### RADIUS Configuration (Network Access)
 
-```text
+```ios
 ! Configure RADIUS server
 aaa new-model
 radius server ISE
@@ -470,11 +463,11 @@ line vty 0 15
 ! Verify
 show aaa servers
 show radius statistics
-```text
+```
 
 ### TACACS+ Configuration (Device Admin)
 
-```text
+```ios
 ! Configure TACACS+ server
 aaa new-model
 tacacs server ACS
@@ -510,11 +503,11 @@ line vty 0 15
 ! Verify
 show tacacs statistics
 show aaa servers
-```text
+```
 
 ### LDAP Configuration (Direct Query)
 
-```text
+```ios
 ! Configure LDAP server (for direct queries)
 aaa new-model
 ldap server AD
@@ -531,11 +524,11 @@ aaa authentication login default group ldap local
 ! Verify
 show ldap statistics
 debug aaa ldap
-```text
+```
 
 ### Hybrid Setup (RADIUS + TACACS+)
 
-```text
+```ios
 aaa new-model
 
 ! RADIUS for network access
@@ -554,7 +547,7 @@ aaa authorization exec default group tacacs+ local  ! Admin access via TACACS+
 aaa authorization commands 15 default group tacacs+ local
 
 ! Verify RADIUS is used for login, TACACS+ for admin
-```text
+```
 
 ---
 
@@ -562,7 +555,7 @@ aaa authorization commands 15 default group tacacs+ local
 
 ### RADIUS Configuration (Network Access)
 
-```text
+```fortios
 ! Enable RADIUS server
 config user radius
  edit "ISE"
@@ -590,11 +583,11 @@ config authentication rule
   set radius-server "ISE"
  next
 end
-```text
+```
 
 ### TACACS+ Configuration (Device Admin)
 
-```text
+```fortios
 config user tacacs+
  edit "ACS"
   set server 192.168.1.200
@@ -613,7 +606,7 @@ config system admin
   set tacacs+-server "ACS"
  next
 end
-```text
+```
 
 ---
 
@@ -654,19 +647,15 @@ end
 - **Shared secret security:** Both RADIUS and TACACS+ use a pre-shared secret. This secret
   must be strong and securely distributed to all NAS/devices. A compromised shared secret
   exposes all credentials.
-
 - **RADIUS accounting:** RFC 2866 defines RADIUS accounting. This is used for usage
   reporting, billing (ISP dial-up), and compliance auditing. TACACS+ has similar
   capabilities but Cisco-specific.
-
 - **Multiple servers:** RADIUS and TACACS+ can be configured with primary and secondary
   servers. If the primary is unreachable, the device falls back to the secondary. LDAP
   replication provides similar resilience via directory replication.
-
 - **Modern alternatives:** OAuth 2.0 and SAML are increasingly used for user authentication
   in cloud and API-based services. RADIUS and TACACS+ remain the standard for network device
   access.
-
 - **RFC references:** RADIUS is RFC 2865 (auth) and RFC 2866 (accounting). TACACS+ was
   proprietary; RFC 6613 is a draft for TACACS+ specification. LDAP is RFC 3389 (simplified
   version of X.500 directory service).
