@@ -81,6 +81,87 @@ docs/
 **Architecture Diagrams:** Use Mermaid (supported via `pymdownx.superfences`) for flowcharts, sequence
 diagrams, and architecture layouts.
 
+## Theory Document Template & Categories
+
+**Purpose:** Theory documents explain concepts, compare protocols, and provide design guidance.
+
+**Categories (41 total):**
+
+1. **Protocol Comparisons** (10 docs) — Compare two or more protocols/technologies head-to-head
+   - Examples: eBGP vs iBGP, OSPF vs EIGRP, IPv4 vs IPv6, RADIUS vs TACACS+ vs LDAP
+
+2. **Fundamentals** (8 docs) — Core concepts and foundational knowledge
+   - Examples: Interface & Routing Fundamentals, IP Addressing Design, Switching Fundamentals
+
+3. **Protocol & Technology Deep Dives** (13 docs) — Detailed explanation of a single protocol/feature
+   - Examples: DMVPN, IPsec, QoS, BGP, OSPF, EIGRP, HSRP/VRRP/GLBP, Cloud Connectivity
+
+4. **Architecture & Design** (7 docs) — Network topology and design patterns
+   - Examples: DC Topologies, Cloud Network Design, Firewall Rule Processing, SD-WAN Design
+
+5. **Security** (3 docs) — Security-focused protocols and practices
+   - Examples: DHCP Security, IPsec, NAT
+
+**Standard Template Structure:**
+
+```text
+# Title
+
+[1-2 sentence intro: what this is and why it matters]
+
+---
+
+## At a Glance
+
+[For comparisons: side-by-side table of key properties]
+[For deep dives: quick reference of major sections]
+
+---
+
+## [Main Section 1]
+
+[Explanation with diagrams where helpful]
+
+### Subsection
+
+[Details with examples]
+
+---
+
+## [Main Section 2]
+
+[Follow same pattern]
+
+---
+
+## [Additional Sections as Needed]
+
+[Typically: Use Cases, Best Practices, Examples, Troubleshooting]
+
+---
+
+## Notes / Gotchas
+
+- **Key point 1:** Explanation
+- **Key point 2:** Explanation
+
+---
+
+## See Also
+
+- [Related doc](../path/doc.md)
+- [Reference page](../reference/page.md)
+```
+
+**Key Guidelines:**
+
+- Start with a compelling intro (why should someone read this?)
+- Include "At a Glance" table or summary for quick scanning
+- Use H2 for main sections, H3 for subsections (no deeper nesting)
+- Include at least one Mermaid diagram for visual learners
+- End with Notes/Gotchas section capturing non-obvious details
+- Link to related docs and reference pages
+
 ## Markdown Formatting Standards
 
 **Code Blocks:**
