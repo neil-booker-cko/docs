@@ -85,9 +85,10 @@ diagrams, and architecture layouts.
 
 **Code Blocks:**
 
-- Always close code blocks with exactly 3 backticks: ` ``` ` (never ` ```text ` or ` ```ios `)
 - Opening backticks may have a language tag: ` ```ios `, ` ```fortios `, ` ```mermaid `, ` ```bash `
-- Closing backticks must be bare: ` ``` ` — never include language identifiers
+- **Closing backticks must ALWAYS be bare: ` ``` `** — NEVER include language identifiers
+  (` ```text ` or ` ```ios ` will break rendering)
+- No blank line immediately after opening backticks — code starts on next line
 - Language tags: `ios` (Cisco IOS-XE), `fortios` (FortiOS), `bash` (shell), `text` (plaintext output)
 - Each code block must have exactly one closing fence; never nest code blocks
 - Blank line before code block opening (unless immediately after a heading)
@@ -166,6 +167,7 @@ Next paragraph here.
 | Issue | Symptom | Fix |
 | --- | --- | --- |
 | Closing fence with language tag | Backticks appear in HTML | Replace ` ```ios `, ` ```text ` with ` ``` ` |
+| Blank line after opening backticks | Syntax highlighting breaks; garbled rendering | Remove blank line after ` ```bash `, start code on next line |
 | Blank lines in list | List breaks into separate lists | Remove blank lines between items |
 | Missing blank line before code block | Parser confusion | Add blank line before opening backticks |
 | Indentation in code blocks | Content as inline code | Use 0-indent; flush left |
