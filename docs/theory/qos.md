@@ -12,6 +12,20 @@ interact.
 
 ---
 
+## At a Glance
+
+| Phase | Purpose | Mechanism | Scope |
+| --- | --- | --- | --- |
+| **Classify** | Identify traffic type | ACL, NBAR, port, DSCP match | Per-hop; most expensive |
+| **Mark** | Write priority to packet | DSCP (IP), CoS (802.1Q), MPLS EXP | Persists through network |
+| **Police** | Enforce rate limit (drop) | Token bucket; immediate drop on excess | Per-interface ingress |
+| **Shape** | Enforce rate limit (buffer) | Token bucket; queue excess traffic | Per-interface egress |
+| **Queue** | Buffer by class | FIFO, WFQ, CBWFQ, LLQ | Per-interface; per-class |
+| **Schedule** | Allocate bandwidth | Strict priority, WRR, DWRR | Among active queues |
+| **Congestion Avoidance** | Prevent buffer overflow | WRED; drop based on probability | Per-queue |
+
+---
+
 ## The QoS Pipeline
 
 Every packet traverses the same logical pipeline at each QoS-enabled node:
@@ -355,3 +369,13 @@ interface GigabitEthernet0/0
 
 - DSCP is preserved across MPLS networks via EXP/TC bits (3-bit field; maps to the top
   3 bits of DSCP). Verify with your provider that DSCP is honoured end-to-end.
+
+---
+
+## See Also
+
+- [DSCP & QoS Reference](../reference/dscp_qos.md) — DSCP values and PHB encodings
+- [Cisco QoS Configuration (MQC)](../cisco/cisco_qos_config.md) — IOS-XE policy-maps and class-maps
+- [FortiGate Traffic Shaping](../fortigate/fortigate_traffic_shaping.md) — FortiOS QoS setup
+- [Network Design: QoS in Multi-Cloud](../theory/cloud_network_design.md) — Cloud QoS considerations
+- [Troubleshooting QoS Issues](../operations/qos_troubleshooting.md) — Verification and diagnostics

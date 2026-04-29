@@ -6,6 +6,22 @@ used in service provider environments.
 
 ---
 
+## At a Glance
+
+| Aspect | RIP v2 | EIGRP | OSPF v2 |
+| --- | --- | --- | --- |
+| **Type** | Distance-vector | Advanced distance-vector (DUAL) | Link-state |
+| **Best For** | Tiny networks; legacy only | Medium–large enterprises (Cisco) | Large networks; multi-vendor |
+| **Convergence** | Slow (3–4 min) | Fast (<1 sec with feasible successor) | Fast (SPF on topology change) |
+| **Metric** | Hop count (max 15) | Composite (bandwidth + delay) | Cost (bandwidth-based) |
+| **Scalability** | Small (max 15 hops) | Medium–large (no hop limit) | Large (no hop limit) |
+| **CPU/Memory** | Minimal | Medium (maintained topology table) | High (full topology stored) |
+| **Authentication** | MD5 (v2) | MD5, SHA-256 (named mode) | MD5, SHA-256 |
+| **Multi-vendor** | Yes (standard) | No (Cisco proprietary) | Yes (standard) |
+| **Deployment** | Legacy, education | Enterprise (Cisco-heavy) | Enterprise, ISP, cloud |
+
+---
+
 ## Protocol Overview
 
 | Property | RIP v2 | EIGRP | OSPF v2 |
@@ -207,3 +223,13 @@ offset by predictable convergence and extensive industry familiarity.
 
 - See individual protocol pages for full packet formats:
   [OSPF](../routing/ospf.md), [EIGRP](../routing/eigrp.md), [RIP](../routing/rip.md).
+
+---
+
+## See Also
+
+- [IGP vs EGP](../theory/igp_vs_egp.md) — Interior vs exterior routing protocols
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md) — Detailed comparison of the two most common IGPs
+- [Route Redistribution](../theory/route_redistribution.md) — Mixing multiple IGPs
+- [Cisco EIGRP Configuration](../cisco/cisco_eigrp_config.md) — EIGRP setup and tuning
+- [Cisco OSPF Configuration](../cisco/cisco_ospf_config.md) — OSPF setup and design

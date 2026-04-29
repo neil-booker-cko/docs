@@ -16,18 +16,18 @@ as an AWS DX router. A cross-connect at the facility joins the two cages. From t
 side, the DX router connects to a Virtual Interface (VIF) — the logical construct that
 carries BGP and data plane traffic into the AWS network.
 
-```text
-Customer router
-      |
-      | Cross-connect (co-location facility)
-      |
-AWS DX router
-      |
-      | Virtual Interface (Private VIF / Transit VIF / Public VIF)
-      |
-VGW (Virtual Private Gateway)   or   DX Gateway → TGW
-      |
-VPC(s)
+```mermaid
+graph TD
+    CR["Customer Router"]
+    DX["AWS DX Router"]
+    VIF["Virtual Interface<br/>(Private VIF / Transit VIF / Public VIF)"]
+    GW["VGW (Virtual Private Gateway)<br/>or DX Gateway → TGW"]
+    VPC["VPC(s)"]
+
+    CR -- "Cross-connect (co-location facility)" --> DX
+    DX --> VIF
+    VIF --> GW
+    GW --> VPC
 ```
 
 Two connection models exist:
@@ -91,7 +91,7 @@ Before configuring the VIF and BGP, confirm the physical layer is healthy.
 
 **Customer router (Cisco IOS-XE):**
 
-```text
+```ios
 
 show interfaces GigabitEthernet0/0
 show interfaces GigabitEthernet0/0 transceiver
@@ -152,7 +152,7 @@ from the VIF configuration screen.
 
 **Cisco IOS-XE — Private or Transit VIF:**
 
-```text
+```ios
 
 ! Create the subinterface for the VIF VLAN
 interface GigabitEthernet0/0.100
@@ -219,13 +219,13 @@ For multi-VPC or multi-region access, use a DX Gateway:
 
    Assign an Amazon-side ASN (64512–65534 recommended; must differ from the TGW ASN).
 
-2. **Associate the DX Gateway with a TGW**: in the TGW console, create an association
+1. **Associate the DX Gateway with a TGW**: in the TGW console, create an association
 
    between the TGW and the DX Gateway. Specify which VPC CIDRs the TGW should advertise
    to the DX Gateway.
 
-3. **Create a Transit VIF** pointing at the DX Gateway rather than a VGW.
-4. Configure the customer router as above — the BGP session is the same structure; only
+1. **Create a Transit VIF** pointing at the DX Gateway rather than a VGW.
+1. Configure the customer router as above — the BGP session is the same structure; only
 
    the remote-as and the prefixes advertised by AWS differ.
 

@@ -1,5 +1,18 @@
 # OSPF Convergence: Standard vs. Tuned vs. Fast Hellos vs. BFD
 
+## At a Glance
+
+| Aspect | Default Settings | Tuned Timers | Fast Hellos | OSPF with BFD |
+| --- | --- | --- | --- | --- |
+| **Hello / Dead Timer** | 10s / 40s | 2s / 8s | 1s / 4s | 10s / 40s (backup) |
+| **Detection Time** | ~40 seconds | ~8 seconds | ~4 seconds | **< 1 second** |
+| **CPU Impact** | Very low | Low-medium | High | Low (offloaded) |
+| **Stability** | Very high | High | Moderate | High |
+| **SPF Trigger** | Dead timer expire | Dead timer expire | Dead timer expire | Immediate (BFD) |
+| **Best For** | Stable legacy networks | Balanced performance | Time-critical production | Sub-100ms convergence |
+
+---
+
 ## 1. Overview & Principles
 
 OSPF detects failure when it stops receiving "Hello" packets. While naturally faster
@@ -123,3 +136,37 @@ sub-second
 - **LSA Throttling:** Pair BFD with tuned LSA generation timers (throttle SPF) for
 
     true "carrier-grade" convergence.
+
+---
+
+## Notes / Gotchas
+
+- **Dead Timer is Still Required, Not Replaced:** BFD notifies OSPF of failure, but the Dead
+  Timer is not removed. If BFD fails to start, OSPF falls back to the Dead Timer. Set it
+  conservatively (4× hello) to avoid false positives.
+
+- **Fast Hellos Create False Positives on CPU Spikes:** A CPU overload of >1 second causes a
+  missed hello and can trigger SPF. BFD at 300 ms is less susceptible — it runs in the
+  forwarding plane, not the control-plane CPU.
+
+- **SPF Throttling Must Match Convergence Goals:** With `timers throttle spf 5000 10000 20000`,
+  SPF waits 5 seconds even after instant BFD detection. Use aggressive throttling
+  (`timers throttle spf 50 200 5000`) when deploying BFD.
+
+- **Adjacency State Machine Still Runs:** BFD failure triggers SPF, but the FULL → DOWN
+  transition still takes a few milliseconds while the OSPF state machine processes the
+  BFD notification.
+
+- **Multicast Connectivity Required:** BFD on OSPF uses multicast (224.0.0.5). If multicast
+  is filtered on the segment, BFD will fail to establish. Verify multicast is permitted on
+  all OSPF segments before enabling BFD.
+
+---
+
+## See Also
+
+- [BFD (Bidirectional Forwarding Detection)](../theory/bfd_fundamentals.md)
+- [OSPF Fundamentals](../theory/ospf_fundamentals.md)
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md)
+- [BGP vs OSPF](../theory/bgp_vs_ospf.md)
+- [Cisco OSPF Configuration](../cisco/ospf_configuration.md)

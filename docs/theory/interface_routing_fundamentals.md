@@ -2,6 +2,23 @@
 
 Essential concepts for configuring interfaces and basic routing on network devices.
 
+---
+
+## At a Glance
+
+| Concept | Purpose | Key Attribute | Example |
+| --- | --- | --- | --- |
+| **Physical Interface** | Direct cable connection | Speed, duplex, MTU | Gi0/0/1 (1 Gbps) |
+| **Virtual Interface (VLAN)** | Logical grouping on switch | VLAN ID; L2 broadcast domain | VLAN 100 (IP 10.0.100.1) |
+| **Loopback Interface** | Always-up virtual interface | Used for routing source/management | Lo0 (10.0.0.1 management) |
+| **Tunnel Interface** | Encapsulated connection | Protocol (GRE, IPsec); endpoints | Tunnel0 (GRE 10.0.0.1→20.0.0.1) |
+| **Subinterface** | VLAN per physical port | VLAN tag (802.1Q); IP per tag | Gi0/0.100 (VLAN 100) |
+| **Port Channel** | Aggregated links | Load balancing algo (hash-based) | Po1 (Gi0/0-1 bundled) |
+| **Default Route** | Route to unknown destinations | Metric; next-hop | 0.0.0.0/0 → 10.0.0.1 |
+| **Routing Table** | All known routes | Prefix; next-hop; metric | 192.168.1.0/24 → 10.0.0.1 |
+
+---
+
 ## Network Interfaces
 
 ### Interface Types
@@ -299,3 +316,13 @@ Cisco OSPF:
 - **Loopback** provides stable management and router ID
 - **Default route** (0.0.0.0/0) catches all unmatched traffic
 - **Verify** connectivity with ping/traceroute before production deployment
+
+---
+
+## See Also
+
+- [IP Addressing Design](../theory/ip_addressing_design.md) — Subnetting strategies and address planning
+- [Switching Fundamentals](../theory/switching_fundamentals.md) — VLANs and broadcast domains
+- [Static vs Dynamic Routing](../theory/static_vs_dynamic_routing.md) — Choosing a routing strategy
+- [Cisco Interface Configuration](../cisco/cisco_interface_config.md) — IOS-XE interface setup
+- [OSPF Fundamentals](../theory/ospf_fundamentals.md) — Dynamic routing on interfaces

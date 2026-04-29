@@ -261,3 +261,13 @@ repeated MAC table flushes and sustained performance degradation.
 - STP diameter recommendations: keep STP domain diameter ≤ 7 hops; tune max-age and
   forward-delay only when absolutely necessary, and only with full understanding of the
   convergence implications.
+
+---
+
+## See Also
+
+- [STP / RSTP Packet Format](../packets/stp.md) — BPDU structure and encoding
+- [STP & RSTP Configuration](../theory/stp_rstp_configuration.md) — Hands-on setup guide
+- [Switching Fundamentals](../theory/switching_fundamentals.md) — Layer 2 concepts
+- [Cisco STP Configuration](../cisco/cisco_stp_config.md) — IOS-XE STP/RSTP tuning
+- [Data Centre Topologies](../theory/dc_topologies.md) — Modern networks moving away from STP

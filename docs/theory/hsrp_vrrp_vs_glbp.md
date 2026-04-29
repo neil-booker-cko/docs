@@ -403,3 +403,13 @@ interface Gi0/0/1
   why hosts cache it in ARP. GLBP generates 4 MACs (one per AVG) from the same group number.
 - **RFC references:** HSRP is Cisco proprietary (no RFC). VRRP is RFC 5798 (v3) / RFC 3768
   (v2). GLBP is Cisco proprietary (no RFC).
+
+---
+
+## See Also
+
+- [GLBP (Gateway Load Balancing Protocol)](../theory/glbp.md)
+- [Cisco Gateway Redundancy Configuration](../cisco/cisco_hsrp_vrrp_glbp_config.md)
+- [Data Centre Topologies](../theory/dc_topologies.md)
+- [Gateway Redundancy Fundamentals](../theory/gateway_redundancy_fundamentals.md)
+- [Network Redundancy Best Practices](../operations/network_redundancy.md)

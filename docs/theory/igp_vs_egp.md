@@ -5,6 +5,24 @@ problems within different scopes. IGPs optimize routing within a single autonomo
 while EGPs connect separate autonomous systems and enforce policy at the AS boundary. Understanding
 their distinction is fundamental to network architecture.
 
+---
+
+## At a Glance
+
+| Aspect | IGP (Interior) | EGP (Exterior) |
+| --- | --- | --- |
+| **Scope** | Single AS (internal) | Between autonomous systems |
+| **Primary Goal** | Optimize path; fast convergence | Policy control; AS-level reachability |
+| **Scale** | 10s–1000s of routers | 1000s of networks globally |
+| **Metrics** | Technical (cost, bandwidth, delay) | Path attributes (AS-path, local-pref, MED) |
+| **Common Protocols** | OSPF, EIGRP, IS-IS, RIP | BGP (de facto standard) |
+| **Convergence** | Sub-second to seconds | Minutes (by design for stability) |
+| **Update Style** | Periodic or event-driven | Event-driven (no periodic flooding) |
+| **Auth Methods** | MD5, SHA-256 | MD5, TCP MD5 option |
+| **Architecture Role** | Intra-AS routing; optimality | Inter-AS routing; reachability + policy |
+
+---
+
 ## Quick Reference
 
 | Aspect | IGP (Interior) | EGP (Exterior) |
@@ -286,19 +304,32 @@ Each company:
 
 ---
 
-## References
+## Notes / Gotchas
 
-- RFC 1771: A Border Gateway Protocol 4 (BGPv4)
-- RFC 2328: OSPF Version 2
-- RFC 5340: OSPF for IPv6
-- RFC 4271: A Border Gateway Protocol 4 (Updated BGP standard)
-- RFC 7538: The 2-Octet Autonomous System Number Extension
+- **BGP is Not Just for the Internet:** Many enterprises use BGP between data centers or for
+  inter-company routing wherever multiple autonomous systems need policy-controlled routing.
+
+- **IGPs Cannot Scale to Global Internet Size:** OSPF floods all topology changes to every
+  router. With 1M+ prefixes, this would overwhelm routers. BGP's event-driven updates and
+  aggregation make global scale possible.
+
+- **Mixing IGPs Requires Redistribution:** Running OSPF in one site and EIGRP in another
+  requires redistribution at the border router. This is complex — avoid mixing IGPs unless
+  absolutely necessary.
+
+- **BGP Does Not Guarantee Optimality:** BGP applies policy (local-preference, AS-path,
+  MED) before technical metrics. A policy-preferred path may be physically longer than
+  the optimal route.
+
+- **AS Numbers Are Public Identity:** An AS number is a network's public routing identity.
+  Changing it requires BGP session resets across all peers — a major operational event.
 
 ---
 
-## Next Steps
+## See Also
 
-- See [eBGP vs iBGP](ebgp_vs_ibgp.md) for external vs internal BGP use
-- Review [Static vs Dynamic Routing](static_vs_dynamic_routing.md) for foundational routing choices
-- Explore [OSPF Advanced](ospf_advanced.md) for complex IGP designs
-- Read [Route Redistribution](route_redistribution.md) for IGP ↔ EGP interactions
+- [eBGP vs iBGP](../theory/ebgp_vs_ibgp.md)
+- [BGP Fundamentals](../theory/bgp_fundamentals.md)
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md)
+- [Route Redistribution](../theory/route_redistribution.md)
+- [Static vs Dynamic Routing](../theory/static_vs_dynamic_routing.md)

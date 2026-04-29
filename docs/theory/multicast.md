@@ -12,6 +12,21 @@ trees to forward multicast traffic to interested receivers.
 
 ---
 
+## At a Glance
+
+| Aspect | ASM (Any-Source Multicast) | SSM (Source-Specific Multicast) | Broadcast |
+| --- | --- | --- | --- |
+| **Receiver Subscription** | Join group (G) | Join (S, G) — source + group | Implicit (all hosts) |
+| **Routing Protocol** | PIM-DM, PIM-SM, DVMRP | PIM-SM only | N/A (flooding) |
+| **Join Message** | "Interested in G" | "Interested in S for G" | N/A |
+| **RP (Rendezvous Point)** | Required (PIM-SM) | Not required (source-based) | N/A |
+| **Distribution Tree** | Shared or shortest-path | Shortest-path tree (SPT) only | Flooding |
+| **Bandwidth Efficiency** | Medium (extra RP overhead) | High (direct paths) | Low (floods all) |
+| **Scope** | Global multicast | Global, but source-aware | Link-local only |
+| **Use Case** | Video distribution, live streaming | TV channels (IPTV), financial data | Network protocols only |
+
+---
+
 ## Multicast Addressing
 
 ### IPv4 — 224.0.0.0/4
@@ -297,3 +312,13 @@ broadcast (ARP). Far simpler to operate — no PIM configuration on the fabric.
 
 - IGMPv3 is required for SSM. Verify all hosts and routers support it before deploying
   SSM — legacy hosts may not send IGMPv3 Membership Reports.
+
+---
+
+## See Also
+
+- [IPv4 vs IPv6](../theory/ipv4_vs_ipv6.md) — MLDv2 for IPv6 multicast
+- [QoS & DSCP](../theory/qos.md) — Multicast-specific QoS policies
+- [PIM Protocol Deep Dive](../routing/pim.md) — PIM-SM, PIM-DM, and BIDIR operation
+- [Cisco Multicast Configuration](../cisco/cisco_multicast_config.md) — PIM, IGMP setup
+- [Data Centre Networking](../theory/dc_topologies.md) — Multicast in EVPN and overlay networks

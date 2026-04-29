@@ -65,7 +65,7 @@ iked[500]: azure-vpn-primary goes DOWN
 
 **Followed by BGP withdrawal (link-down-failover):**
 
-```text
+```ios
 
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.21.1 Down Interface flap
 ```
@@ -82,7 +82,7 @@ packet loss, or Cisco `show interfaces` for physical errors on the ER port.
 
 **FortiGate log signature:**
 
-```text
+```ios
 
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.21.1 Down BGP Notification sent
 BGP: %BGP-3-NOTIFICATION: sent to neighbor 169.254.21.1 4/0 (hold time expired)
@@ -102,7 +102,7 @@ events overlapping with the BGP failure timestamp.
 
 **FortiGate log signature:**
 
-```text
+```ios
 
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.21.1 -> OpenConfirm
 BGP: %BGP-3-NOTIFICATION: received from neighbor 169.254.21.1 2/2 (peer in wrong state)
@@ -148,7 +148,7 @@ show bgp neighbors 172.16.0.2 advertised-routes
 
 **Cisco log signature:**
 
-```text
+```ios
 
 %BFD-6-BFD_SESS_DOWN: BFD session ld:4097 handle:1 is going down Reason: DETECT_TIMER_EXPIRED
 %BGP-5-ADJCHANGE: neighbor 172.16.0.2 Down BFD adjacency down
@@ -225,25 +225,25 @@ AzureDiagnostics
 
 ## 6. Quick Fault Isolation Checklist
 
-```text
+```mermaid
+graph TD
+    A["VPN tunnel not up?"]
+    A --> A1["diagnose vpn ike log-filter dst-addr4 &lt;azure-gw-ip&gt;"]
+    A --> A2["Check proposal: aes256-sha256, dhgrp 2"]
+    A --> A3["Check FortiGate can reach Azure GW private IP via ER"]
 
-VPN tunnel not up?
-  └─ Check Phase 1: diagnose vpn ike log-filter dst-addr4 <azure-gw-ip>
-  └─ Check proposal: aes256-sha256, dhgrp 2 (or match Azure custom policy)
-  └─ Check private IP routing: can FortiGate reach Azure GW private IP via ER?
+    B["BGP not establishing?"]
+    B --> B1["Confirm tunnel is UP first"]
+    B --> B2["Check remote-as matches Azure VPN GW ASN (65515)"]
+    B --> B3["Check APIPA addresses match Azure BGP IP settings"]
 
-BGP not establishing?
-  └─ Confirm tunnel is UP first
-  └─ Check remote-as matches Azure VPN GW ASN (default 65515)
-  └─ Check APIPA addresses match Azure connection custom BGP IP settings
+    C["BGP up but no routes?"]
+    C --> C1["Verify Azure VNet is connected to VPN Gateway"]
+    C --> C2["Check route-map-in is not filtering Azure prefixes"]
+    C --> C3["get router info bgp neighbors x advertised-routes"]
 
-BGP established but no routes?
-  └─ Verify Azure VNet is connected to VPN Gateway
-  └─ Check route-map-in is not filtering Azure prefixes
-  └─ Confirm on-prem prefixes advertised: get router info bgp neighbors x advertised-routes
-
-Underlay ER BGP flapping?
-  └─ Check BFD: show bfd neighbors
-  └─ Check interface errors: show interfaces <ER-port>
-  └─ Check Azure portal ExpressRoute circuit metrics for BgpAvailability
+    D["Underlay ER BGP flapping?"]
+    D --> D1["Check BFD: show bfd neighbors"]
+    D --> D2["show interfaces &lt;ER-port&gt;"]
+    D --> D3["Check Azure portal ER circuit BgpAvailability metric"]
 ```

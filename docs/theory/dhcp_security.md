@@ -12,6 +12,17 @@ For IOS-XE configuration of these features see
 
 ---
 
+## At a Glance
+
+| Mechanism | Problem Solved | Data Source | Filter Type | Scope |
+| --- | --- | --- | --- | --- |
+| **DHCP Snooping** | Rogue DHCP servers; DHCP starvation | DHCP messages | Trusted/untrusted ports; rate limiting | VLAN; per-port |
+| **Dynamic ARP Inspection (DAI)** | ARP poisoning; gratuitous ARP spoofing | Binding table (MAC + IP) | ARP payload validation | Layer 2; per-port |
+| **IP Source Guard** | IP source spoofing | Binding table (IP + port) | Per-packet source IP filter | Layer 3 ingress |
+| **Combined (Layered)** | All three attacks above | All of the above | Bind table + port enforcement | Broadcast domain |
+
+---
+
 ## The DHCP Attack Surface
 
 ### Rogue DHCP Server (DHCP Spoofing)
@@ -275,3 +286,13 @@ Verify that all devices — especially static IP devices — have entries before
   installs a per-host ACL entry in hardware for each binding table entry. On switches
   with limited TCAM, this limits the number of devices that can be protected
   simultaneously. Verify platform-specific limits before large-scale deployment.
+
+---
+
+## See Also
+
+- [Cisco DHCP, Snooping & DAI Configuration](../cisco/cisco_dhcp_snooping.md) — IOS-XE setup and verification
+- [DHCP Fundamentals](../theory/switching_fundamentals.md) — Layer 2 broadcast domains and DHCP mechanics
+- [ARP and Gratuitous ARP](../reference/arp_reference.md) — ARP protocol details and attack vectors
+- [802.1X Port Authentication](../theory/switching_fundamentals.md) — Interaction with DHCP Snooping
+- [Access Control Lists (ACLs)](../reference/acl_reference.md) — Port security and ARP ACL configuration

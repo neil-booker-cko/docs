@@ -11,6 +11,19 @@ For BGP configuration see [Cisco BGP & iBGP Design](../cisco/cisco_bgp_ibgp.md) 
 
 ---
 
+## At a Glance
+
+| Aspect | Active-Active | Active-Passive | Hub-Spoke | Mesh |
+| --- | --- | --- | --- | --- |
+| **Traffic Distribution** | Simultaneous on all paths | Single path active | All traffic through hub | Direct peer paths |
+| **Bandwidth Efficiency** | Maximum (additive) | Single path only | Limited by hub | Maximum |
+| **Failover Speed** | <1s with BFD | Manual or 10-30s | <1s with BFD | <1s with BFD |
+| **Load Algorithm** | Per-flow or per-packet hashing | N/A | Hub routing decisions | Per-flow hashing |
+| **Complexity** | Medium (ECMP, BFD) | Low | Medium (hub management) | High (many peers) |
+| **Use Case** | Maximize throughput; HA | Cost-sensitive; simplicity | Multi-cloud centralization | True resilience; no bottleneck |
+
+---
+
 ## 1. Overview
 
 ### Active-Active vs Active-Passive
@@ -61,9 +74,10 @@ graph TB
     style AWS fill:#fff3e0
     style ISP1 fill:#f3e5f5
     style ISP2 fill:#f3e5f5
-```text
+```
 
 **Design:**
+
 - Data center router connects to cloud provider via two paths (DX + VPN, or DX + DX different carriers)
 - Both paths announce same BGP prefix from cloud (AWS announces 10.0.0.0/16 on both connections)
 - Data center receives two equal-cost routes; uses ECMP
@@ -79,16 +93,17 @@ router bgp 65000
     neighbor 169.254.2.1 activate
     ! Both neighbors receive same routes; if same cost, ECMP applied
 end
-```text
+```
 
 **Cloud Side (AWS example):**
 
 ```bash
 # Both VGW (DX) and VPN GW announce same prefix
 # AWS automatically sets equal cost if configured identically
-```text
+```
 
 **Load Balancing:**
+
 - Cisco uses flow-based hashing (per-destination or per-flow)
 - FortiGate uses per-packet or per-flow hashing
 - Result: traffic distributed across both paths
@@ -115,9 +130,10 @@ graph TB
     style AWS fill:#fff3e0
     style AZURE fill:#fff3e0
     style GCP fill:#fff3e0
-```text
+```
 
 **Design:**
+
 - Data center connects to Equinix FCR (or similar multi-cloud exchange)
 - All clouds connect to same FCR hub
 - Hub advertises all cloud routes; single point of control for load balancing
@@ -146,14 +162,16 @@ router bgp 65100
     neighbor 169.254.3.1 route-reflector-client
     neighbor 169.254.4.1 route-reflector-client
 end
-```text
+```
 
 **Advantages:**
+
 - Single connection from DC reaches all clouds
 - Hub provides route summarization and filtering
 - Easier to manage security policies at hub
 
 **Limitations:**
+
 - Hub becomes bottleneck (single point of failure without redundant hub)
 - All traffic passes through hub (added latency)
 
@@ -177,9 +195,10 @@ graph TB
     style AZURE fill:#fff3e0
     style EQUINIX1 fill:#ffe0b2
     style EQUINIX2 fill:#ffe0b2
-```text
+```
 
 **Design:**
+
 - Both clouds connect to Equinix FCR via multiple vConnections
 - Creates mesh topology with redundancy at hub level
 - Each cloud sees equal-cost paths through hub
@@ -194,9 +213,10 @@ router bgp 64512
     neighbor 169.254.1.1 activate
     neighbor 169.254.2.1 activate
 end
-```text
+```
 
 **Result:**
+
 - AWS learns 172.16.0.0/16 (Azure) from both Equinix connections
 - ECMP load-balances traffic across both paths
 - If one vConnection fails, traffic uses the other
@@ -215,14 +235,16 @@ Example:
   Flow 1: 192.168.1.10 → 10.0.0.20 (SSH) → Path 1
   Flow 2: 192.168.1.11 → 10.0.0.21 (SSH) → Path 2
   (Different flows use different paths; same flow always uses same path)
-```text
+```
 
 **Pros:**
+
 - Preserves packet order (no reordering)
 - Compatible with TCP (no out-of-order packet issues)
 - Default on Cisco and FortiGate
 
 **Cons:**
+
 - Imbalanced if many flows go same source/destination pair
 
 ### Per-Packet Hashing
@@ -235,13 +257,15 @@ Example:
   Packet 2 from Flow A → Path 2
   Packet 3 from Flow A → Path 1
   (Packets from same flow can use different paths)
-```text
+```
 
 **Pros:**
+
 - Better load distribution if flows are bursty
 - True per-packet distribution
 
 **Cons:**
+
 - Risk of out-of-order delivery (TCP must reorder)
 - Higher CPU overhead on endpoints (reordering buffer)
 - Not recommended for VPN or high-latency paths (divergent RTT)
@@ -255,7 +279,7 @@ Path 1: 100 Mbps → weight 1
 Path 2: 50 Mbps  → weight 1/2
 
 Distribution: 2/3 traffic on Path 1, 1/3 on Path 2
-```text
+```
 
 **Configuration:**
 
@@ -268,7 +292,7 @@ router bgp 65000
     neighbor 169.254.2.1 weight 100        ! Path 2: weight 100
     ! Higher weight = preferred path; 2:1 ratio
 end
-```text
+```
 
 **FortiGate:**
 
@@ -284,7 +308,7 @@ config router bgp
     next
   end
 end
-```text
+```
 
 ---
 
@@ -300,10 +324,8 @@ ECMP is automatically enabled when multiple routes to the same destination have 
    - BGP default: AS-Path length
    - If AS-Path differs, highest metric loses (longer path deprioritized)
    - Solution: Use `bestpath as-path ignore` or `local-preference` to override
-
-2. **Same next-hop weight** (optional) — Routes can have different BGP next-hops
-
-3. **Maximum paths configured** — Default is often 1; increase to allow multiple:
+1. **Same next-hop weight** (optional) — Routes can have different BGP next-hops
+1. **Maximum paths configured** — Default is often 1; increase to allow multiple:
 
 ```ios
 ! Cisco BGP
@@ -312,14 +334,14 @@ router bgp 65000
     maximum-paths 4    ! Allow up to 4 ECMP paths
   exit-address-family
 end
-```text
+```
 
 ```fortios
 ! FortiGate BGP
 config router bgp
   set maximum-paths 4
 end
-```text
+```
 
 ### ECMP Examples
 
@@ -330,7 +352,7 @@ DC Router receives:
   Route: 10.0.0.0/16, Next-Hop: 169.254.1.1, AS-Path: 64512
   Route: 10.0.0.0/16, Next-Hop: 169.254.2.1, AS-Path: 64512
   (Same AS-Path length = ECMP)
-```text
+```
 
 #### Example 2: Unequal AS-Path (no ECMP)
 
@@ -339,7 +361,7 @@ DC Router receives:
   Route: 10.0.0.0/16, Next-Hop: 169.254.1.1, AS-Path: 64512
   Route: 10.0.0.0/16, Next-Hop: 169.254.2.1, AS-Path: 64512 65999
   (Path 1 has shorter AS-Path; Path 2 loses. No ECMP unless configured.)
-```text
+```
 
 #### Fix: Override AS-Path comparison
 
@@ -353,7 +375,7 @@ router bgp 65000
 
 route-map PREFER-PATH2 permit 10
   set local-preference 150    ! Higher local-pref = preferred
-```text
+```
 
 ---
 
@@ -372,7 +394,7 @@ router bgp 65000
   neighbor 169.254.1.1 fall-over bfd single-hop
   ! BFD detects neighbor down in <1 second
 end
-```text
+```
 
 ```fortios
 config router bgp
@@ -382,9 +404,10 @@ config router bgp
     next
   end
 end
-```text
+```
 
 **Behavior:**
+
 - BFD sends keepalive packets every 300 ms
 - If 3 consecutive keepalives missed (900 ms total), link declared down
 - BGP immediately removes route; ECMP adjusts
@@ -417,7 +440,7 @@ show ip route bgp | include 10.0.0.0
 
 show ip cef 10.0.0.0/16
 ! Show forwarding path (which next-hops are active)
-```text
+```
 
 ### FortiGate BGP Routes
 
@@ -430,7 +453,7 @@ get router info routing-table bgp 10.0.0.0/16
 
 diagnose ip route list
 ! Verify ECMP distribution in kernel
-```text
+```
 
 ### BFD Status
 
@@ -439,20 +462,43 @@ diagnose ip route list
 ```ios
 show bfd session
 ! Lists BFD neighbors and status (UP/DOWN)
-```text
+```
 
 **FortiGate:**
 
 ```fortios
 diagnose ip bfd session list
 ! Shows BFD peers and detection times
-```text
+```
 
 ---
 
-## Next Steps
+## Notes / Gotchas
 
-- [BGP & iBGP Design](../cisco/cisco_bgp_ibgp.md) — BGP metric tuning
-- [AWS BGP Stack (Flagship)](../aws/bgp_stack_vpn_over_dx.md) — Dual-DX example
-- [Equinix Cloud-to-Cloud Interconnect](../equinix/equinix_cloud_to_cloud_interconnect.md) — Multi-cloud hub design
-- [BFD Core Config](../cisco/cisco_bfd_config_guide.md) — Detailed BFD setup
+- **ECMP Requires Identical Metrics:** Both routes must have the same cost/metric or ECMP will not
+  activate. A longer BGP AS-Path deprioritizes a path unless overridden with
+  `bestpath as-path ignore` or matching `local-preference`.
+
+- **Per-Flow vs Per-Packet Tradeoff:** Per-flow hashing preserves TCP ordering but can cause
+  imbalance with skewed source/destination pairs. Per-packet distributes better but risks
+  out-of-order delivery on high-latency paths.
+
+- **BFD + BGP Damping Interaction:** BFD detects failure in under a second, but BGP route
+  dampening can suppress the prefix for 15+ minutes after multiple flaps. This is intentional
+  protection against control-plane storms.
+
+- **Hub Becomes Single Point of Failure:** Hub-and-spoke designs centralize routing but create a
+  bottleneck. A dual-hub with route reflection mitigates this but adds complexity and cost.
+
+- **Cloud Provider AS-Path Matching:** AWS, Azure, and GCP may assign different AS-Path lengths to
+  equivalent routes. Verify both paths have identical AS-Path length, or use local-preference.
+
+---
+
+## See Also
+
+- [BGP Convergence: Default Settings vs. BFD Integration](../theory/bgp_bfd_comparison.md)
+- [eBGP vs iBGP](../theory/ebgp_vs_ibgp.md)
+- [BFD Core Config Guide](../cisco/cisco_bfd_config_guide.md)
+- [AWS BGP Stack (Flagship)](../aws/bgp_stack_vpn_over_dx.md)
+- [Equinix Cloud-to-Cloud Interconnect](../equinix/equinix_cloud_to_cloud_interconnect.md)

@@ -16,22 +16,23 @@ routers. The MSEE pair is a design constant — Microsoft operates two physical 
 every ExpressRoute location. To achieve full redundancy, the customer must connect to
 both MSEEs. A circuit with only one path active is treated as degraded by Azure.
 
-```text
-Customer network
-      |
-      | (provider circuit or direct cross-connect)
-      |
-Connectivity provider PoP   OR   ExpressRoute Direct location
-      |
-MSEE-1 (primary)    MSEE-2 (secondary)
-      |                    |
-      +--------------------+
-             |
-      ExpressRoute circuit
-             |
-   ExpressRoute Gateway (in VNet)
-             |
-          VNet(s)
+```mermaid
+graph TD
+    CN["Customer Network"]
+    PP["Connectivity Provider PoP<br/>or ExpressRoute Direct Location"]
+    MSEE1["MSEE-1 (primary)"]
+    MSEE2["MSEE-2 (secondary)"]
+    ER["ExpressRoute Circuit"]
+    GW["ExpressRoute Gateway (in VNet)"]
+    VN["VNet(s)"]
+
+    CN -- "Provider circuit or direct cross-connect" --> PP
+    PP --> MSEE1
+    PP --> MSEE2
+    MSEE1 --> ER
+    MSEE2 --> ER
+    ER --> GW
+    GW --> VN
 ```
 
 The customer is responsible for establishing BGP sessions to both MSEE paths. Azure
@@ -138,7 +139,7 @@ ensure path independence.
 
 **Cisco IOS-XE:**
 
-```text
+```ios
 
 ! Primary path — VLAN 100
 interface GigabitEthernet0/0.100
@@ -231,12 +232,12 @@ The ExpressRoute circuit does not connect to a VNet automatically. A dedicated
 
    "GatewaySubnet" exactly — Azure requires this name)
 
-2. Deploy an ExpressRoute Gateway resource in the GatewaySubnet. Choose the SKU
+1. Deploy an ExpressRoute Gateway resource in the GatewaySubnet. Choose the SKU
 
    (Standard, HighPerformance, UltraPerformance, ErGw1Az/2Az/3Az) based on
    required throughput and availability zone support
 
-3. Create a Connection resource linking the Gateway to the ExpressRoute circuit
+1. Create a Connection resource linking the Gateway to the ExpressRoute circuit
 
 Multiple VNets can connect to a single ExpressRoute circuit through separate Gateway
 Connection resources. The number of VNet Gateways per circuit depends on the circuit

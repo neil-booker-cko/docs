@@ -196,3 +196,13 @@ IPv4 and IPv6 connections concurrently; use whichever completes first.
 
 - Never route `fe80::/10` — link-local addresses are non-routable by design. Use global
   unicast or ULA for any routed IPv6 traffic.
+
+---
+
+## See Also
+
+- [IP Addressing Design](../theory/ip_addressing_design.md)
+- [OSPF Fundamentals](../theory/ospf_fundamentals.md)
+- [Cisco IPv6 Configuration](../cisco/cisco_ipv6_config.md)
+- [Multicast (IPv4 & IPv6)](../theory/multicast.md)
+- [Dual-Stack Migration Strategy](../operations/ipv6_migration.md)

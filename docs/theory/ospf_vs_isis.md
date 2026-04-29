@@ -160,3 +160,13 @@ private
 - IS-IS has no concept of passive interfaces in the same way as OSPF — interfaces not
   running IS-IS are simply not configured with `ip router isis`. Use `passive-interface`
   under `router isis` to advertise a prefix without forming adjacencies.
+
+---
+
+## See Also
+
+- [IGP Comparison (OSPF, EIGRP, RIP)](../theory/igp_comparison.md) — Broader IGP comparison
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md) — Enterprise IGP comparison
+- [OSPF Fundamentals](../theory/ospf_fundamentals.md) — OSPF core concepts
+- [Cisco IS-ISIS Configuration](../cisco/cisco_isis_config.md) — IOS-XE IS-IS setup
+- [Service Provider Routing](../operations/sp_routing_design.md) — IS-IS in SP networks

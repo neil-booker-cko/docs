@@ -3,6 +3,23 @@
 Port aggregation combines multiple physical links into a single logical link for higher
 bandwidth and redundancy.
 
+---
+
+## At a Glance
+
+| Aspect | Details |
+| --- | --- |
+| **Definition** | Bundles multiple physical ports into a single logical Link Aggregation Group (LAG) or Port Channel for combined bandwidth and redundancy |
+| **Bandwidth** | Additive: 4× 1 Gbps ports = 4 Gbps throughput; scales linearly up to practical limits |
+| **Protocols** | LACP (IEEE 802.3ad, recommended) or Static LAG (manual, no negotiation) |
+| **Load balancing** | Hash-based (MAC, IP, or port) per flow; all traffic from same source-dest pair uses one port |
+| **Redundancy** | If one member port fails, traffic rehashes to remaining ports; no packet loss (ideally) |
+| **Failover time** | LACP detects failure in 3x hello interval (~6 seconds); static LAG has no auto-detection |
+| **Configuration** | Both sides must be identically configured; LACP auto-negotiates agreement |
+| **Typical size** | 2-4 ports; more than 4 provides diminishing benefit; avoid mixing speeds or types |
+
+---
+
 ## Core Concepts
 
 ### What is Port Aggregation?
@@ -225,11 +242,10 @@ Switch B power failure:
 
 ---
 
-## Summary
+## See Also
 
-- **Port Aggregation (LAG)** combines physical ports into logical bundles
-- **LACP** (recommended) provides automatic negotiation and failure detection
-- **Load balancing** distributes traffic across member ports based on hash
-- **Redundancy** ensures traffic continues if individual ports fail
-- **Same speed/type** ports prevent configuration issues
-- **Monitor health** regularly to catch port failures early
+- [Switching Fundamentals](switching_fundamentals.md)
+- [Spanning Tree Protocol](stp_rstp_configuration.md)
+- [HSRP/VRRP/GLBP Overview](hsrp_vrrp_glbp.md)
+- [Network Resilience Patterns](../architecture/resilience_patterns.md)
+- [Switch Performance Metrics](switching_fundamentals.md#switch-performance-metrics)

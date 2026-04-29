@@ -4,6 +4,22 @@ Ethernet has evolved from 10 Mbps over coax (1980s) to 100+ Gbps over fiber. Und
 the progression helps explain why older devices are incompatible, why speed negotiation matters,
 and how to plan network upgrades.
 
+---
+
+## At a Glance
+
+| Era | Speed | Year | Medium | Distance | Key Benefit | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| **Coax (10Base5/2)** | 10 Mbps | 1983–1985 | Thick/thin coax | 185–500 m | Shared bus | Obsolete |
+| **Twisted-Pair (10Base-T)** | 10 Mbps | 1990 | Cat3 twisted pair | 100 m | Star topology, hubs | Legacy |
+| **Fast Ethernet (100Base-TX)** | 100 Mbps | 1995 | Cat5 twisted pair | 100 m | Autonegotiation | Rare |
+| **Gigabit Ethernet (1000Base-T)** | 1 Gbps | 1999 | Cat5e/Cat6 | 100 m | 4-pair simultaneous | Common |
+| **10 Gigabit (10GBase-T, -SR, -LR)** | 10 Gbps | 2002–2006 | Fiber/Cat6A | 100 m–10 km | Data center backbone | Widespread |
+| **100 Gigabit (100GBase-SR4, -LR4)** | 100 Gbps | 2010 | Parallel optics (4×25G) | 100 m–10 km | Hyperscale DCs | Standard |
+| **400 Gigabit (400GBase-ZR)** | 400 Gbps | 2022 | Dense wavelengths | 120+ km | Metro/long-haul | Emerging |
+
+---
+
 ## Timeline and Standards
 
 ### The Early Years (1980s-1990s)
@@ -327,16 +343,42 @@ Speeds will continue to 10x; cost per Gbps continues falling.
 
 ---
 
-## References
+## Notes / Gotchas
 
-- IEEE 802.3: Ethernet standard (comprehensive, 6000+ pages)
-- RFC 3384: BGP Communities (relevant for network design)
-- TIA/EIA-568B: Twisted-pair cabling standards
+- **10Base-T Coil Cables (Crossover vs Straight):** Pre-1990s networks used 10Base-T on Cat3
+  with crossover cables between hubs (MDI-X) and straight-through to devices (MDI). Modern
+  auto-MDIX eliminates the distinction; older equipment may fail silently if cabling is
+  reversed.
+
+- **100Base-T Required New Cable:** 100Base-TX requires Cat5 (100Base-TX over Cat3 fails
+  intermittently). Upgrading from 10Base-T to 100Base-T sometimes required rewiring — many
+  sites mixed speeds via autonegotion.
+
+- **1000Base-T Uses All 4 Pairs Simultaneously:** Unlike 100Base-TX (which uses 2 pairs),
+  1000Base-T transmits and receives on all 4 pairs at once. Crosstalk or EMI affecting any
+  pair degrades the link; a single bad wire can cause intermittent Gbps-level failures.
+
+- **Fiber Connector Cleanliness Matters:** SMF (Single-Mode Fiber) connectors are 8-micron
+  cores. A speck of dust causes immediate signal loss. Always clean fiber ends before
+  connecting; dirty connections cause intermittent errors and bit errors invisible to basic
+  diagnostics.
+
+- **Speed Negotiation Failures are Silent:** If autonegotiation fails (bad cable, mismatched
+  transceivers), the interface may lock to a lower speed silently (e.g., 100 Mbps instead of
+  1 Gbps). Always verify negotiated speed: `show interface <port> | include speed` or
+  `show transceiver detail`.
 
 ---
 
-## Next Steps
+## See Also
 
-- Learn [Physical Layer](physical_layer.md) cabling details
-- Understand [Switching Fundamentals](switching_fundamentals.md) for link-layer concepts
-- See [Interface & Routing Fundamentals](interface_routing_fundamentals.md) for device configuration
+- [Physical Layer Cabling & Standards](../theory/physical_layer.md) — Twisted-pair and fiber
+  specifications
+- [Switching Fundamentals](../theory/switching_fundamentals.md) — Hubs, switches, and
+  broadcast domains
+- [Interface & Routing Fundamentals](../theory/interface_routing_fundamentals.md) — Interface
+  configuration and autonegotiation
+- [Cisco Interface Configuration](../cisco/cisco_interface_config.md) — Speed and duplex
+  tuning
+- [Network Troubleshooting: Speed & Duplex Issues](../operations/troubleshooting_speed_duplex.md)
+  — Diagnosis and recovery

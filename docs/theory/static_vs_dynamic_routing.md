@@ -445,3 +445,13 @@ show ip route 192.168.0.0
   routing (between ASes) and can carry hundreds of thousands of routes. Most networks use
   BGP only at the edge (ISP peering, cloud provider connections); internal routing is OSPF
   or EIGRP.
+
+---
+
+## See Also
+
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md) — Detailed IGP comparison
+- [IGP Comparison (OSPF, EIGRP, RIP)](../theory/igp_comparison.md) — Three-way IGP comparison
+- [eBGP vs iBGP](../theory/ebgp_vs_ibgp.md) — BGP for inter-domain routing
+- [Cisco Static Route Configuration](../cisco/cisco_static_routing.md) — IOS-XE setup
+- [Cisco OSPF Configuration](../cisco/cisco_ospf_config.md) — Dynamic routing configuration

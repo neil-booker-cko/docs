@@ -7,6 +7,21 @@ highlights where behaviour diverges.
 
 ---
 
+## At a Glance
+
+| Aspect | AWS | Azure | GCP |
+| --- | --- | --- | --- |
+| **Private WAN Product** | Direct Connect (DX) | ExpressRoute (ER) | Cloud Interconnect |
+| **Transit Hub** | Transit Gateway (TGW); customer-managed | Virtual WAN (vWAN); Microsoft-managed | Network Connectivity Center (NCC); Google-managed |
+| **VPN Product** | Site-to-Site VPN | VPN Gateway (VNG) | HA VPN |
+| **Cloud-side BGP ASN** | 7224 (VGW) or configurable (TGW) | 12076 (always fixed) | 16550 (always fixed) |
+| **Route Import Limit** | 100–200 prefixes (DX); unlimited (VPN) | 4,000 prefixes | 100 prefixes per BGP session |
+| **VPN Max Throughput** | ~1.25 Gbps per tunnel | Up to 10 Gbps (VpnGw5 SKU) | ~3 Gbps per tunnel |
+| **ECMP Support** | Yes (TGW + multiple VIFs) | Yes (active/active VNG) | Yes (Cloud Router default) |
+| **Default Route Injection** | Optional (not by default) | Optional (not by default) | Not supported |
+
+---
+
 ## Terminology Map
 
 | Concept | AWS | Azure | GCP |
@@ -272,10 +287,36 @@ for VPC topology is not necessary given global VPC peering defaults.
 
 ---
 
-## References
+## Notes / Gotchas
 
-- [AWS Direct Connect Setup](../aws/aws_direct_connect_setup.md)
-- [Azure ExpressRoute Setup](../azure/azure_expressroute_setup.md)
-- [GCP Cloud Interconnect Setup](../gcp/gcp_cloud_interconnect_setup.md)
-- [Cloud Network Design Principles](cloud_network_design.md)
-- [eBGP vs iBGP](ebgp_vs_ibgp.md)
+- **Fixed Cloud ASNs (Azure & GCP):** Azure's MSEE always uses 12076, and GCP's Cloud
+  Router always uses 16550. These cannot be changed. If your on-prem ASN is 12076 or 16550,
+  you must renumber on-prem or use route-maps to avoid BGP adjacency issues.
+
+- **Route Limits Vary Significantly:** AWS DX is generous (100–200 prefixes) but VPN has no
+  documented limit; Azure accepts 4,000 prefixes; GCP caps at 100 per BGP session. Exceeding
+  limits causes BGP session resets or route drops with no error message—verify route counts
+  in production.
+
+- **Public VIF & Microsoft Peering Require Public ASN:** AWS Public VIF and Azure Microsoft
+  Peering both require a public/legitimate BGP ASN (not RFC 1918 private ASNs). If
+  misconfigured with a private ASN, BGP adjacency fails silently or routes are filtered.
+
+- **Microsoft Peering Requires Route Filters:** Azure's Microsoft Peering advertises internet
+  routes by default. Without route filters, you risk importing unwanted prefixes and leaking
+  your internal routes back to the internet. Always apply strict route filters.
+
+- **Transitive Routing Limitations:** In AWS, VPCs cannot route to each other via VGW alone
+  (TGW required). In Azure, VNets cannot route transitively through ER Gateway (vWAN
+  required). In GCP, global VPC peering is automatic, but on-prem transit still requires
+  NCC.
+
+---
+
+## See Also
+
+- [AWS Direct Connect Setup](../aws/aws_direct_connect_setup.md) — DX configuration and routing
+- [Azure ExpressRoute Setup](../azure/azure_expressroute_setup.md) — ER peering and BGP tuning
+- [GCP Cloud Interconnect Setup](../gcp/gcp_cloud_interconnect_setup.md) — Interconnect VLAN attachments
+- [Cloud Network Design](../theory/cloud_network_design.md) — Design patterns for cloud connectivity
+- [eBGP vs iBGP](../theory/ebgp_vs_ibgp.md) — BGP modes for cloud and datacenter routing

@@ -574,3 +574,13 @@ polling
 
 - **RFC references:** NTP is RFC 5905 (v4) and RFC 5906 (authentication). SNTP is a
   simplified client mode defined in RFC 5905.
+
+---
+
+## See Also
+
+- [NTP vs PTP](../theory/ntp_vs_ptp.md) — NTP vs Precision Time Protocol comparison
+- [Cisco NTP Configuration](../cisco/cisco_ntp_config.md) — IOS-XE NTP server and client setup
+- [Time Synchronization Best Practices](../operations/time_synchronization.md) — Deployment strategies
+- [NTP Packet Format](../packets/ntp.md) — Protocol details and timestamp encoding
+- [Network Time Synchronization](../reference/time_sync_reference.md) — Reference documentation

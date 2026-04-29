@@ -15,18 +15,16 @@ into a **Cloud Router** in a specified GCP region. The Cloud Router terminates t
 session and programs learned routes into the VPC's route table. The Cloud Router is not
 optional — there is no mechanism to use static routing over an Interconnect connection.
 
-```text
-Customer router
-      |
-      | Cross-connect (Dedicated) or provider circuit (Partner)
-      |
-Google peering edge
-      |
-      | VLAN attachment
-      |
-Cloud Router (regional, per-VPC)
-      |
-VPC network
+```mermaid
+graph TD
+    CR["Customer Router"]
+    GPE["Google Peering Edge"]
+    CRR["Cloud Router (regional, per-VPC)"]
+    VPC["VPC Network"]
+
+    CR -- "Cross-connect (Dedicated)<br/>or provider circuit (Partner)" --> GPE
+    GPE -- "VLAN attachment" --> CRR
+    CRR --> VPC
 ```
 
 ---
@@ -69,8 +67,8 @@ Cloud Router is Google's managed BGP routing service. Key characteristics:
 
    Dedicated Interconnect**
 
-2. Choose the colocation facility and capacity (10 Gbps or 100 Gbps)
-3. GCP generates a **Letter of Authorization (LOA)** — download it from the Console
+1. Choose the colocation facility and capacity (10 Gbps or 100 Gbps)
+1. GCP generates a **Letter of Authorization (LOA)** — download it from the Console
 
 Submit the LOA to the colocation facility to provision a cross-connect between the
 customer's cage and Google's cage. The facility connects the two at the specified patch
@@ -88,15 +86,15 @@ of the physical interconnect.
 
    (50 Mbps to 50 Gbps)
 
-2. The provider creates a VLAN attachment on their infrastructure and shares a
+1. The provider creates a VLAN attachment on their infrastructure and shares a
 
    **pairing key** with the customer
 
-3. In the GCP Console, navigate to **Hybrid Connectivity → Interconnect → Create
+1. In the GCP Console, navigate to **Hybrid Connectivity → Interconnect → Create
 
    Partner Interconnect** and enter the pairing key to associate the attachment
 
-4. Once the provider confirms provisioning is complete, **activate the attachment** in
+1. Once the provider confirms provisioning is complete, **activate the attachment** in
 
    the GCP Console — the attachment will not pass traffic until activated
 
@@ -133,7 +131,7 @@ router for the VLAN, then bring up the BGP session.
 
 **Cisco IOS-XE:**
 
-```text
+```ios
 
 ! VLAN attachment subinterface
 interface GigabitEthernet0/0.100

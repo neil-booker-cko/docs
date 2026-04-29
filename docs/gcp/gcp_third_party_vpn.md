@@ -58,7 +58,7 @@ graph LR
         Peer
         R["Routes to reach<br/>10.0.0.0/16"]
     end
-```text
+```
 
 ---
 
@@ -69,10 +69,10 @@ graph LR
 GCP Console:
 
 1. VPC Network → VPN → HA VPN Gateways → Create VPN Gateway
-2. Name: `third-party-vpn-gw`
-3. VPC Network: select your VPC
-4. Region: select region (HA VPN requires region-specific gateway)
-5. Create
+1. Name: `third-party-vpn-gw`
+1. VPC Network: select your VPC
+1. Region: select region (HA VPN requires region-specific gateway)
+1. Create
 
 Via gcloud CLI:
 
@@ -80,20 +80,20 @@ Via gcloud CLI:
 gcloud compute vpn-gateways create third-party-vpn-gw \
   --network my-vpc \
   --region us-central1
-```text
+```
 
 ### B. Create VPN Connection (Tunnel)
 
 GCP Console:
 
 1. VPC Network → VPN → VPN connections → Create VPN Connection
-2. Name: `third-party-vpn-conn`
-3. Type: Site-to-Site (IPsec)
-4. VPN Gateway: `third-party-vpn-gw`
-5. IKE version: IKEv2 (recommended)
-6. Shared Key (PSK): generate or provide (must match third party's PSK)
-7. Peer IP: `203.0.113.5` (third-party peer public IP)
-8. Create
+1. Name: `third-party-vpn-conn`
+1. Type: Site-to-Site (IPsec)
+1. VPN Gateway: `third-party-vpn-gw`
+1. IKE version: IKEv2 (recommended)
+1. Shared Key (PSK): generate or provide (must match third party's PSK)
+1. Peer IP: `203.0.113.5` (third-party peer public IP)
+1. Create
 
 Via gcloud CLI:
 
@@ -109,7 +109,7 @@ gcloud compute vpn-tunnels create third-party-vpn-tunnel-0 \
   --region us-central1
 
 echo "PSK: $PSK"
-```text
+```
 
 GCP HA VPN creates two tunnels automatically for high availability (tunnel-0 and tunnel-1).
 
@@ -120,11 +120,11 @@ Cloud Router provides BGP peering with the VPN gateway.
 GCP Console:
 
 1. VPC Network → Cloud Routers → Create Router
-2. Name: `third-party-router`
-3. Network: select your VPC
-4. Region: same as VPN gateway
-5. BGP ASN: `64514` (Google-assigned; cannot change for default)
-6. Create
+1. Name: `third-party-router`
+1. Network: select your VPC
+1. Region: same as VPN gateway
+1. BGP ASN: `64514` (Google-assigned; cannot change for default)
+1. Create
 
 Via gcloud CLI:
 
@@ -133,7 +133,7 @@ gcloud compute routers create third-party-router \
   --network my-vpc \
   --region us-central1 \
   --asn 64514
-```text
+```
 
 ### D. Configure BGP Peering (Dynamic Routing)
 
@@ -142,13 +142,13 @@ If using dynamic routing (recommended):
 GCP Console:
 
 1. Cloud Routers → select `third-party-router`
-2. BGP Peers → Add BGP Peer
-3. Peer Name: `third-party-peer`
-4. Interface Name: create new interface (e.g., `third-party-if`)
-5. IP Address: `169.254.21.1` (RFC 5549; GCP-assigned internal address)
-6. Peer IP address: `169.254.21.2` (third-party's tunnel IP)
-7. Peer ASN: `65100` (agree with third party)
-8. Create
+1. BGP Peers → Add BGP Peer
+1. Peer Name: `third-party-peer`
+1. Interface Name: create new interface (e.g., `third-party-if`)
+1. IP Address: `169.254.21.1` (RFC 5549; GCP-assigned internal address)
+1. Peer IP address: `169.254.21.2` (third-party's tunnel IP)
+1. Peer ASN: `65100` (agree with third party)
+1. Create
 
 Via gcloud CLI:
 
@@ -166,7 +166,7 @@ gcloud compute routers add-bgp-peer third-party-router \
   --peer-ip-address 169.254.21.2 \
   --peer-asn 65100 \
   --region us-central1
-```text
+```
 
 The third party configures their BGP peer on `169.254.21.1` (GCP side) and exchanges routes via
 BGP.
@@ -178,11 +178,11 @@ If the third party cannot support BGP:
 GCP Console:
 
 1. VPC Network → Routes → Create Route
-2. Name: `to-third-party`
-3. Network: select your VPC
-4. Destination IP range: `192.168.0.0/16` (third-party network)
-5. Next hop: VPN tunnel (`third-party-vpn-tunnel-0`)
-6. Create
+1. Name: `to-third-party`
+1. Network: select your VPC
+1. Destination IP range: `192.168.0.0/16` (third-party network)
+1. Next hop: VPN tunnel (`third-party-vpn-tunnel-0`)
+1. Create
 
 Via gcloud CLI:
 
@@ -192,7 +192,7 @@ gcloud compute routes create to-third-party \
   --next-hop-vpn-tunnel third-party-vpn-tunnel-0 \
   --next-hop-vpn-tunnel-region us-central1 \
   --network my-vpc
-```text
+```
 
 ### F. Third-Party Configuration (Cisco Example)
 
@@ -235,7 +235,7 @@ router bgp 65100
   address-family ipv4
     network 192.168.0.0 mask 255.255.0.0
     neighbor 169.254.21.1 activate
-```text
+```
 
 ---
 
@@ -259,7 +259,7 @@ router bgp 65100
 ```bash
 gcloud compute vpn-tunnels describe third-party-vpn-tunnel-0 \
   --region us-central1
-```text
+```
 
 Tunnel should show status: `up` when peer connects.
 
@@ -268,7 +268,7 @@ Tunnel should show status: `up` when peer connects.
 ```bash
 gcloud compute routers describe third-party-router \
   --region us-central1
-```text
+```
 
 BGP peer should show status: `established`.
 
@@ -277,7 +277,7 @@ BGP peer should show status: `established`.
 ```bash
 gcloud compute routers get-status third-party-router \
   --region us-central1
-```text
+```
 
 Third-party routes (e.g., 192.168.0.0/16) should appear in learned routes once BGP neighbor
 establishes.
@@ -286,7 +286,7 @@ establishes.
 
 ```bash
 gcloud compute routes list --filter "network:my-vpc"
-```text
+```
 
 Routes to third-party network should show VPN tunnel as next hop.
 

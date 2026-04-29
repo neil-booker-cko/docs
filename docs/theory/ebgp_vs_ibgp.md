@@ -151,3 +151,13 @@ the
 
 - `show ip bgp summary` distinguishes iBGP and eBGP by whether the remote-as matches the
   local AS.
+
+---
+
+## See Also
+
+- [BGP Fundamentals](../theory/bgp_fundamentals.md) — BGP protocol mechanics and session establishment
+- [Route Reflection & Confederation](../theory/route_reflection_confederation.md) — Scaling iBGP networks
+- [BGP Communities & Policy](../reference/bgp_communities.md) — Using communities for path preference
+- [Cisco BGP & iBGP Design](../cisco/cisco_bgp_ibgp.md) — Configuration and best practices
+- [AWS BGP Stack (Flagship)](../aws/bgp_stack_vpn_over_dx.md) — eBGP peering with cloud providers

@@ -2,6 +2,22 @@
 
 Complete guide to importing routes from one routing protocol into another.
 
+---
+
+## At a Glance
+
+| Aspect | Static→Dynamic | IGP A→IGP B | IGP→BGP | BGP→IGP |
+| --- | --- | --- | --- | --- |
+| **Common** | Very (branch defaults) | Sometimes (mergers) | Always (edge) | Rarely (risky) |
+| **Metric Translation** | Custom seed required | Requires explicit metric | Requires MED/AS-Path | Requires seed metric |
+| **Redistribution Direction** | One-way (always out) | Both ways (both ASes) | One-way (core→edge) | One-way (edge→core) |
+| **Loop Prevention** | ACL/distribute-list | Route-tags + filters | AS-Path (implicit) | Dangerous; needs filters |
+| **Typical Config** | 2–3 routes | 50–500 routes | 1000s of routes | 100s of routes (filtered) |
+| **Risk Level** | Low (few routes) | Medium (accidental loops) | Low (AS-Path) | High (external routes inside) |
+| **Best Practice** | Explicit; firewall model | Use mutual redistribution + tags | Summarize before export | Use BGP inside; avoid IGP |
+
+---
+
 ## Core Concept
 
 **Route redistribution** imports routes from one protocol and advertises them
@@ -445,3 +461,13 @@ Solution: Use route-map to filter what gets redistributed
 - **One-way redistribution** is simpler than two-way
 - **Test thoroughly** before production deployment
 - **Use route tags and administrative distance** to prevent and detect loops
+
+---
+
+## See Also
+
+- [IGP Comparison (OSPF, EIGRP, RIP)](../theory/igp_comparison.md) — Metric differences between IGPs
+- [Static vs Dynamic Routing](../theory/static_vs_dynamic_routing.md) — When to use static redistribution
+- [Cisco Route Redistribution Config](../cisco/cisco_route_redistribution.md) — IOS-XE syntax and examples
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md) — Comparing the two most common IGPs
+- [eBGP vs iBGP](../theory/ebgp_vs_ibgp.md) — BGP peering and route advertisement

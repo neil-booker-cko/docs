@@ -57,7 +57,7 @@ graph LR
         Peer
         R["Routes to reach<br/>10.0.0.0/16"]
     end
-```text
+```
 
 ---
 
@@ -68,10 +68,10 @@ graph LR
 AWS Console:
 
 1. VPC → Virtual Private Gateways → Create Virtual Private Gateway
-2. Name: `third-party-vpn-gw`
-3. ASN: `64512` (AWS default) or custom ASN for BGP
-4. Create
-5. Attach to VPC
+1. Name: `third-party-vpn-gw`
+1. ASN: `64512` (AWS default) or custom ASN for BGP
+1. Create
+1. Attach to VPC
 
 Alternatively, via CLI:
 
@@ -84,7 +84,7 @@ aws ec2 create-vpn-gateway \
 aws ec2 attach-vpn-gateway \
   --vpn-gateway-id vgw-1a2b3c4d \
   --vpc-id vpc-12345678
-```text
+```
 
 ### B. Create Customer Gateway (CGW)
 
@@ -93,10 +93,10 @@ Define the third-party peer's public IP and BGP ASN.
 AWS Console:
 
 1. VPC → Customer Gateways → Create Customer Gateway
-2. Name: `third-party-cgw`
-3. BGP ASN: `65100` (third party's ASN; agree beforehand)
-4. Public IP: `203.0.113.5` (third-party peer's public IP, or leave blank for dynamic)
-5. Create
+1. Name: `third-party-cgw`
+1. BGP ASN: `65100` (third party's ASN; agree beforehand)
+1. Public IP: `203.0.113.5` (third-party peer's public IP, or leave blank for dynamic)
+1. Create
 
 Via CLI:
 
@@ -106,19 +106,19 @@ aws ec2 create-customer-gateway \
   --public-ip 203.0.113.5 \
   --bgp-asn 65100 \
   --tag-specifications 'ResourceType=customer-gateway,Tags=[{Key=Name,Value=third-party-cgw}]'
-```text
+```
 
 ### C. Create Site-to-Site VPN Connection
 
 AWS Console:
 
 1. VPC → Site-to-Site VPN Connections → Create VPN Connection
-2. Name: `third-party-vpn`
-3. Virtual Private Gateway: `third-party-vpn-gw`
-4. Customer Gateway: `third-party-cgw` (or Target Customer Gateway ID)
-5. Static Route Propagation: disable (we'll use BGP)
-6. Tunnel Options: keep defaults (AWS selects IKEv2, AES-256-GCM, etc.)
-7. Create
+1. Name: `third-party-vpn`
+1. Virtual Private Gateway: `third-party-vpn-gw`
+1. Customer Gateway: `third-party-cgw` (or Target Customer Gateway ID)
+1. Static Route Propagation: disable (we'll use BGP)
+1. Tunnel Options: keep defaults (AWS selects IKEv2, AES-256-GCM, etc.)
+1. Create
 
 Via CLI:
 
@@ -128,7 +128,7 @@ aws ec2 create-vpn-connection \
   --customer-gateway-id cgw-1a2b3c4d \
   --vpn-gateway-id vgw-1a2b3c4d \
   --options TunnelOptions=[{Phase1EncryptionAlgorithms=[{Value=AES256}],Phase2EncryptionAlgorithms=[{Value=AES256}]}]
-```text
+```
 
 ### D. Enable VPN Route Propagation (BGP)
 
@@ -137,8 +137,8 @@ For dynamic routing, enable BGP route propagation on your route tables.
 AWS Console:
 
 1. VPC → Route Tables → select your route table
-2. Route Propagation tab → Edit Route Propagation
-3. Select the VGW → Save
+1. Route Propagation tab → Edit Route Propagation
+1. Select the VGW → Save
 
 Via CLI:
 
@@ -146,7 +146,7 @@ Via CLI:
 aws ec2 enable-vgw-route-propagation \
   --route-table-id rtb-1a2b3c4d \
   --gateway-id vgw-1a2b3c4d
-```text
+```
 
 Once enabled, AWS will automatically propagate routes learned from the third party via BGP.
 
@@ -155,8 +155,8 @@ Once enabled, AWS will automatically propagate routes learned from the third par
 AWS Console:
 
 1. VPC → Site-to-Site VPN Connections → select your connection
-2. Download Configuration button → select your device type (Generic, Cisco, Fortinet, etc.)
-3. Download the configuration file
+1. Download Configuration button → select your device type (Generic, Cisco, Fortinet, etc.)
+1. Download the configuration file
 
 This file contains:
 
@@ -174,9 +174,9 @@ If the third party cannot support BGP:
 AWS Console:
 
 1. VPC → Site-to-Site VPN Connections → select connection
-2. Static Routes tab → Add Static Route
-3. Destination: `192.168.0.0/16` (third-party network)
-4. Add Route
+1. Static Routes tab → Add Static Route
+1. Destination: `192.168.0.0/16` (third-party network)
+1. Add Route
 
 Via CLI:
 
@@ -184,7 +184,7 @@ Via CLI:
 aws ec2 create-vpn-connection-route \
   --vpn-connection-id vpn-1a2b3c4d \
   --destination-cidr-block 192.168.0.0/16
-```text
+```
 
 ### G. Third-Party Configuration (Cisco Example)
 
@@ -232,7 +232,7 @@ router bgp 65100
     network 192.168.0.0 mask 255.255.0.0
     neighbor 169.254.10.2 activate
   exit-address-family
-```text
+```
 
 ---
 
@@ -257,7 +257,7 @@ router bgp 65100
 aws ec2 describe-vpn-gateways \
   --vpn-gateway-ids vgw-1a2b3c4d \
   --query 'VpnGateways[*].[VpnGatewayId,State,Type]'
-```text
+```
 
 ### Check VPN Connection Status
 
@@ -265,7 +265,7 @@ aws ec2 describe-vpn-gateways \
 aws ec2 describe-vpn-connections \
   --vpn-connection-ids vpn-1a2b3c4d \
   --query 'VpnConnections[*].[VpnConnectionId,State,Options]'
-```text
+```
 
 Both tunnels should show state: `available`. Tunnel state changes to `up` when third party
 connects.
@@ -276,7 +276,7 @@ connects.
 aws ec2 describe-vpn-gateway-routes \
   --vpn-gateway-id vgw-1a2b3c4d \
   --filters Name=state,Values=available
-```text
+```
 
 ### Check Route Table Propagation
 
@@ -284,7 +284,7 @@ aws ec2 describe-vpn-gateway-routes \
 aws ec2 describe-route-tables \
   --route-table-ids rtb-1a2b3c4d \
   --query 'RouteTables[*].Routes[*].[DestinationCidrBlock,State,GatewayId]'
-```text
+```
 
 ---
 

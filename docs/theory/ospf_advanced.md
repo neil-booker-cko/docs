@@ -3,6 +3,19 @@
 Advanced OSPF topics for complex network designs: area types, virtual links, and
 optimization.
 
+---
+
+## At a Glance
+
+| Area Type | Type 3 (Inter-area) | Type 5 (External) | Type 7 (NSSA-external) | Routing Table Size | Use Case |
+| --- | --- | --- | --- | --- | --- |
+| **Regular** | Flooded | Flooded | Flooded (if ASBR) | Largest (full topology) | Backbone; large networks |
+| **Stub** | Flooded | Blocked (→ default) | Blocked | Smaller (no externals) | Remote offices; smaller sites |
+| **Totally Stub** | Blocked (→ default) | Blocked (→ default) | Blocked | Smallest (only intra-area) | Leaf areas; minimal routing |
+| **NSSA** | Flooded | Blocked (→ default) | Flooded as Type 3 | Medium (local ABR injects) | Sites with local ASBR |
+
+---
+
 ## OSPF Area Types
 
 ### Regular Area
@@ -333,3 +346,13 @@ Advertising 100 /24 routes instead of summarizing to /16.
 - **Virtual Links**: Temporary fix for disconnected backbone (redesign for permanent)
 - **Scaling**: Use areas to keep per-area router count to 50-100
 - **Optimization**: Summarization + stub areas + fast hello for large networks
+
+---
+
+## See Also
+
+- [OSPF Fundamentals](../theory/ospf_fundamentals.md) — Core OSPF concepts and protocol mechanics
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md) — Comparing OSPF with EIGRP
+- [Cisco OSPF Configuration](../cisco/cisco_ospf_config.md) — Area design and best practices
+- [Route Summarization & Aggregation](../theory/route_redistribution.md) — Inter-area route filtering
+- [Data Centre Topologies](../theory/dc_topologies.md) — OSPF in modern network designs

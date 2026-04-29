@@ -369,3 +369,17 @@ routers. However:
 
 - **RFC references:** LLDP is defined in IEEE 802.1AB-2016. CDP has no formal RFC
   (Cisco proprietary) but its frame format is documented in Cisco technical literature.
+
+---
+
+## See Also
+
+- [CDP Packet Format](../packets/cdp.md) — CDP frame structure and TLV encoding
+- [LLDP Packet Format](../packets/lldp.md) — LLDP frame structure and TLV types
+- [Interface & Routing Fundamentals](../theory/interface_routing_fundamentals.md) — Layer 2
+  concepts and device
+  connectivity
+- [Cisco IOS-XE Core Configuration](../cisco/cisco_ios_xe_core_config.md) — CDP and LLDP
+  settings
+- [Cisco DNA Center Integration](../reference/monitoring_tools.md) — LLDP-based device
+  discovery tools

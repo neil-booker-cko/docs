@@ -14,6 +14,18 @@ For FortiGate configuration see [FortiGate NAT](../fortigate/fortigate_nat.md).
 
 ---
 
+## At a Glance
+
+| Type | Direction | Public IPs | Bidirectional | Use Case |
+| --- | --- | --- | --- | --- |
+| **Static NAT** | 1:1 permanent | One per host | Yes (inbound allowed) | Web servers, mail, VPN endpoints |
+| **Dynamic NAT** | Many-to-many pool | Shared pool | No (outbound initialed only) | Office users → internet |
+| **PAT (Port Overload)** | Many-to-one | Single IP + ports | No (outbound initiated only) | Branch office; small deployments |
+| **Bidirectional NAT** | Symmetric translation | Multiple | Yes (both directions) | Load balancers, cloud NAT |
+| **Double NAT** | Both directions | Multiple | Yes (both directions) | Border routers; cascaded translation |
+
+---
+
 ## NAT Terminology
 
 | Term | Definition |
@@ -183,8 +195,10 @@ out the same interface it arrived on.
 
 ---
 
-## Related Pages
+## See Also
 
-- [Cisco NAT Configuration](../cisco/cisco_nat_config.md)
-- [FortiGate NAT](../fortigate/fortigate_nat.md)
-- [IPsec and IKE](ipsec.md)
+- [Cisco NAT Configuration](../cisco/cisco_nat_config.md) — IOS-XE static/dynamic NAT setup
+- [FortiGate NAT Configuration](../fortigate/fortigate_nat.md) — FortiOS NAT and PAT
+- [IPsec and IKE](../theory/ipsec.md) — NAT-T for IPsec over NAT
+- [Firewall Rule Processing](../theory/firewall_rule_processing.md) — NAT interaction with policies
+- [Cloud Connectivity](../theory/cloud_connectivity_comparison.md) — Cloud provider NAT models

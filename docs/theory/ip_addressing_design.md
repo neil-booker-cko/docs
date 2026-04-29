@@ -3,6 +3,25 @@
 Comprehensive guide to designing scalable, maintainable IP addressing schemes and
 understanding CIDR, subnetting, aggregation, and summarization.
 
+---
+
+## At a Glance
+
+| Prefix | Hosts | Typical Use | Example |
+| --- | --- | --- | --- |
+| **/32** | 1 | Single host; loopback; management | 10.0.0.1/32 (router ID) |
+| **/30** | 2 | Point-to-point links (routers) | 10.0.1.0/30 (serial link) |
+| **/29** | 6 | Small IoT segment | 10.0.2.0/29 (6 devices) |
+| **/28** | 14 | Departmental VLAN | 10.0.3.0/28 (14 hosts) |
+| **/27** | 30 | Large department/floor | 10.0.4.0/27 (30 users) |
+| **/26** | 62 | Multiple departments | 10.0.5.0/26 (60 users) |
+| **/24** | 254 | Standard LAN; subnet | 10.0.6.0/24 (255 hosts) |
+| **/23** | 510 | Multiple subnets / zone | 10.0.6.0/23 (512 hosts) |
+| **/22** | 1,022 | Campus; regional office | 10.0.4.0/22 (1,024 hosts) |
+| **/16** | 65,534 | Enterprise division | 10.0.0.0/16 (65K hosts) |
+
+---
+
 ## IPv4 CIDR Fundamentals
 
 ### CIDR Notation
@@ -425,3 +444,14 @@ Year 4: Gradually phase out IPv4 (or keep for legacy)
 - **IPv6 uses same logic** as IPv4 but with 128-bit addresses
 - **Plan for growth** and ensure subnets are aligned for future summarization
 - **Document everything** to prevent conflicts and facilitate capacity planning
+
+---
+
+## See Also
+
+- [Interface & Routing Fundamentals](../theory/interface_routing_fundamentals.md) — Applying IP
+  addresses to interfaces
+- [IPv4 vs IPv6](../theory/ipv4_vs_ipv6.md) — Comparison and migration strategies
+- [VLANS](../theory/vlans.md) — Logical segmentation with IP subnets
+- [BGP Communities & Aggregation](../reference/bgp_communities.md) — Summarization for routing scale
+- [Cisco Interface Configuration](../cisco/cisco_interface_config.md) — Configuring IPs on devices

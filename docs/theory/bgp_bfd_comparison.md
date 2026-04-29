@@ -1,5 +1,18 @@
 # BGP Convergence: Default Settings vs. BFD Integration
 
+## At a Glance
+
+| Aspect | Default Settings | Tuned BGP | BGP with BFD |
+| --- | --- | --- | --- |
+| **Keepalive / Hold Timer** | 60s / 180s | 10s / 30s | 60s / 180s (backup) |
+| **Detection Time** | ~180 seconds | ~30 seconds | **< 1 second** |
+| **CPU Impact** | Very low | Medium | Low (offloaded) |
+| **Stability Risk** | None | Flapping | Low |
+| **Route Withdrawn** | TCP timeout | Timer expire | Immediate |
+| **Use Case** | Legacy/stable | Performance-sensitive | Production multi-hop |
+
+---
+
 ## 1. Overview & Principles
 
 BGP is an application-layer protocol (TCP/179) designed for stability and policy-based
@@ -131,3 +144,36 @@ end
 
     triggers a session drop multiple times, the prefix may be suppressed for up
     to 60 minutes.
+
+---
+
+## Notes / Gotchas
+
+- **BFD Requires Symmetry:** Both peers must support BFD and have it configured. If one side has
+  BFD enabled but the other does not, that side falls back to TCP timeouts. Check
+  `show ip bgp neighbors` for BFD registration.
+
+- **Multihop BFD TTL Limits:** `bfd multihop` decrements TTL per hop. For paths crossing 10+
+  hops, increase the `hop-count` parameter to avoid unexpected session terminations.
+
+- **Dampening Penalizes Recovery:** BGP route dampening can delay route re-installation for
+  15 minutes or longer even with sub-second BFD detection. Know your dampening thresholds
+  before deploying BFD.
+
+- **TCP Connection Establishment Still Matters:** BFD detects failure instantly, but a new TCP
+  session after recovery takes 1–2 seconds. The BGP session is not "up" until the TCP
+  handshake and Open exchange complete — this is the actual convergence bottleneck.
+
+- **Graceful Restart Interaction:** If BGP Graceful Restart is enabled, a forwarding-plane hold
+  is requested during restart. BFD failure during this hold is not detected by BGP. Ensure
+  the GR timeout is shorter than the BFD hold timer.
+
+---
+
+## See Also
+
+- [BFD (Bidirectional Forwarding Detection)](../theory/bfd_fundamentals.md)
+- [BGP Fundamentals](../theory/bgp_fundamentals.md)
+- [iBGP vs eBGP](../theory/ibgp_vs_ebgp.md)
+- [BGP Communities](../reference/bgp_communities.md)
+- [AWS Direct Connect BGP Stack](../aws/bgp_stack_vpn_over_dx.md)

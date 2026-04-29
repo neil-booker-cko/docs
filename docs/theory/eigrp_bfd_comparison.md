@@ -1,5 +1,18 @@
 # EIGRP Convergence: Default Settings vs. BFD Integration
 
+## At a Glance
+
+| Aspect | Default Settings | Tuned Timers | EIGRP with BFD |
+| --- | --- | --- | --- |
+| **Hello / Hold Timer** | 5s / 15s | 1s / 3s | 5s / 15s (backup) |
+| **Detection Time** | ~15 seconds | ~3 seconds | **< 1 second** |
+| **CPU Impact** | Low | High | Low (offloaded) |
+| **Stability** | High | Moderate (SIA risk) | High |
+| **Local vs Remote Failure** | Same delay | Same delay | Instant for remote |
+| **Feasible Successor Promotion** | Delayed by timer | Delayed by timer | Immediate via DUAL |
+
+---
+
 ## 1. Overview & Principles
 
 Enhanced Interior Gateway Routing Protocol (EIGRP) is renowned for its rapid convergence
@@ -139,3 +152,38 @@ router eigrp CORE
 
     successors. BFD detects the failure faster, but DUAL needs a valid backup path
     in the topology table to achieve "instant" (sub-50ms) convergence.
+
+---
+
+## Notes / Gotchas
+
+- **Stuck-In-Active (SIA) is Not Unique to Fast Timers:** BFD detects link failure but does not
+  prevent SIA caused by CPU overload or query storms. If a neighbor cannot respond to an Active
+  query within the hold timer, EIGRP tears down the adjacency regardless of BFD.
+
+- **Local Repair vs Remote Failure:** When a local interface goes down, EIGRP can promote a
+  Feasible Successor in milliseconds — even without BFD. BFD solves *remote* failure (neighbor
+  down, interface still up). Topology diversity is still required; BFD cannot fix a design
+  with no Feasible Successors.
+
+- **BFD Interval Mismatch Causes Session Flap:** Mismatched BFD intervals (e.g. 300 ms vs 1 s)
+  prevent session establishment or cause flaps. Always configure identical intervals on both
+  ends of a link.
+
+- **Tuned Timers (1s/3s) Have Bandwidth Cost:** Sub-second hellos on WAN links with hundreds of
+  neighbors consume significant bandwidth and CPU. BFD offloads detection to the forwarding
+  plane; tuned timers do not.
+
+- **DUAL Query Scope Matters:** BFD provides instant detection, but DUAL must still query all
+  neighbors for alternate paths. On a meshed core with 50+ neighbors, query scope drives
+  overall convergence. Use `eigrp log-neighbor-changes` to monitor.
+
+---
+
+## See Also
+
+- [BFD (Bidirectional Forwarding Detection)](../theory/bfd_fundamentals.md)
+- [EIGRP Fundamentals](../theory/eigrp_fundamentals.md)
+- [OSPF vs EIGRP](../theory/ospf_vs_eigrp.md)
+- [BGP vs EIGRP](../theory/bgp_vs_eigrp.md)
+- [Cisco EIGRP Configuration](../cisco/eigrp_configuration.md)

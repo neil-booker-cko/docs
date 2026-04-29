@@ -3,6 +3,22 @@
 This guide covers STP/RSTP configuration principles, design patterns, and best practices
 across vendors.
 
+---
+
+## At a Glance
+
+| Aspect | STP (802.1D) | RSTP (802.1w) |
+| --- | --- | --- |
+| **Convergence time** | 30-50 seconds | <10 seconds (theoretical <1s) |
+| **Port states** | Disabled, Blocking, Listening, Learning, Forwarding (5 states) | Discarding, Learning, Forwarding (3 states) |
+| **Recommended use** | Legacy only; avoid in new deployments | Industry standard for all new deployments |
+| **Backward compatibility** | N/A | Yes; falls back to STP on old switches |
+| **Core config concepts** | Bridge priority, port cost, port priority, BPDU guard, PortFast, root guard, loop guard | Same concepts; faster convergence mechanisms |
+| **Key protections** | BPDU guard (access ports), root guard (uplinks), loop guard (blocked ports) | Same protections; all compatible with RSTP |
+| **PVST+/Rapid-PVST** | Per-VLAN STP for load balancing across multiple root bridges | Per-VLAN Rapid STP (Rapid-PVST+); faster convergence per VLAN |
+
+---
+
 ## Configuration Fundamentals
 
 ### STP vs RSTP: Configuration Differences
@@ -396,3 +412,13 @@ Cisco:
 STP/RSTP configuration revolves around **priority, cost, and port role**. Modern
 deployments should use RSTP for fast convergence and combine it with portfast + BPDU
 guard on access ports and root/loop guard on uplinks for a robust, loop-free topology.
+
+---
+
+## See Also
+
+- [Switching Fundamentals](switching_fundamentals.md) — MAC learning, broadcast domains, VLANs
+- [VLANs and 802.1Q](vlans.md) — Virtual segmentation and Per-VLAN STP (PVST+)
+- [Port Aggregation (LAG)](port_aggregation.md) — Combining STP with link aggregation
+- [Network Resilience Patterns](../architecture/resilience_patterns.md) — Combining STP with HSRP/VRRP
+- [Cisco STP/RSTP Configuration Guide](../cisco/cisco_stp_rstp_config.md) — Vendor-specific implementation

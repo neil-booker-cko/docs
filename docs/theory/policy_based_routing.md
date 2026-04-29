@@ -2,6 +2,23 @@
 
 Guide to routing packets based on policies rather than just destination IP address.
 
+---
+
+## At a Glance
+
+| Aspect | Details |
+| --- | --- |
+| **Definition** | Routes packets based on multiple criteria (source, destination, protocol, port, DSCP) instead of just destination IP |
+| **Match criteria** | Source/dest IP, protocol (TCP/UDP/ICMP), port numbers, DSCP, incoming interface, application (DPI) |
+| **Common actions** | Set next-hop, set outgoing interface, set metric, set DSCP, deny, count/log |
+| **Use cases** | Multi-ISP load balancing, priority routing for critical apps, backup link failover, source-based access control |
+| **Best for** | Small networks (2-10 sites); scales better with BGP for larger deployments |
+| **Key limitation** | Can cause asymmetric routing; requires careful testing and health checks |
+| **Configuration complexity** | Low (route-maps on Cisco, policy-based routes on FortiGate) |
+| **Convergence** | Manual or health-check based; slower than BGP FRR for sub-second failover |
+
+---
+
 ## Traditional Routing vs Policy-Based Routing
 
 ### Traditional Routing (Destination-Based)
@@ -299,11 +316,25 @@ PBR good for simple cases. BGP better for complex, large networks.
 
 ---
 
-## Summary
+## Notes / Gotchas
 
-- **PBR** routes based on packet attributes (source, protocol, port)
-- **Traditional routing** uses only destination IP
-- **Use cases:** load balancing, priority routing, failover, access control
-- **Good for:** small networks (2-10 sites), specific policy needs
-- **Combine with BGP** for larger, more scalable designs
-- **Test asymmetric routing** before production deployment
+- **Asymmetric routing trap:** Outbound traffic may take a different path than return traffic,
+  triggering firewalls or security monitoring. Always verify both directions before deployment.
+- **CPU overhead:** PBR adds per-packet evaluation cost. Modern hardware offloads this, but
+  verify on older platforms before deploying at scale.
+- **Policy order matters:** PBR rules are evaluated top-to-bottom. Overly broad match criteria
+  can redirect unintended traffic. Test with `debug policy-route` on Cisco.
+- **No automatic failover by default:** If the next-hop becomes unreachable, traffic is still
+  sent to the dead next-hop. Pair PBR with IP SLA or health checks for automatic failover.
+- **BGP is the long-term choice:** PBR suits quick, targeted deployments. At 10+ sites,
+  migrate to BGP for automatic convergence and scalability.
+
+---
+
+## See Also
+
+- [Border Gateway Protocol (BGP) Fundamentals](bgp_fundamentals.md)
+- [Routing Protocols Overview](routing_protocols.md)
+- [Quality of Service (QoS) Fundamentals](qos_fundamentals.md)
+- [Static Routing vs Dynamic Routing](static_vs_dynamic_routing.md)
+- [HSRP/VRRP/GLBP Overview](hsrp_vrrp_glbp.md)

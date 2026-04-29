@@ -3,6 +3,23 @@
 Complete guide to understanding how packets are evaluated against firewall rules and
 access control lists.
 
+---
+
+## At a Glance
+
+| Aspect | Stateless (ACL) | Stateful (Firewall Policy) |
+| --- | --- | --- |
+| **Evaluation Scope** | Per-packet, independent | Per-connection (session tracking) |
+| **Rule Direction** | Unidirectional (in/out separate) | Bidirectional (single policy) |
+| **Return Traffic** | Requires explicit rule | Automatic (established connection) |
+| **Performance** | Fast (simple match) | Slower (connection state tracking) |
+| **Complexity** | High (need in + out rules) | Low (bidirectional single rule) |
+| **Implicit Deny** | Yes (recommended) | Yes (recommended) |
+| **Use Case** | Network layer filtering | Application layer / DPI |
+| **Example Platforms** | Cisco router ACLs, Fortinet (ACCEPT-phase) | FortiGate policies, Cisco ASA, Palo Alto Networks |
+
+---
+
 ## Fundamental Concepts
 
 ### Rule Processing Order
@@ -504,3 +521,13 @@ Solution: Put more specific rule (Rule 2) before general rule (Rule 1)
 - **Bidirectional policies simplify configuration vs unidirectional ACLs**
 - **Log important rules to troubleshoot**
 - **Test changes before deploying to production**
+
+---
+
+## See Also
+
+- [Access Control Lists (ACLs) Reference](../reference/acl_reference.md)
+- [Cisco ACL Configuration](../cisco/cisco_acl_config.md)
+- [Fortinet FortiGate Policies](../fortigate/fortigate_firewall_policies.md)
+- [Stateful Firewall Concepts](../theory/stateful_inspection.md)
+- [NAT & Port Translation](../theory/nat.md)

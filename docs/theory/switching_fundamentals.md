@@ -4,6 +4,25 @@ Layer 2 (Data Link Layer) switching is the foundation of modern networks. Unders
 addresses, broadcast domains, collision domains, and how switches forward frames is critical
 for network design and troubleshooting.
 
+---
+
+## At a Glance
+
+| Concept | Details |
+| --- | --- |
+| **MAC address** | 48-bit hardware identifier (OUI + device serial); XX:XX:XX:XX:XX:XX format |
+| **Unicast vs Broadcast** | Unicast = one-to-one (LSB of first octet = 0); Broadcast = FF:FF:FF:FF:FF:FF (all devices on VLAN) |
+| **Collision domain** | Network segment where frames can collide (half-duplex); modern switches = one per port |
+| **Broadcast domain** | Network segment where broadcasts are flooded; separated by VLAN or router interface |
+| **MAC learning** | Switch learns source MAC from received frames and ages out entries after 300 seconds (default) |
+| **Forwarding methods** | Store-and-forward (safe, checks CRC), Cut-through (low latency, no CRC), Fragment-free (hybrid) |
+| **VLAN (802.1Q)** | Logical segmentation; 12-bit VID field = 4094 usable VLANs (1–4094); 4-byte tag in frame |
+| **Access vs Trunk** | Access = one VLAN, untagged; Trunk = multiple VLANs, tagged (except native VLAN) |
+| **Layer 3 switch** | Combines L2 switching + L3 routing in hardware; can route between VLANs at wire speed |
+| **STP/RSTP** | Prevents loops in redundant topologies; RSTP converges in <10s vs 30-50s for STP |
+
+---
+
 ## MAC (Media Access Control) Addresses
 
 ### Structure
@@ -519,10 +538,27 @@ Causes:
 
 ---
 
+---
+
+## Notes / Gotchas
+
+- **MAC aging trap:** When a device moves ports, the old MAC entry persists for 5 minutes. Frames
+  destined for that MAC go to the old port until aging completes, causing temporary packet loss.
+- **Broadcast flooding:** Broadcast frames are flooded to all ports in the VLAN. Excessive ARP or
+  DHCP broadcasts in large flat VLANs consume bandwidth — use VLANs to segment broadcast domains.
+- **Cut-through caveats:** Cut-through forwarding does NOT detect CRC errors, so corrupted frames
+  are forwarded. Verify your platform's mode if error rates are a concern.
+- **Native VLAN mismatch:** Trunk ports with mismatched native VLANs misinterpret untagged frames.
+  Always configure matching native VLANs on both ends of a trunk.
+- **STP can mask cabling errors:** STP disables redundant loops, so a cable causing a loop may
+  appear silent. Verify STP port states before assuming a cabling issue is resolved.
+
+---
+
 ## Next Steps
 
 - Learn [Physical Layer](physical_layer.md) for cabling details
 - Study [Ethernet Evolution](ethernet_evolution.md) for speed/standard progression
 - Configure [VLANs](vlans.md) on your network
-- Understand [Spanning Tree](../theory/spanning_tree.md) for resilient networks
+- Understand [Spanning Tree](../theory/stp_rstp_configuration.md) for resilient networks
 - Review [STP/RSTP Configuration](../cisco/cisco_stp_rstp_config.md) for implementation

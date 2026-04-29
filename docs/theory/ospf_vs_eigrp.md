@@ -452,3 +452,13 @@ show ip eigrp topology | include Summary
 - **BFD integration:** Both OSPF and EIGRP can integrate with BFD for sub-second failure
   detection, independent of protocol timers.
 - For detailed IGP comparison across three protocols, see [EIGRP vs OSPF vs RIP](igp_comparison.md).
+
+---
+
+## See Also
+
+- [IGP Comparison (OSPF, EIGRP, RIP)](../theory/igp_comparison.md) — Three-way IGP comparison
+- [OSPF vs IS-ISIS](../theory/ospf_vs_isis.md) — OSPF vs service provider choice
+- [Cisco OSPF Configuration](../cisco/cisco_ospf_config.md) — OSPF setup and tuning
+- [Cisco EIGRP Configuration](../cisco/cisco_eigrp_config.md) — EIGRP setup and tuning
+- [Route Redistribution](../theory/route_redistribution.md) — Running both protocols together

@@ -5,6 +5,24 @@ fixed-length labels to packets, enabling fast switching based on label lookups r
 than longest-prefix-match routing table searches. This guide covers MPLS architecture,
 label distribution, and PE/CE interactions.
 
+---
+
+## At a Glance
+
+| Aspect | Purpose | Key Attributes |
+| --- | --- | --- |
+| **MPLS Label** | Forwarding identifier | 20 bits; locally significant per hop |
+| **LSP (Label Switched Path)** | Predetermined forwarding path | Pre-established by LDP or BGP |
+| **PE (Provider Edge)** | Edge of MPLS domain | Pushes labels on ingress; pops on egress |
+| **P (Provider/Transit)** | Backbone router | Swaps labels; no IP header inspection |
+| **CE (Customer Edge)** | Customer router | Unaware of MPLS; sends/receives IP packets |
+| **LDP (Label Distribution Protocol)** | Label binding distribution | Dynamic; hop-by-hop LSP creation |
+| **BGP as signaling** | Label distribution via BGP | For VPN routes; provider routes |
+| **LFIB (Label FIB)** | Label forwarding table | Hardware-based; faster than IP lookup |
+| **Stack Depth** | Multiple labels possible | Common: 2–3 labels (VPN + IGP + BGP) |
+
+---
+
 ## MPLS Overview
 
 ### Core Concept
@@ -22,12 +40,15 @@ path
 
 An MPLS label is a 32-bit header inserted between Layer 2 and Layer 3:
 
-```text
-  0                   1                   2                   3
-  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |                Label (20 bits)         | TC  |S|    TTL      |
- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+```mermaid
+---
+title: "MPLS Label"
+---
+packet
+0-20: "Label"
+21-23: "TC"
+24: "S"
+25-31: "TTL"
 ```
 
 - **Label** (20 bits): Forwarding identifier; locally significant per hop
@@ -306,4 +327,13 @@ designs
 - **Label distribution** via LDP (topology-driven) or BGP (policy-driven)
 - **Key benefit**: Fast hardware-based forwarding, support for traffic engineering, VPN
 isolation, and fast reroute
-isolation, and fast reroute
+
+---
+
+## See Also
+
+- [BGP Fundamentals](../theory/bgp_fundamentals.md) — BGP for label distribution
+- [Quality of Service (QoS)](../theory/qos.md) — Traffic Class in MPLS labels
+- [SD-WAN (Software-Defined WAN)](../theory/sdwan.md) — Modern MPLS-based WAN optimization
+- [Cisco MPLS Configuration](../cisco/cisco_mpls_config.md) — IOS-XE MPLS setup
+- [Multiprotocol BGP (MP-BGP)](../routing/bgp.md) — Label signaling in BGP

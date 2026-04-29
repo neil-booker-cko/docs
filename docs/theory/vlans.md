@@ -12,6 +12,23 @@ For IOS-XE configuration see [Cisco VLAN Configuration](../cisco/cisco_vlan_conf
 
 ---
 
+## At a Glance
+
+| Aspect | Details |
+| --- | --- |
+| **802.1Q tag** | 4-byte VLAN tag (TPID=0x8100, PCP=3 bits, DEI=1 bit, VID=12 bits) inserted between Src MAC and EtherType |
+| **VID range** | 0-4095; VID 0 = priority tag only; VID 4095 reserved; **4094 usable VLANs (1–4094)** |
+| **Frame size** | Increases max Ethernet from 1518 to 1522 bytes with 802.1Q tag |
+| **Access port** | Carries single VLAN, untagged; endpoints (hosts, printers) connect here |
+| **Trunk port** | Carries multiple VLANs, tagged (except native VLAN); switch-to-switch or switch-to-router |
+| **Native VLAN** | Untagged VLAN on trunk; both ends must match or misconfig occurs |
+| **Allowed VLAN list** | Controls which VLANs traverse trunk; default allows all; prune unused VLANs |
+| **Inter-VLAN routing** | Router-on-a-Stick (single physical link, subinterfaces), Layer 3 Switch (hardware SVIs), or separate interfaces |
+| **SVI (Switched Virtual Interface)** | Logical interface per VLAN on Layer 3 switch; becomes active when ≥1 port in that VLAN is up |
+| **Private VLANs (PVLAN)** | Subdivide VLAN into isolated segments (promiscuous, community, isolated ports); complex; rarely used |
+
+---
+
 ## 802.1Q Frame Tagging
 
 802.1Q (colloquially "dot1q") is the IEEE standard that defines how VLAN
@@ -174,8 +191,26 @@ one switch only).
 
 ---
 
-## Related Pages
+## Notes / Gotchas
+
+- **Native VLAN mismatch:** Trunk ports with different native VLANs misinterpret untagged frames,
+  breaking inter-switch communication. Verify both ends with
+  `show interfaces trunk | include Native`.
+- **VLAN database vs config:** Cisco stores VLAN definitions in `vlan.dat` and config in NVRAM.
+  A VLAN can exist in one without the other. Define VLANs in global config (`vlan <id>`) so
+  they appear in `show running-config`.
+- **SVI down/down trap:** An SVI comes up only when at least one port in that VLAN is up and
+  forwarding. If all ports are down or STP-blocked, the SVI goes down and breaks inter-VLAN
+  routing. Use `show vlan brief` and `show spanning-tree` to diagnose.
+- **Router-on-a-Stick bottleneck:** All inter-VLAN traffic traverses the uplink twice. This
+  becomes a bottleneck at scale — use a Layer 3 switch with SVIs for high-throughput routing.
+- **Trunk pruning:** All VLANs are allowed by default. Explicitly set the allowed VLAN list to
+  only those that cross each trunk to reduce unnecessary flooding.
+
+---
+
+## See Also
 
 - [Cisco VLAN Configuration](../cisco/cisco_vlan_config.md)
-- [STP / RSTP](../packets/stp.md)
-- [Spanning Tree Design](spanning_tree.md)
+- [STP / RSTP Configuration](stp_rstp_configuration.md)
+- [Switching Fundamentals](switching_fundamentals.md)

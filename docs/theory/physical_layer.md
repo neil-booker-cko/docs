@@ -3,6 +3,21 @@
 Layer 1 defines the physical transmission of bits over cabling: copper, fiber, wireless. Understanding
 cabling types, distances, and standards is critical for network design and troubleshooting.
 
+---
+
+## At a Glance
+
+| Medium | Speed | Distance | Cost | Immunity | Use Case |
+| --- | --- | --- | --- | --- | --- |
+| **Cat5e (UTP)** | 1 Gbps | 100 m | $ | Low EMI | Office, residential |
+| **Cat6 (UTP)** | 10 Gbps | 55 m | $$ | Medium EMI | Data center (short) |
+| **Cat6A (UTP)** | 10 Gbps | 100 m | $$$ | Medium EMI | Data center standard |
+| **SMF (Single-Mode Fiber)** | 10–100 Gbps | 10–80 km | $$ | Excellent | Long-haul WAN links |
+| **MMF (Multi-Mode Fiber)** | 1–10 Gbps | 300 m–2 km | $ | Excellent | Data center backbone |
+| **Wireless (802.11ac)** | 1.3 Gbps | 50 m | $ | Poor (interference) | Offices, mobile |
+
+---
+
 ## Copper Cabling
 
 ### Twisted-Pair Standards
@@ -329,6 +344,31 @@ Causes:
 
 ## Next Steps
 
-- Review [Ethernet Evolution](ethernet_evolution.md) for speed standards
-- Understand [Switching Fundamentals](switching_fundamentals.md) for link-layer concepts
-- See [Port Aggregation](port_aggregation.md) for multi-link bonding
+---
+
+## Notes / Gotchas
+
+- **Cat5e vs Cat6:** Cat5e works at 10 Gbps over short distances (up to 30 m) but is not
+  certified by TIA for 10GbE. Always use Cat6 or Cat6A for 10Gbps deployments.
+
+- **Fiber Connector Care:** SMF connectors are 8-micron cores; a speck of dust causes
+  signal loss immediately. Always clean fiber ends with isopropyl alcohol and lens paper.
+
+- **Speed Negotiation Issues:** Autonegotiation can fail silently, locking to 100 Mbps
+  instead of 1 Gbps. Always verify negotiated speed: `show interface <port> | include speed`.
+
+- **Impedance Mismatch:** Using non-certified cable (e.g., telephone wire for data) causes
+  reflections and packet errors. Stick to certified TIA categories.
+
+- **Wireless Interference:** 2.4 GHz band is crowded (WiFi, Bluetooth, microwaves). Use
+  5 GHz or 6 GHz where possible; site survey before large deployments.
+
+---
+
+## See Also
+
+- [Ethernet Evolution](../theory/ethernet_evolution.md)
+- [Interface & Routing Fundamentals](../theory/interface_routing_fundamentals.md)
+- [Switching Fundamentals](../theory/switching_fundamentals.md)
+- [Port Aggregation (LAG/EtherChannel)](../theory/port_aggregation.md)
+- [Cisco Interface Configuration](../cisco/cisco_interface_config.md)

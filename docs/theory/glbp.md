@@ -2,6 +2,23 @@
 
 Complete guide to Cisco's gateway redundancy and load balancing protocol.
 
+---
+
+## At a Glance
+
+| Aspect | GLBP | HSRP | VRRP |
+| --- | --- | --- | --- |
+| **Active Forwarders** | Multiple (up to 4 AVFs) | One (active) | One (master) |
+| **Load Balancing** | Yes (via 4 virtual MACs) | No (single gateway) | No (single gateway) |
+| **Bandwidth Utilization** | High (all routers active) | Low (one gateway active) | Low (one gateway active) |
+| **Virtual MACs** | 4 (one per forwarder) | 1 (00:00:5E:00:01:xx) | 1 (00:00:5E:00:01:xx) |
+| **Convergence** | ~3 seconds (AVG + AVF election) | ~3–10 seconds | ~3–10 seconds |
+| **Vendor** | Cisco proprietary | Cisco proprietary | Standards-based (RFC 3768) |
+| **Complexity** | Medium (AVG + multiple AVFs) | Low | Low |
+| **Best For** | Multi-router load sharing | Simple active/backup | Vendor-neutral networks |
+
+---
+
 ## Core Concept
 
 **GLBP** provides both gateway redundancy and load balancing across multiple routers.
@@ -334,3 +351,13 @@ Total outage: ~10-15 seconds (depends on how many hellos missed)
 - **Faster convergence** (3 seconds default) than HSRP/VRRP
 - **Cisco proprietary** — not available on other vendors
 - **Complexity trade-off** — more features but more to configure and monitor
+
+---
+
+## See Also
+
+- [HSRP/VRRP/GLBP Comparison](../theory/hsrp_vrrp_vs_glbp.md)
+- [Cisco Gateway Redundancy Configuration](../cisco/cisco_hsrp_vrrp_glbp_config.md)
+- [Gateway Redundancy & Failover](../theory/gateway_redundancy_fundamentals.md)
+- [Cisco Interface Configuration](../cisco/cisco_interface_config.md)
+- [Network Redundancy & High Availability](../operations/network_redundancy.md)

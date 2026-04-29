@@ -12,6 +12,20 @@ For Cisco configuration see [Cisco DMVPN Config](../cisco/cisco_dmvpn_config.md)
 
 ---
 
+## At a Glance
+
+| Aspect | Static GRE | DMVPN Phase 1 | DMVPN Phase 2 | DMVPN Phase 3 |
+| --- | --- | --- | --- | --- |
+| **Spoke-to-Hub** | Individual tunnels | mGRE + NHRP | mGRE + NHRP + shortcuts | mGRE + NHRP + full mesh |
+| **Spoke-to-Spoke** | Via hub (2 hops) | Via hub (hub decides) | Direct tunnels possible | Direct tunnels standard |
+| **NHRP Resolution** | N/A | Hub-based | Hub triggers shortcuts | Peer-to-peer |
+| **Routing Split-Horizon** | No (normal) | Enabled (hub blocks updates) | Enabled | Disabled on hub |
+| **Scalability** | O(n) tunnels on hub | Single mGRE | Single mGRE | Single mGRE |
+| **Convergence** | Slow (route-based) | Slow (hub-dependent) | Medium (shortcut-based) | Fast (direct paths) |
+| **Typical Use Case** | Small networks; static | Transitional | Growing spoke count | Large deployments |
+
+---
+
 ## What Is DMVPN
 
 DMVPN is composed of four technologies:
@@ -411,8 +425,34 @@ routing updates are received from Hub 2.
 
 ---
 
-## Related Pages
+## Notes / Gotchas
 
-- [GRE](../packets/gre.md)
-- [IPsec & IKE](ipsec.md)
-- [Cisco DMVPN Config](../cisco/cisco_dmvpn_config.md)
+- **NHRP TTL & Routing:** NHRP uses IP TTL for hop counting. On long paths (>64 hops) or with
+  incorrect tunnel MTU, NHRP packets may be dropped. Verify MTU is at least 1500 bytes on
+  the tunnel interface and physical links.
+
+- **Split-Horizon Breaks Spoke-to-Spoke in Phase 1/2:** Split-horizon blocks hub-to-spoke EIGRP
+  updates, preventing spokes from learning routes from each other through EIGRP. All
+  spoke-to-spoke traffic transits the hub. Phase 3 with `no split-horizon` resolves this.
+
+- **NHRP Authentication Mismatch:** Mismatched NHRP authentication keys cause registrations and
+  queries to fail silently. The spoke registers but queries are rejected. Verify key
+  consistency across all tunnel peers.
+
+- **IPsec Anti-Replay Window:** DMVPN reuses the same SA for multiple spokes. A small anti-replay
+  window may drop legitimate shortcut packets. The default (64 packets) is sufficient for most
+  deployments — verify if seeing sporadic loss on shortcuts.
+
+- **Routing Protocol Churn During Shortcut:** Phase 2/3 shortcut creation causes a metric change
+  (path switches from via-hub to direct), triggering temporary routing flaps until the new
+  route stabilises.
+
+---
+
+## See Also
+
+- [GRE Packet Format](../packets/gre.md)
+- [IPsec & IKE Deep Dive](../theory/ipsec.md)
+- [Cisco DMVPN Configuration](../cisco/cisco_dmvpn_config.md)
+- [EIGRP & DMVPN Integration](../routing/eigrp.md)
+- [Next Hop Resolution Protocol (NHRP)](../reference/nhrp_reference.md)

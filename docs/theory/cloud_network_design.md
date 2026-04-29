@@ -9,6 +9,27 @@ regardless of whether the destination is AWS, Azure, or GCP.
 
 ---
 
+## At a Glance
+
+| Design Choice | Hub-and-Spoke | Flat Mesh | Transit Service |
+| --- | --- | --- | --- |
+| **Security Inspection** | Centralized (bottleneck) | Per-VPC (complex) | Centralized (optimized) |
+| **East-West Latency** | Higher (via hub) | Lowest | Low (native backbone) |
+| **VPC Scaling** | O(n) peering | O(n²) peering | O(n) attachment |
+| **Throughput Bottleneck** | Hub firewall | None | Managed service |
+| **Complexity** | Low | High | Medium |
+| **Recommended For** | Single region | Multi-region direct peers | Multi-region production |
+
+| Network Planning | Recommendation | Notes |
+| --- | --- | --- |
+| **Reserved Prefix Space** | AWS: 172.16.0.0/16 per region | Non-overlapping with on-premises (10.0.0.0/8) |
+| **Subnet Size** | /24 per tier (web, app, data, mgmt) | Leaves growth room; respects cloud reserved addresses |
+| **Link-Local BGP** | Use APIPA (169.254.x.x) where supported | Eliminates need for routable /30s; saves addresses |
+| **AS Number Strategy** | Private ASN 64512–65534 on-prem | Cloud providers use fixed public ASNs |
+| **Max Prefixes** | Monitor per provider; AWS DX: 100–200 | Exceeding causes BGP session teardown |
+
+---
+
 ## Connectivity Options
 
 Three categories of transport exist for reaching cloud providers from an on-premises
@@ -331,3 +352,38 @@ For detailed BGP configuration over each connection type:
 - [AWS BGP Stack](../aws/bgp_stack_vpn_over_dx.md)
 - [Azure BGP Stack](../azure/bgp_stack_vpn_over_expressroute.md)
 - [GCP BGP Stack](../gcp/bgp_stack_vpn_over_interconnect.md)
+
+---
+
+## Notes / Gotchas
+
+- **VPC Peering is Non-Transitive:** A peer cannot transit traffic to a third VPC. In a three-VPC
+  environment you need three separate peering connections (1↔2, 2↔3, 1↔3). This quadratic growth
+  is why transit services or a hub-and-spoke model is mandatory at scale.
+
+- **Overlapping Address Space Silently Fails:** If an on-premises subnet and VPC subnet share the
+  same prefix, the BGP session may accept both but drop one without warning. No error is raised —
+  the route simply does not work. Enforce non-overlapping ranges from day one using IPAM.
+
+- **Cloud Reserved Addresses Surprise Small Subnets:** AWS and Azure reserve 5 addresses per subnet.
+  A /28 has 16 addresses total; only 11 are usable. Always use /24 or larger for production
+  subnets; /27 minimum for transit links.
+
+- **BGP Prefix Limits Are Hard Stops:** Exceeding a provider's maximum prefix count (AWS: 100–200
+  per VIF; Azure: 4,000 per session) tears down the entire BGP session, not just the excess
+  prefixes. Aggregate on-premises routes before hitting the limit.
+
+- **Link-Local Addressing Requires Awareness:** APIPA 169.254.0.0/16 works for BGP but cannot be
+  used for ping/traceroute diagnostics the same way routable /30s can. Ensure monitoring tools
+  do not block or filter this range.
+
+---
+
+## See Also
+
+- [BGP Fundamentals](../theory/bgp_fundamentals.md)
+- [BGP Communities](../reference/bgp_communities.md)
+- [AWS Direct Connect Setup](../aws/aws_direct_connect_setup.md)
+- [Azure ExpressRoute Setup](../azure/azure_expressroute_setup.md)
+- [GCP Cloud Interconnect Setup](../gcp/gcp_cloud_interconnect_setup.md)
+- [IP Addressing Design](../theory/ip_addressing_design.md)

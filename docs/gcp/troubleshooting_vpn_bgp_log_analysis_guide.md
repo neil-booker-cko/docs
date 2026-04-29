@@ -55,7 +55,7 @@ Tunnel 2 of an HA VPN gateway have independent PSKs).
 
 **FortiGate log signature:**
 
-```text
+```ios
 
 ike 0:gcp-havpn-tunnel1: DPD timeout
 ike 0:gcp-havpn-tunnel1: connection expiring due to phase1 down
@@ -86,7 +86,7 @@ gcloud logging read \
 
 **FortiGate log signature:**
 
-```text
+```ios
 
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.1.1 Down BGP Notification sent
 BGP: %BGP-3-NOTIFICATION: sent to neighbor 169.254.1.1 4/0 (hold time expired)
@@ -103,7 +103,7 @@ with the BGP drop timestamp.
 
 **FortiGate log signature:**
 
-```text
+```ios
 
 BGP: %BGP-5-ADJCHANGE: neighbor 169.254.1.1 -> OpenConfirm
 BGP: %BGP-3-NOTIFICATION: received from neighbor 169.254.1.1 2/6 (Unsupported Capability)
@@ -157,7 +157,7 @@ the Cloud Router's region.
 
 **Cisco log signature:**
 
-```text
+```ios
 
 %BFD-6-BFD_SESS_DOWN: BFD session ld:4097 handle:1 is going down Reason: DETECT_TIMER_EXPIRED
 %BGP-5-ADJCHANGE: neighbor 169.254.0.2 Down BFD adjacency down
@@ -255,31 +255,31 @@ gcloud logging read \
 
 ## 6. Quick Fault Isolation Checklist
 
-```text
+```mermaid
+graph TD
+    A["HA VPN tunnel not establishing?"]
+    A --> A1["Check Phase 1 proposal: dhgrp must match (GCP default: 14)"]
+    A --> A2["Verify PSK matches per tunnel (Tunnel 1 and 2 independent PSKs)"]
+    A --> A3["Check FortiGate can reach GCP gateway public IP (UDP 500/4500)"]
+    A --> A4["diagnose vpn ike log-filter dst-addr4 &lt;gcp-vpn-gw-ip&gt;"]
 
-HA VPN tunnel not establishing?
-  └─ Check Phase 1 proposal: dhgrp must match (GCP default: 14)
-  └─ Verify PSK matches per tunnel (Tunnel 1 and 2 have independent PSKs)
-  └─ Check FortiGate can reach GCP gateway public IP (UDP 500/4500)
-  └─ Review: diagnose vpn ike log-filter dst-addr4 <gcp-vpn-gw-ip>
+    B["BGP not establishing over tunnel?"]
+    B --> B1["Confirm tunnel is UP first"]
+    B --> B2["Check remote-as matches Cloud Router ASN"]
+    B --> B3["Check BGP peer IP matches Cloud Router interface IP"]
 
-BGP not establishing over tunnel?
-  └─ Confirm tunnel is UP first
-  └─ Check remote-as matches Cloud Router ASN (e.g. 65001)
-  └─ Check BGP peer IP on FortiGate matches Cloud Router interface IP
+    C["BGP up but no GCP routes received?"]
+    C --> C1["Check Cloud Router custom advertisement config"]
+    C --> C2["gcloud compute routers get-status and check bgpPeerStatus"]
+    C --> C3["Verify VPC subnet routes in Cloud Router advertisement list"]
 
-BGP established but no GCP routes received?
-  └─ Check Cloud Router custom advertisement config
-  └─ Run: gcloud compute routers get-status <ROUTER> and check bgpPeerStatus
-  └─ Verify VPC subnet routes are in the Cloud Router's advertisement list
+    D["Underlay Interconnect BGP flapping?"]
+    D --> D1["Check BFD: show bfd neighbors"]
+    D --> D2["show interfaces &lt;IC-subinterface&gt;"]
+    D --> D3["gcloud compute interconnects attachments describe"]
 
-Underlay Interconnect BGP flapping?
-  └─ Check BFD: show bfd neighbors
-  └─ Check interface errors: show interfaces <IC-subinterface>
-  └─ Check VLAN attachment state: gcloud compute interconnects attachments describe
-
-Asymmetric drops through firewall?
-  └─ Confirm zone grouping: both tunnel VTIs in ZONE_GCP_VPN
-  └─ Confirm loose RPF on both tunnel interfaces
-  └─ Check session table: get system session list | grep <destination-ip>
+    E["Asymmetric drops through firewall?"]
+    E --> E1["Confirm both tunnel VTIs in same zone"]
+    E --> E2["Confirm loose RPF on both tunnel interfaces"]
+    E --> E3["get system session list | grep &lt;destination-ip&gt;"]
 ```

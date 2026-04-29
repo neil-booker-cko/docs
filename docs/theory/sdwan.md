@@ -15,6 +15,21 @@ For FortiGate SD-WAN configuration see [FortiGate SD-WAN](../fortigate/fortigate
 
 ---
 
+## At a Glance
+
+| Component | Purpose | Typical Metrics |
+| --- | --- | --- |
+| **Underlay** | Physical WAN links | MPLS, broadband, LTE, leased line |
+| **Overlay** | SD-WAN tunnels (IPsec/GRE) | Encrypted paths independent of underlay |
+| **SLA Monitoring** | Measure link quality | Latency, jitter, packet loss, throughput |
+| **Steering** | Route based on quality | Per-flow rules; failover on SLA breach |
+| **Application Awareness** | Identify traffic type | DPI; port; DNS; NBAR-like classification |
+| **Failover** | Automatic path switch | Sub-second on quality breach vs 30s+ BGP |
+| **Hub & Spoke** | Centralized policy | Hub enforces routing; spokes tunnel to hub |
+| **Mesh** | Direct spokes | Spoke-to-spoke IPsec; full connectivity |
+
+---
+
 ## The Problem SD-WAN Solves
 
 A site with two WAN links — MPLS and internet broadband — presents the classic scenario:
@@ -308,3 +323,13 @@ handle traffic from all spoke sites simultaneously, including during failover sc
 - SD-WAN logging (FortiGate: `Log & Report → Forward Traffic` with SD-WAN fields
   enabled) provides per-session records of which member was selected and why. This is
   the primary tool for verifying that steering rules are behaving as designed.
+
+---
+
+## See Also
+
+- [Quality of Service (QoS)](../theory/qos.md) — Traffic prioritization on selected paths
+- [Policy-Based Routing (PBR)](../theory/policy_based_routing.md) — Per-flow steering fundamentals
+- [FortiGate SD-WAN Configuration](../fortigate/fortigate_sdwan.md) — FortiOS setup and tuning
+- [Cloud Connectivity Comparison](../theory/cloud_connectivity_comparison.md)
+- [Cisco SD-WAN (Catalyst)](../cisco/cisco_sd_wan.md) — Cisco IOS-XE SD-WAN deployment

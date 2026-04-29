@@ -58,7 +58,7 @@ graph LR
         Peer
         R["Routes to reach<br/>10.0.0.0/16"]
     end
-```text
+```
 
 ---
 
@@ -69,10 +69,10 @@ graph LR
 Azure Portal:
 
 1. Virtual Networks → select your VNet
-2. Gateways → VPN Gateway → Create
-3. Name: `third-party-vpn-gw`
-4. SKU: `VpnGw1` (basic, suitable for third-party VPN)
-5. Create
+1. Gateways → VPN Gateway → Create
+1. Name: `third-party-vpn-gw`
+1. SKU: `VpnGw1` (basic, suitable for third-party VPN)
+1. Create
 
 Via Azure CLI:
 
@@ -94,7 +94,7 @@ az network vnet-gateway create \
   --vpn-type RouteBased \
   --sku VpnGw1 \
   --asn 65515
-```text
+```
 
 ### B. Create Local Network Gateway
 
@@ -103,11 +103,11 @@ Represents the third-party network and peer IP.
 Azure Portal:
 
 1. Virtual Networks → Local Network Gateways → Create
-2. Name: `third-party-lng`
-3. Public IP Address: `203.0.113.5` (third-party peer public IP)
-4. Address Spaces: `192.168.0.0/16` (third-party network)
-5. BGP Settings: Enable BGP → ASN: `65100` (agree with third party)
-6. Create
+1. Name: `third-party-lng`
+1. Public IP Address: `203.0.113.5` (third-party peer public IP)
+1. Address Spaces: `192.168.0.0/16` (third-party network)
+1. BGP Settings: Enable BGP → ASN: `65100` (agree with third party)
+1. Create
 
 Via Azure CLI:
 
@@ -120,17 +120,17 @@ az network local-gateway create \
   --address-prefixes 192.168.0.0/16 \
   --asn 65100 \
   --bgp-peering-address 192.168.0.1
-```text
+```
 
 ### C. Create VPN Connection
 
 Azure Portal:
 
 1. VPN Gateway → Connections → Add
-2. Connection Type: `Site-to-Site (IPsec)`
-3. Local Network Gateway: `third-party-lng`
-4. Shared Key (PSK): generate or provide (must match third party's PSK)
-5. Create
+1. Connection Type: `Site-to-Site (IPsec)`
+1. Local Network Gateway: `third-party-lng`
+1. Shared Key (PSK): generate or provide (must match third party's PSK)
+1. Create
 
 Via Azure CLI:
 
@@ -147,7 +147,7 @@ az network vpn-connection create \
   --shared-key "$PSK"
 
 echo "PSK: $PSK"
-```text
+```
 
 **Important:** Share the PSK and gateway public IP with the third party.
 
@@ -158,9 +158,9 @@ If using dynamic routing (recommended):
 Azure Portal:
 
 1. VPN Gateway → Configuration
-2. Autonomous System Number (ASN): `65515` (default)
-3. BGP Peering Address: `169.254.21.1` (Azure-assigned internal address)
-4. Save
+1. Autonomous System Number (ASN): `65515` (default)
+1. BGP Peering Address: `169.254.21.1` (Azure-assigned internal address)
+1. Save
 
 Via Azure CLI:
 
@@ -170,7 +170,7 @@ az network vnet-gateway update \
   --resource-group my-rg \
   --set 'bgpSettings.asn=65515' \
   --set 'bgpSettings.bgpPeeringAddress=169.254.21.1'
-```text
+```
 
 The third party configures their BGP peer on `169.254.21.1` (Azure side) and exchanges routes via
 BGP.
@@ -182,10 +182,10 @@ If the third party cannot support BGP:
 Azure Portal:
 
 1. Route Tables → select your route table
-2. Routes → Add
-3. Address Prefix: `192.168.0.0/16` (third-party network)
-4. Next Hop Type: `Virtual Network Gateway`
-5. Save
+1. Routes → Add
+1. Address Prefix: `192.168.0.0/16` (third-party network)
+1. Next Hop Type: `Virtual Network Gateway`
+1. Save
 
 Via Azure CLI:
 
@@ -196,7 +196,7 @@ az network route-table route create \
   --name to-third-party \
   --address-prefix 192.168.0.0/16 \
   --next-hop-type VirtualNetworkGateway
-```text
+```
 
 ### F. Third-Party Configuration (Cisco Example)
 
@@ -237,7 +237,7 @@ router bgp 65100
   address-family ipv4
     network 192.168.0.0 mask 255.255.0.0
     neighbor 169.254.21.1 activate
-```text
+```
 
 ---
 
@@ -262,7 +262,7 @@ router bgp 65100
 az network vnet-gateway show \
   --name third-party-vpn-gw \
   --resource-group my-rg
-```text
+```
 
 ### Check Connection Status
 
@@ -271,7 +271,7 @@ az network vpn-connection show \
   --name third-party-vpn-conn \
   --resource-group my-rg \
   --query 'connectionStatus'
-```text
+```
 
 Connection should show: `Connected`.
 
@@ -281,7 +281,7 @@ Connection should show: `Connected`.
 az network vnet-gateway list-learned-routes \
   --name third-party-vpn-gw \
   --resource-group my-rg
-```text
+```
 
 Third-party routes (e.g., 192.168.0.0/16) should appear here once BGP neighbor establishes.
 
@@ -293,7 +293,7 @@ az network route-table route show-effective \
   --name my-routes \
   --vm-name my-vm \
   --nic-name my-nic
-```text
+```
 
 Routes to third-party network should show VPN Gateway as next hop.
 

@@ -14,6 +14,21 @@ see [FortiGate SD-WAN](../fortigate/fortigate_sdwan.md). For AWS VPN usage see
 
 ---
 
+## At a Glance
+
+| Aspect | AH | ESP (Transport) | ESP (Tunnel) |
+| --- | --- | --- | --- |
+| **Encryption** | No | Yes | Yes |
+| **Integrity/Auth** | Yes | Yes | Yes |
+| **NAT Compatible** | No | Yes (with NAT-T) | Yes (with NAT-T) |
+| **Overhead** | 12–16 bytes | 8–20+ bytes | 8–40+ bytes (+ IP header) |
+| **Mode** | Authentication only | IP payload encrypted | Entire packet encrypted |
+| **Use Case** | Legacy / rare | GRE+IPsec tunnels | Gateway-to-gateway VPN |
+| **Typical Deployment** | Never used | Common for site-to-site VPN | Common for remote-access VPN |
+| **IKE Negotiation** | IKEv1/IKEv2 | IKEv1/IKEv2 | IKEv1/IKEv2 |
+
+---
+
 ## AH vs ESP
 
 Two protocols carry IPsec-protected traffic. In modern deployments, ESP is used
@@ -729,8 +744,33 @@ Set tunnel MTU = 1400 bytes (conservative, ~100-byte buffer)
 
 ---
 
-## Related Pages
+## Notes / Gotchas
 
-- [GRE](../packets/gre.md)
-- [AWS BGP Stack](../aws/bgp_stack_vpn_over_dx.md)
-- [FortiGate SD-WAN](../fortigate/fortigate_sdwan.md)
+- **MTU Black Hole:** IPsec adds ESP header and trailer overhead. Without MSS clamping or a
+  reduced tunnel MTU, packets exceed path MTU. Firewalls blocking ICMP "Fragment Needed"
+  cause complete path failure. Always clamp MSS or reduce tunnel MTU.
+
+- **IKE Version Mismatch:** IKEv1 and IKEv2 are incompatible — both peers must run the same
+  version. Mismatches fail silently with no tunnel establishment and no clear error.
+
+- **Anti-Replay Window Size:** The default anti-replay window (32–64 packets) can drop
+  legitimate packets when reordering is severe (e.g. ECMP with different latencies).
+  Increase the window if seeing sporadic drops on multi-path links.
+
+- **DPD Interaction:** Dead Peer Detection detects dead peers but does not establish new SAs.
+  If an SA times out, a full IKE re-negotiation is required. Coordinate DPD and SA
+  lifetime timers to avoid gaps in protection.
+
+- **Perfect Forward Secrecy (PFS):** New DH parameters per phase-2 SA protect past traffic
+  if the long-lived IKE key is compromised. PFS is CPU-heavy — balance security vs
+  performance on high-throughput tunnels.
+
+---
+
+## See Also
+
+- [GRE Packet Format](../packets/gre.md)
+- [DMVPN (Dynamic Multipoint VPN)](../theory/dmvpn.md)
+- [Cisco IPsec Configuration](../cisco/cisco_ipsec_config.md)
+- [FortiGate VPN & SD-WAN](../fortigate/fortigate_sdwan.md)
+- [AWS VPN & BGP Stack](../aws/bgp_stack_vpn_over_dx.md)
