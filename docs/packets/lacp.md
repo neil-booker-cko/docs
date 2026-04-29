@@ -64,7 +64,7 @@ Actor and Partner Information TLVs contain the following structure:
 
 | Bit | Name | Meaning |
 | --- | --- | --- |
-| **7** | Lacp Activity | 1=Active (send LACP regularly), 0=Passive (respond only) |
+| **7** | Lacp Activity | 1=Active/Fast (send LACP regularly), 0=Passive/Slow (respond only) |
 | **6** | Lacp Timeout | 1=Short timeout (1s), 0=Long timeout (30s) |
 | **5** | Aggregation | 1=Can aggregate with this port, 0=Individual link only |
 | **4** | Synchronization | 1=In sync with partner, 0=Out of sync |
@@ -124,17 +124,19 @@ Ports 1-4: Key 1 (form LAG together)
 Ports 5-8: Key 2 (form separate LAG)
 ```
 
-## LACP Timeouts
+## LACP Timeouts (Fast vs Slow)
 
-| Parameter | Active | Passive |
+| Parameter | Fast (Active) | Slow (Passive) |
 | --- | --- | --- |
 | **Send interval** | 1 LACP PDU/sec | 30 LACP PDUs/min (no active sending) |
 | **Receive timeout** | 3 seconds | 90 seconds |
 | **Behavior** | Initiates LACP negotiation | Responds to peer's LACP |
 
-**Active:** Send LACP regularly, even if partner is quiet. Recommended for switch-to-switch.
+**Fast mode (Active):** Send LACP regularly (1/sec), even if partner is quiet. Faster
+convergence (~1 second). Recommended for switch-to-switch and production links.
 
-**Passive:** Only respond to peer's LACP. Saves bandwidth but slower convergence.
+**Slow mode (Passive):** Only respond to peer's LACP. Saves bandwidth but slower convergence
+(~30 seconds). Use only when space or CPU is constrained.
 
 ## Common LACP States
 
