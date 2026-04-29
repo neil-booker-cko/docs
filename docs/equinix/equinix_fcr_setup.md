@@ -15,7 +15,7 @@ Equinix Console → Fabric → Fabric Cloud Router
   BGP Timers: hello 3s, holdtime 9s
 
 Create
-```text
+```
 
 Result: FCR instance ready to receive vConnections.
 
@@ -29,7 +29,7 @@ Equinix Console → Fabric → Virtual Connections
   Bandwidth: 10Gbps
 
 Create
-```text
+```
 
 Result: vConnection pending. Equinix provides cross-connect details.
 
@@ -40,7 +40,7 @@ Your Cisco router:
   router bgp 65000
     neighbor 10.255.0.1 remote-as 65001
     neighbor 10.255.0.1 timers 3 9
-```text
+```
 
 Result: BGP peering with FCR (status: Established).
 
@@ -51,7 +51,7 @@ Your Cisco router:
   network 10.0.0.0 mask 255.0.0.0  ! Local DC subnets
 
 BGP announces: 10.0.0.0/8 → FCR → Cloud provider
-```text
+```
 
 ---
 
@@ -66,7 +66,7 @@ BGP announces: 10.0.0.0/8 → FCR → Cloud provider
 1. Log in to Equinix console
 1. Navigate to Fabric → Fabric Cloud Router
 1. Click "Create"
-```text
+```
 
 ### 1.2 Configure FCR Parameters
 
@@ -86,7 +86,7 @@ BGP Timers:
   Hold Time: 9 seconds
 
 Notifications: Enable (email on vConnection status changes)
-```text
+```
 
 ### 1.3 Review and Create
 
@@ -98,9 +98,10 @@ Summary:
   ✓ BGP Timers: 3s/9s
 
 [Create FCR]
-```text
+```
 
 **Status:** FCR created. Equinix assigns:
+
 - FCR ID: fcr-xxxxx
 - BGP peering IP: 10.255.0.1 (primary), 10.255.0.2 (secondary/redundancy)
 - Route reflector IP (if applicable)
@@ -140,9 +141,10 @@ Connection Details:
 Notifications: Enable
 
 [Create vConnection]
-```text
+```
 
 **Status:** vConnection created. Equinix provides:
+
 - vConnection ID: vc-xxxxx
 - BGP peer IP (your side): 10.255.1.1/30
 - BGP peer IP (FCR side): 10.255.1.2/30
@@ -158,7 +160,7 @@ Status progression:
 Once ACTIVE:
   ✓ Layer 2 link is up
   ✓ Ready for BGP peering
-```text
+```
 
 ### 2.3 Cloud Provider vConnection (Optional)
 
@@ -183,7 +185,7 @@ BGP Configuration:
   Customer Gateway ASN: 65001 (your FCR ASN)
 
 [Create vConnection]
-```text
+```
 
 **Status:** AWS vConnection created. AWS receives BGP prefixes advertised by FCR.
 
@@ -227,7 +229,7 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 ### 3.2 Verification
 
@@ -245,7 +247,7 @@ show bgp ipv4 unicast
   *> 10.0.0.0/8 0.0.0.0 0 32768 i
   * 172.31.0.0/16 10.255.1.2 0 65001 16509 i  (AWS)
   *> 192.168.0.0/16 10.255.1.2 0 65001 8075 i  (Azure)
-```text
+```
 
 ---
 
@@ -275,9 +277,10 @@ FCR BGP Configuration (Equinix-managed):
   Route Reflection:
     Reflects routes from AWS → Your DC
     Reflects routes from Your DC → AWS
-```text
+```
 
 **You typically don't configure FCR directly.** Equinix manages BGP on FCR; you configure:
+
 - BGP adjacency (peering)
 - Route advertisements (what you want to advertise)
 - Route filtering (what routes you accept)
@@ -299,7 +302,7 @@ Status Codes:
   DEPROVISIONING: Being deleted
   DELETED: No longer available
   FAILED: Error (check notification details)
-```text
+```
 
 ### 3.2 Viewing BGP Peer Information
 
@@ -312,7 +315,7 @@ BGP Details:
   BGP ASN (Equinix): 65001
   BGP Status: Established
   Uptime: 3 days 2 hours
-```text
+```
 
 ### 3.3 Upgrading vConnection Bandwidth
 
@@ -324,18 +327,20 @@ Bandwidth: 10Gbps → 100Gbps
 [Apply]
 
 Status: UPDATING → ACTIVE (typically 15–30 minutes)
-```text
+```
 
 **No downtime during upgrade** (Equinix handles carrier transition).
 
 ### 3.4 Adding Redundancy
 
 #### Initial Setup (Single vConnection)
+
 ```text
 Your DC ←(vConnection #1)→ FCR
-```text
+```
 
 #### Add Second vConnection
+
 ```text
 Equinix Console → Fabric → Virtual Connections → New
 (Create vConnection #2: identical to #1)
@@ -343,16 +348,17 @@ Equinix Console → Fabric → Virtual Connections → New
 Result:
   Your DC ←(vConnection #1)→ FCR
   Your DC ←(vConnection #2)→ FCR
-```text
+```
 
 #### Update BGP
+
 ```text
 Your router:
   neighbor 10.255.1.2 remote-as 65001  ! vConnection #1
   neighbor 10.255.1.6 remote-as 65001  ! vConnection #2
 
 (Both announce same routes; traffic load-balances)
-```text
+```
 
 ---
 
@@ -362,9 +368,10 @@ Your router:
 
 ```text
 Your switch port → (untagged) → Equinix cross-connect → FCR vConnection
-```text
+```
 
 **Configuration:**
+
 - Your switch: Interface in native VLAN
 - No tagging required
 - Simplest setup
@@ -376,15 +383,16 @@ Your switch port → (tagged)
   ├─ VLAN 100 → vConnection #1
   ├─ VLAN 101 → vConnection #2
   └─ VLAN 102 → Secondary DC
-```text
+```
 
 **Configuration:**
+
 ```text
 switch# conf t
 interface Ethernet1/1
   switchport mode trunk
   switchport trunk allowed vlan 100,101,102
-```text
+```
 
 ---
 
@@ -400,7 +408,7 @@ curl -X POST https://api.equinix.com/fabric/v4/auth/tokens \
     "username": "your-api-key",
     "password": "your-api-secret"
   }'
-```text
+```
 
 Result: `access_token` for subsequent API calls.
 
@@ -419,7 +427,7 @@ curl -X POST https://api.equinix.com/fabric/v4/routers \
       { "type": "ALL", "emails": ["ops@company.com"] }
     ]
   }'
-```text
+```
 
 ### 3. Create vConnection (API)
 
@@ -444,7 +452,7 @@ curl -X POST https://api.equinix.com/fabric/v4/connections \
       }
     }
   }'
-```text
+```
 
 ---
 
@@ -455,18 +463,20 @@ curl -X POST https://api.equinix.com/fabric/v4/connections \
 **Cause:** Equinix waiting for approval.
 
 **Fix:**
+
 ```text
 Equinix Console → Virtual Connections → [vConnection] → Details
   Click: "Approve" (if option available)
 
 Or contact Equinix support: support@equinix.com
-```text
+```
 
 ### Issue: BGP Peer Down
 
 **Cause:** vConnection not ACTIVE, or BGP not configured on your router.
 
 **Check:**
+
 ```text
 Equinix Console → Virtual Connections → [vConnection]
   Status: ACTIVE? (if not, wait for provisioning)
@@ -474,9 +484,10 @@ Equinix Console → Virtual Connections → [vConnection]
 Your router:
   show bgp ipv4 unicast summary
   show bgp ipv4 unicast neighbors 10.255.1.2
-```text
+```
 
 **Fix:**
+
 1. Ensure vConnection is ACTIVE
 1. Verify BGP neighbor IP is correct
 1. Check firewall allows BGP (port 179)
@@ -487,15 +498,17 @@ Your router:
 **Cause:** Routes not advertised by FCR or access list blocking.
 
 **Check:**
+
 ```text
 Your router:
   show bgp ipv4 unicast
   (Should see routes from AWS/Azure/GCP)
 
 show bgp ipv4 unicast neighbors 10.255.1.2 received-routes
-```text
+```
 
 **Fix:**
+
 1. Verify FCR has received routes from cloud provider
 1. Check route filtering/access lists on your router
 1. Verify local preference isn't rejecting routes

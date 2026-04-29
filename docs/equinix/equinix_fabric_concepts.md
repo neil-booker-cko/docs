@@ -20,7 +20,7 @@ Traditional (Public Internet):
 Equinix Fabric (Private Interconnect):
   DC A ←(direct private link)→ Equinix Metal → FCR → AWS/Azure/GCP
   (dedicated bandwidth, low latency, consistent performance)
-```text
+```
 
 ---
 
@@ -36,7 +36,7 @@ Equinix Metro Structure:
   ├─ Equinix Metal compute availability (bare metal servers)
   ├─ Direct connection points to cloud providers
   └─ Fabric Cloud Router endpoints for routing
-```text
+```
 
 ### Connection Types
 
@@ -94,14 +94,16 @@ Multiple clouds connected via single FCR instance.
   Azure      GCP    Enterprise
 
 Use case: Multi-cloud applications, cloud-agnostic failover
-```text
+```
 
 **Advantages:**
+
 - Single BGP routing instance for all clouds
 - Simplified redundancy (one FCR to fail over)
 - Centralized traffic steering policies
 
 **Disadvantages:**
+
 - Single point of failure (mitigated with secondary FCR)
 - All traffic flows through one router
 
@@ -117,14 +119,16 @@ Multiple datacenters with independent FCR instances per location.
     AWS                            Azure
 
 Use case: DR, load distribution, geo-redundancy
-```text
+```
 
 **Advantages:**
+
 - No single point of failure
 - Traffic stays local (DC-A ↔ AWS direct)
 - Lower latency for regional traffic
 
 **Disadvantages:**
+
 - More complex BGP configuration
 - Multiple FCR instances to manage
 
@@ -140,7 +144,7 @@ Combination: Primary DC routes through FCR to cloud, secondary DC routes directl
   Secondary DC → On-prem resources
          |
     (optional: secondary link to FCR for failover)
-```text
+```
 
 Use case: Gradual cloud migration, cost optimization.
 
@@ -159,25 +163,28 @@ A **logical connection** between:
 ### vConnection Types
 
 #### 1. Metal-to-FCR
+
 ```text
 Equinix Metal server → (Layer 2 Link) → FCR instance
-```text
+```
 
 **Use case:** Apps on Metal accessing cloud via FCR.
 **Bandwidth:** Up to Metal device bandwidth (typically 40Gbps – 100Gbps).
 
 #### 2. DC-to-FCR (Cross-Connect)
+
 ```text
 Your datacenter → (Dark fiber or wavelength) → Equinix IBX → FCR
-```text
+```
 
 **Use case:** On-prem datacenters to cloud via FCR.
 **Bandwidth:** 1Gbps, 10Gbps, 100Gbps (depending on carrier agreement).
 
 #### 3. FCR-to-Cloud
+
 ```text
 FCR → (Private link to AWS/Azure/GCP) → Cloud Provider
-```text
+```
 
 **Use case:** Routing from FCR to cloud (BGP-advertised routes).
 **Bandwidth:** Up to 400Gbps (varies by cloud provider).
@@ -187,7 +194,7 @@ FCR → (Private link to AWS/Azure/GCP) → Cloud Provider
 ```text
 Provisioning → Configuring → Waiting for BGP → Active
   (creating)    (link up)    (peers coming up)  (routing)
-```text
+```
 
 ---
 
@@ -211,7 +218,7 @@ Your Cisco Router
       BGP
         |
     AWS TGW
-```text
+```
 
 ### AS Path and Route Propagation
 
@@ -228,7 +235,7 @@ Routes advertised FROM cloud TO your DC:
 Your routes advertised TO cloud:
   Your router (AS 65000) → FCR (AS 64512) → AWS (AS 16509)
   AS Path: 65000 16509
-```text
+```
 
 ---
 
@@ -237,11 +244,13 @@ Your routes advertised TO cloud:
 ### Equinix Fabric (FCR)
 
 **Pros:**
+
 - Single entry point to multiple clouds
 - Consistent routing control
 - Unified BGP policies
 
 **Cons:**
+
 - Additional cost (FCR subscription + vConnections)
 - One more hop in the path
 - Equinix dependency
@@ -249,11 +258,13 @@ Your routes advertised TO cloud:
 ### Direct Cloud Connections (AWS Direct Connect, Azure ExpressRoute, etc.)
 
 **Pros:**
+
 - Direct connection to cloud
 - No additional hop
 - Native cloud integration
 
 **Cons:**
+
 - Separate connection per cloud
 - Different management for each cloud
 - Complex if multi-cloud
@@ -282,7 +293,7 @@ Equinix Metal to AWS (same IBX): <1ms
 Equinix Metal to AWS (different IBX, same metro): 2–5ms
 Cross-metro (e.g., SJC to LAX): 10–15ms
 Intercontinental (SJC to London): 150–170ms
-```text
+```
 
 ### Throughput
 

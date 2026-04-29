@@ -22,13 +22,14 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 **Verify:**
+
 ```text
 show bgp ipv4 unicast summary
 ! Expect: Established status
-```text
+```
 
 ---
 
@@ -55,7 +56,7 @@ Cisco Router (DC)
     |           |          |
   AWS        Azure      GCP
   16509      8075      15169
-```text
+```
 
 ### Cisco Configuration
 
@@ -87,7 +88,7 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 ### Verification
 
@@ -100,7 +101,7 @@ show bgp ipv4 unicast neighbors 10.255.1.2
 
 show bgp ipv4 unicast
 ! Show all routes learned (from AWS, Azure, GCP via FCR)
-```text
+```
 
 ---
 
@@ -122,7 +123,7 @@ Cisco Router-A (primary)        Cisco Router-B (backup)
     AS 65001
         |
     AWS/Azure/GCP
-```text
+```
 
 ### Router-A Configuration
 
@@ -153,7 +154,7 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 ### Router-B Configuration
 
@@ -184,7 +185,7 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 ### Verification
 
@@ -196,7 +197,7 @@ Router-A:
   show bgp ipv4 unicast
   ! Routes from AWS/Azure/GCP received via FCR
   ! Best path chosen (Router-A or Router-B based on distance)
-```text
+```
 
 ---
 
@@ -220,7 +221,7 @@ Router-A (DC-A)      Router-B (DC-B)
         |                    |
         |                    |
     AWS (dual peering)
-```text
+```
 
 ### Router-A Configuration
 
@@ -267,7 +268,7 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 ### Failover Behavior
 
@@ -280,7 +281,7 @@ FCR-A failure:
   BGP detects neighbor down (3s + 9s holdtime = ~12s)
   Routes shift to FCR-B (LAX, secondary)
   Full convergence: ~15 seconds
-```text
+```
 
 ---
 
@@ -304,7 +305,7 @@ Cisco Router (DC)
 Optional: Direct connection to GCP (AWS Direct Connect, bypassing FCR)
         |
         ├─→ GCP (direct, not via FCR)
-```text
+```
 
 ### Cisco Configuration (FCR + Direct Connection)
 
@@ -335,7 +336,7 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 ---
 
@@ -361,7 +362,7 @@ router bgp 65000
     ip community-list standard AWS_ROUTES permit 65001:1
 
   exit-address-family
-```text
+```
 
 ### Route Aggregation (Reduce BGP Load)
 
@@ -381,7 +382,7 @@ router bgp 65000
     ! Advertise single 10.0.0.0/8 to FCR (suppresses specific routes)
 
   exit-address-family
-```text
+```
 
 ### Conditional Route Advertisement
 
@@ -405,7 +406,7 @@ router bgp 65000
     ip as-path access-list AWS_PRESENT permit "16509"
 
   exit-address-family
-```text
+```
 
 ---
 
@@ -436,7 +437,7 @@ interface GigabitEthernet0/0/1.100
 ip route 10.255.1.0 255.255.255.252 10.255.1.2
 
 end
-```text
+```
 
 ### Verify Interface Status
 
@@ -446,7 +447,7 @@ show interface GigabitEthernet0/0/1
 
 show ip interface brief
 ! Verify IP address assigned: 10.255.1.1
-```text
+```
 
 ---
 
@@ -462,7 +463,7 @@ Neighbor V AS MsgRcvd MsgSent InQ OutQ Up/Down State
 10.255.1.2 4 65001 45 42 0 0 00:15:30 Established
 
 ! Status: Established = BGP peering is healthy
-```text
+```
 
 ### View Routes Learned from FCR
 
@@ -474,7 +475,7 @@ show bgp ipv4 unicast
   * 172.31.0.0/16 10.255.1.2 0 100 65001 16509 i  (AWS)
   * 192.168.0.0/16 10.255.1.2 0 100 65001 8075 i  (Azure)
   * 10.128.0.0/9 10.255.1.2 0 100 65001 15169 i  (GCP)
-```text
+```
 
 ### Monitor BGP Convergence
 
@@ -487,7 +488,7 @@ debug bgp updates
 
 ! After 30 seconds:
 undebug all
-```text
+```
 
 ### Trace BGP Best Path Selection
 
@@ -506,7 +507,7 @@ BGP routing table entry for 10.0.0.0/24, version 10
       Origin IGP, metric 0, localpref 100, valid, external
 
 ! Best path (16509) preferred via primary FCR
-```text
+```
 
 ---
 
@@ -525,7 +526,7 @@ T=9s:  BGP declares neighbor down (holdtime expired)
 T=10s: Routes withdraw from routing table
 T=11s: Traffic reroutes (to secondary FCR if configured)
 T=12s: Full convergence
-```text
+```
 
 ### Verify Failover
 
@@ -540,7 +541,7 @@ Simulate failure:
 
   show bgp ipv4 unicast | include 172.31.0.0
   ! Routes now via secondary neighbor
-```text
+```
 
 ---
 

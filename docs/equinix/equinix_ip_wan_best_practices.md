@@ -19,7 +19,7 @@ Decision:
   ✓ Provision 10 Gbps (1.5–2x peak for headroom)
   ✗ Provision 1 Gbps (insufficient for peak)
   ✗ Provision 100 Gbps (expensive, underutilized)
-```text
+```
 
 ### 2. Latency Predictability
 
@@ -33,7 +33,7 @@ Equinix Fabric:
 Public Internet:
   Variable (5–100ms depending on ISP congestion)
   Unpredictable (varies by time of day)
-```text
+```
 
 **Use case:** Use Fabric for real-time apps (HFT, video), public internet for batch jobs.
 
@@ -50,7 +50,7 @@ Architecture B (No SPOF):
   DC → FCR-A → Cloud
   DC → FCR-B → Cloud
   Or: DC → FCR + Direct AWS Connect (bypass FCR)
-```text
+```
 
 ---
 
@@ -67,11 +67,12 @@ Topology:
   AWS (RDS, S3)
 
   Connectivity: DC ←(1 vConnection)→ FCR ←→ AWS
-```text
+```
 
 **Bandwidth:** 1 Gbps (sufficient for 10 servers, typical usage 200 Mbps).
 
 **Redundancy:**
+
 - **No redundancy:** Single vConnection failure = full outage
 - **Cost:** ~$500–1000/month
 
@@ -93,25 +94,29 @@ Topology:
     └─ GCP (machine learning)
 
   Single vConnection → FCR (SJC) → all clouds
-```text
+```
 
 **Bandwidth:** 10–20 Gbps (multiple clouds, aggregate traffic).
 
 **Redundancy:**
+
 - **Primary:** Single vConnection
 - **Backup:** Dual vConnections (active-active) or secondary FCR (active-passive)
 
 **Cost:**
+
 - Single vConnection: ~$5000/month (10 Gbps)
 - Dual vConnections: ~$10,000/month
 
 **When to use:** Multi-cloud applications, consolidation onto single FCR.
 
 **Advantages:**
+
 - Single BGP routing table (all clouds via one peer)
 - Unified traffic policies (QoS, filtering)
 
 **Disadvantages:**
+
 - FCR becomes single point of failure (mitigated with dual FCR)
 - All traffic funnels through one router (bottleneck at scale)
 
@@ -129,19 +134,21 @@ DC-A (FCR-A)                DC-B (FCR-B)
   ├─ AWS peering             ├─ AWS peering
   ├─ Azure peering           ├─ Azure peering
   └─ GCP peering             └─ GCP peering
-```text
+```
 
 **iBGP sessions:**
+
 ```text
 DC-A ←iBGP→ DC-B
 DC-A ←iBGP→ DC-C
 DC-B ←iBGP→ DC-C
 (Full mesh: 3 DCs = 3 iBGP sessions)
-```text
+```
 
 **Bandwidth:** 10–50 Gbps per DC (varies by DC size).
 
 **Redundancy:**
+
 - Full mesh: any single DC failure doesn't impact others
 - No single point of failure (except cloud provider connection)
 
@@ -163,21 +170,24 @@ DC-B ←iBGP→ FCR-Hub
 DC-C ←iBGP→ FCR-Hub
 
 (DC-B ↔ DC-C traffic via DCHub)
-```text
+```
 
 **iBGP sessions:**
+
 ```text
 FCR-Hub ← iBGP → DC-B
 FCR-Hub ← iBGP → DC-C
 (Star: 3 DCs = 2 iBGP sessions)
-```text
+```
 
 **Advantages:**
+
 - Simpler BGP (linear sessions, not exponential)
 - Centralized routing control
 - Cheaper than full mesh
 
 **Disadvantages:**
+
 - Hub (Primary DC) is SPOF for inter-DC traffic
 - DC-B ↔ DC-C traffic detours through hub (higher latency)
 
@@ -203,7 +213,7 @@ Step 3: Plan for growth
   Current: 3.5 Gbps
   Projected (2 years): +50% = 5.25 Gbps
   Provision: 10 Gbps (supports growth without upgrade)
-```text
+```
 
 ### Method 2: Per-Application-Based
 
@@ -224,7 +234,7 @@ Web app traffic: 500 Mbps peak
 
 Aggregate: 4 Gbps peak
 Provision: 10 Gbps (with headroom)
-```text
+```
 
 ### Method 3: Per-Location-Based
 
@@ -238,7 +248,7 @@ DB replication (multi-region): 1.5 Gbps
 
 Aggregate: 6 Gbps peak
 Provision: 10 Gbps per metro (if multi-metro FCR)
-```text
+```
 
 ### Right-Sizing Strategy
 
@@ -254,7 +264,7 @@ Start small, scale on demand:
 
   Month 12–24: Plan for growth
                If aggregate >15 Gbps, scale to dual vConnections
-```text
+```
 
 ---
 
@@ -271,7 +281,7 @@ Start small, scale on demand:
 1. Local preference (Cisco/FortiGate, higher = preferred)
 1. Weight (Cisco only, higher = preferred)
 1. MED/Metric (multi-exit discriminator, lower = preferred)
-```text
+```
 
 ### Example: Prefer Primary Cloud via Path Length
 
@@ -291,7 +301,7 @@ Azure route: 192.168.0.0/16
 
 Both have same hop count (3 hops), so first-received wins.
 To prefer AWS: Add local-preference 200 to AWS neighbor.
-```text
+```
 
 ### Advanced: Communities-Based Steering
 
@@ -305,7 +315,7 @@ DC router policy:
   If community 65001:2 (Azure), set local-pref 100
 
 Result: AWS preferred unless FCR unreachable
-```text
+```
 
 ---
 
@@ -319,7 +329,7 @@ Timer Setting          Convergence Time    Use Case
 Hello 10s, Hold 30s    ~30–40 seconds      Stable, non-critical
 Hello 3s, Hold 9s      ~10–15 seconds      Balanced
 Hello 1s, Hold 3s      ~3–5 seconds        Real-time apps (HFT)
-```text
+```
 
 ### Convergence Timeline Example
 
@@ -333,7 +343,7 @@ T=11s: Traffic shifts to backup path (if available)
 T=12s: Full convergence
 
 Total outage: 10–12 seconds (with 3s/9s timers)
-```text
+```
 
 ### Fast Convergence Optimization
 
@@ -357,7 +367,7 @@ Option C: Dual active vConnections
   - Traffic load-balances across both
   - Failure of one = load shift (50% → 100% on other)
   - No route withdrawal needed (both paths always active)
-```text
+```
 
 ---
 
@@ -385,24 +395,26 @@ Monitor:
   - Bandwidth utilization (real-time graph)
   - BGP neighbor status
   - Error counts (CRC, underrun, overrun)
-```text
+```
 
 #### Router-Based Monitoring
 
 **Cisco:**
+
 ```text
 show bgp ipv4 unicast summary
 show bgp ipv4 unicast neighbors 10.255.1.2
 show interface GigabitEthernet0/0/1  (vConnection interface)
 show ip bgp rib
-```text
+```
 
 **FortiGate:**
+
 ```text
 get router bgp summary
 get router bgp neighbors 10.255.1.2
 diagnose router bgp paths 172.31.0.0/16  (trace best path)
-```text
+```
 
 #### External Monitoring (Grafana, Prometheus)
 
@@ -413,7 +425,7 @@ Export metrics:
   - Route count (detected changes)
   - BGP session duration (uptime)
   - Route convergence time (measured via test routes)
-```text
+```
 
 ---
 
@@ -433,7 +445,7 @@ Option B: Add second vConnection (10 Gbps)
   Benefit: Active-active redundancy
 
 Recommendation: Choose Option B (redundancy + same cost)
-```text
+```
 
 ### Bandwidth Sharing Across Applications
 
@@ -452,7 +464,7 @@ Solution: QoS rate limiting
   App-2: Limit to 7 Gbps (allows priority to App-1)
 
 Result: No starvation, both apps get fair share
-```text
+```
 
 ### Off-Peak Usage Optimization
 
@@ -467,7 +479,7 @@ Cost optimization:
 Alternative: Separate 1 Gbps vConnection for backups
   Cost: Cheaper ($500/month vs. $2500/month upgrade)
   If vConnection #1 fails: Backups queue (acceptable)
-```text
+```
 
 ---
 
@@ -476,95 +488,107 @@ Alternative: Separate 1 Gbps vConnection for backups
 ### BGP Session Down
 
 1. **Check vConnection status**
-```text
-   Equinix Console: vConnection state = ACTIVE?
-   If DOWN: Wait for Equinix to restore, or open support ticket
-```text
+
+    ```text
+    Equinix Console: vConnection state = ACTIVE?
+    If DOWN: Wait for Equinix to restore, or open support ticket
+    ```
 
 1. **Check layer 2 link**
-```text
-   Cisco: show interface [port]
-   Status: up/up?
 
-   If down: Check physical cabling, cross-connect status
-```text
+    ```text
+    Cisco: show interface [port]
+    Status: up/up?
+
+    If down: Check physical cabling, cross-connect status
+    ```
 
 1. **Check BGP configuration**
-```text
-   Cisco: show bgp ipv4 unicast neighbors 10.255.1.2
-   Expected: Remote AS 65001, local AS 65000
 
-   If mismatch: Verify ASN config
-```text
+    ```text
+    Cisco: show bgp ipv4 unicast neighbors 10.255.1.2
+    Expected: Remote AS 65001, local AS 65000
+
+    If mismatch: Verify ASN config
+    ```
 
 1. **Check BGP timers**
-```text
-   BGP hello received? Check last message time
-   If >9s gap: May hit holdtime, trigger neighbor down
-```text
+
+    ```text
+    BGP hello received? Check last message time
+    If >9s gap: May hit holdtime, trigger neighbor down
+    ```
 
 1. **Check firewall/access**
-```text
-   BGP uses port 179 (TCP)
-   Cisco: show access-list
-   FortiGate: show firewall policy
 
-   Ensure BGP traffic allowed to/from 10.255.1.2
-```text
+    ```text
+    BGP uses port 179 (TCP)
+    Cisco: show access-list
+    FortiGate: show firewall policy
+
+    Ensure BGP traffic allowed to/from 10.255.1.2
+    ```
 
 ### Routes Not Received
 
 1. **Check if neighbor is Established**
-```text
-   If neighbor DOWN: Fix BGP session first
-```text
+
+    ```text
+    If neighbor DOWN: Fix BGP session first
+    ```
 
 1. **Check what FCR is advertising**
-```text
-   Cisco: show bgp ipv4 unicast neighbors 10.255.1.2 advertised-routes
 
-   If no routes shown: FCR has no routes to advertise (check FCR)
-```text
+    ```text
+    Cisco: show bgp ipv4 unicast neighbors 10.255.1.2 advertised-routes
+
+    If no routes shown: FCR has no routes to advertise (check FCR)
+    ```
 
 1. **Check route filters**
-```text
-   Cisco: show bgp ipv4 unicast neighbors 10.255.1.2 received-routes
 
-   If routes shown but not in BGP table: Check route-maps, prefix-lists
-```text
+    ```text
+    Cisco: show bgp ipv4 unicast neighbors 10.255.1.2 received-routes
+
+    If routes shown but not in BGP table: Check route-maps, prefix-lists
+    ```
 
 1. **Check cloud provider connectivity**
-```text
-   If expecting AWS routes but none received:
 
-     - Verify AWS Direct Connect is ACTIVE
-     - Check AWS BGP session with FCR
-     - Verify AWS is advertising VPC CIDRs
-```text
+    ```text
+    If expecting AWS routes but none received:
+
+      - Verify AWS Direct Connect is ACTIVE
+      - Check AWS BGP session with FCR
+      - Verify AWS is advertising VPC CIDRs
+    ```
 
 ### High Latency / Jitter
 
 1. **Check vConnection utilization**
-```text
-   Equinix Console: Monitor bandwidth utilization
 
-   If >85% utilized: Congestion likely, upgrade needed
-```text
+    ```text
+    Equinix Console: Monitor bandwidth utilization
+
+    If >85% utilized: Congestion likely, upgrade needed
+    ```
 
 1. **Check for packet loss**
-```text
-   Cisco: ping -c 100 [cloud-destination]
 
-   If loss >0.1%: Investigate congestion or link issues
-```text
+    ```text
+    Cisco: ping -c 100 [cloud-destination]
+
+    If loss >0.1%: Investigate congestion or link issues
+    ```
 
 1. **Measure baseline latency**
-```text
-   Cisco: ping [cloud-destination]
 
-   Baseline latency should be consistent (±5% variation OK)
-   If jumping 10–20ms: May indicate congestion or routing changes
-```text
+    ```text
+    Cisco: ping [cloud-destination]
+
+    Baseline latency should be consistent (±5% variation OK)
+    If jumping 10–20ms: May indicate congestion or routing changes
+    ```
 
 ---
 
@@ -585,7 +609,7 @@ After Primary failure:
 
 RTO (Recovery Time Objective): Manual failover (hours to days)
 RPO (Recovery Point Objective): Minutes (last backup)
-```text
+```
 
 ### Improved DR Design
 
@@ -605,7 +629,7 @@ Failure scenario:
   Secondary takes over (all routes already advertised)
   RTO: <15 seconds (BGP convergence)
   RPO: Near-zero (hot standby)
-```text
+```
 
 ### Backup Connectivity Pattern
 
@@ -621,7 +645,7 @@ FCR failure:
 
 Cost optimization:
   Use backup connection rarely (pay for standby only)
-```text
+```
 
 ---
 
@@ -647,7 +671,7 @@ Solution:
   Or: Use communities to disambiguate
   AWS routes tagged: 65001:1
   Azure routes tagged: 65001:2
-```text
+```
 
 ### Load Balancing Across Clouds
 
@@ -663,7 +687,7 @@ Implementation: Local preference
   Azure neighbor: local-preference 100
 
 BGP selects 70% of traffic via AWS path, 30% via Azure
-```text
+```
 
 ---
 

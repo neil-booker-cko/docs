@@ -31,13 +31,14 @@ config router bgp
     next
   end
 end
-```text
+```
 
 **Verify:**
+
 ```text
 get router bgp summary
 ! Expect: neighbor 10.255.1.2 status ESTABLISHED
-```text
+```
 
 ---
 
@@ -65,7 +66,7 @@ FortiGate Firewall (DC)
     |           |          |
   AWS        Azure      GCP
   16509      8075      15169
-```text
+```
 
 ### FortiGate Configuration
 
@@ -134,7 +135,7 @@ config firewall policy
     set logtraffic all
   next
 end
-```text
+```
 
 ### Verification
 
@@ -153,7 +154,7 @@ diagnose ip route list
 
 diagnose debug flow show-summary
 ! Monitor traffic flowing through port1 (to FCR)
-```text
+```
 
 ---
 
@@ -176,7 +177,7 @@ FortiGate-A (primary)      FortiGate-B (secondary)
   Equinix FCR-A
     10.255.1.2 (peered with active FortiGate)
     AS 65001
-```text
+```
 
 ### FortiGate-A Configuration (Primary)
 
@@ -224,7 +225,7 @@ config router bgp
     next
   end
 end
-```text
+```
 
 ### FortiGate-B Configuration (Secondary)
 
@@ -265,7 +266,7 @@ config router bgp
     next
   end
 end
-```text
+```
 
 ### Failover Behavior
 
@@ -281,7 +282,7 @@ FortiGate-A failure:
   FCR detects BGP status (BGP session may flap briefly)
   Traffic redirects through FortiGate-B
   Convergence: 3–15 seconds
-```text
+```
 
 ---
 
@@ -308,7 +309,7 @@ Primary DC (SJC)          Secondary DC (LAX)
     ├─iBGP with FCR-B
     │
     AWS (dual peering)
-```text
+```
 
 ### FortiGate-A Configuration (Primary DC)
 
@@ -359,7 +360,7 @@ config router bgp
   end
 
 end
-```text
+```
 
 ### Failover Test
 
@@ -380,7 +381,7 @@ After failure (FCR-A recovers):
   BGP re-establishes
   Preferred path (SJC) restored
   Traffic reconverges (may cause brief flap)
-```text
+```
 
 ---
 
@@ -397,7 +398,7 @@ FortiGate SD-WAN
   Port3: Equinix vConn   →  Equinix FCR → AWS/Azure/GCP
 
   Policy: Route sensitive cloud traffic via FCR (port3)
-```text
+```
 
 ### Configuration
 
@@ -494,7 +495,7 @@ config firewall policy
     set comments "Use ISP for internet destinations"
   next
 end
-```text
+```
 
 ---
 
@@ -537,7 +538,7 @@ config router bgp
     next
   end
 end
-```text
+```
 
 ### Route Aggregation (Reduce BGP Updates)
 
@@ -556,7 +557,7 @@ config router bgp
     next
   end
 end
-```text
+```
 
 ### Access Control for BGP
 
@@ -603,7 +604,7 @@ config router route-map
     end
   next
 end
-```text
+```
 
 ---
 
@@ -618,7 +619,7 @@ diagnose router bgp summary
 
 diagnose router bgp neighbors 10.255.1.2
 ! Details: uptime, hello/hold timers, routes exchanged
-```text
+```
 
 ### View Learned Routes
 
@@ -628,7 +629,7 @@ diagnose ip route list | grep -E "10.255.1.2|AWS|Azure|GCP"
 
 show router bgp network
 ! BGP-advertised networks
-```text
+```
 
 ### Monitor BGP Events
 
@@ -640,7 +641,7 @@ diagnose debug application bgpd -1
 ! Watch for debug output showing BGP events
 
 diagnose debug disable
-```text
+```
 
 ### Trace BGP Path Selection
 
@@ -650,7 +651,7 @@ diagnose router bgp paths 172.31.0.0/16
 
 diagnose router bgp route-map-stats
 ! BGP route map statistics
-```text
+```
 
 ### Check Firewall Policy Logs
 
@@ -661,7 +662,7 @@ diagnose sniffer packet any "host 10.255.1.2" 4
 
 diagnose debug flow show summary
 ! Monitor active traffic flows
-```text
+```
 
 ---
 
@@ -690,7 +691,7 @@ execute router bgp neighbor 10.255.1.2 enable
 ! - BGP re-establishes
 ! - Routes reappear
 ! - Traffic normalizes
-```text
+```
 
 ### Monitor Convergence Time
 
@@ -702,7 +703,7 @@ execute router bgp neighbor 10.255.1.2 enable
 1. Watch for traffic resuming via backup path
 1. Check timestamp: T=X seconds
 1. Calculate convergence = X seconds (should be < 30s)
-```text
+```
 
 ---
 
@@ -721,7 +722,7 @@ end
 
 ! View logs
 execute log display memory
-```text
+```
 
 ### Enable Traffic Logging
 
@@ -732,7 +733,7 @@ config firewall policy
     set logtraffic-start enable  ! Log session initiation
   next
 end
-```text
+```
 
 ---
 

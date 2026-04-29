@@ -20,18 +20,20 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-  features:
-    - navigation.tabs
-    - navigation.sections
-    - navigation.expand
-    - navigation.instant
-    - navigation.top
-    - toc.integrate
-    - search.highlight
-    - search.suggest
-    - content.code.copy
-    - content.code.annotate
-    - content.tabs.link
+  # Note: Zensical ignores theme.features — the Rust backend outputs features: []
+  # regardless of what is listed here. Kept for reference/future compatibility.
+  # features:
+  #   - navigation.tabs
+  #   - navigation.sections
+  #   - navigation.expand
+  #   - navigation.instant
+  #   - navigation.top
+  #   - toc.integrate
+  #   - search.highlight
+  #   - search.suggest
+  #   - content.code.copy
+  #   - content.code.annotate
+  #   - content.tabs.link
 
 markdown_extensions:
   - attr_list

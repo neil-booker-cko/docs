@@ -27,7 +27,7 @@ Equinix Fabric (Private Interconnect):
   Azure (US-West)
 
 Benefits: <5ms latency, zero bandwidth cost, predictable performance
-```text
+```
 
 ---
 
@@ -62,9 +62,10 @@ Benefits: <5ms latency, zero bandwidth cost, predictable performance
         └────── Equinix FCR ────┘
               (AS 65001)
               BGP Hub
-```text
+```
 
 **Routes advertised:**
+
 - AWS advertises: 172.31.0.0/16 → FCR → Azure
 - Azure advertises: 192.168.0.0/16 → FCR → AWS
 
@@ -83,20 +84,23 @@ Benefits: <5ms latency, zero bandwidth cost, predictable performance
       /     |     \
     AWS   Azure   GCP
    (16509)(8075) (15169)
-```text
+```
 
 **Configuration:**
+
 - One FCR instance in primary metro (e.g., SJC)
 - Direct connections to AWS, Azure, GCP in same metro
 - All inter-cloud traffic routes through FCR
 
 **Advantages:**
+
 - Simplest topology
 - Lowest cost (one FCR, 3 vConnections)
 - Single BGP routing table
 - Easy to manage
 
 **Disadvantages:**
+
 - Single point of failure (FCR down = all clouds disconnected)
 - Single metro means latency for out-of-region clouds
 - Limited geographic redundancy
@@ -111,20 +115,23 @@ Primary Metro (SJC)      Secondary Metro (LAX)
    /  |  \                  /  |  \
   /   |   \                /   |   \
 AWS Azure GCP          AWS Azure GCP
-```text
+```
 
 **Configuration:**
+
 - FCR-A in primary metro (SJC)
 - FCR-B in secondary metro (LAX)
 - iBGP session between FCR-A and FCR-B
 - Each cloud peers with both FCRs
 
 **Advantages:**
+
 - Survives single FCR failure (traffic reroutes to FCR-B)
 - Geographic redundancy (failover between metros)
 - Load balancing possible (split traffic across metros)
 
 **Disadvantages:**
+
 - Higher cost (two FCR instances, 6 vConnections)
 - More complex BGP (dual peerings per cloud)
 - Cross-metro latency (10–50ms between metros)
@@ -140,20 +147,23 @@ Direct Connect     ExpressRoute         Cloud Interconnect
   |                    |                     |
   └──── Equinix FCR ───┴────── iBGP ────────┘
        (SJC Metro)      Cloud-to-Cloud BGP peering
-```text
+```
 
 **Configuration:**
+
 - One or more FCRs in central location
 - Each cloud region connects via DX/ExpressRoute/Interconnect
 - Inter-cloud communication routed through FCR
 - Optional: Multi-metro FCR for failover
 
 **Advantages:**
+
 - Global multi-cloud connectivity
 - Consistent path for all inter-cloud traffic
 - Unified BGP policies across clouds
 
 **Disadvantages:**
+
 - All traffic traverses central FCR (potential bottleneck)
 - Increased latency for geographically distant clouds
 - Complex BGP (many routes from multiple regions)
@@ -179,9 +189,10 @@ Application Layer (Client)
 (App-1) (App-2) (App-3)
 
 All apps reachable via FCR with equal priority
-```text
+```
 
 **BGP Configuration:**
+
 - All clouds advertise same prefix with same local preference
 - BGP selects one as best path (first-received or IGP metric)
 - Alternative: Use equal-cost multipath (ECMP) if available
@@ -202,9 +213,10 @@ FCR BGP
   ├─ Local Preference 100
   |
 Secondary (Azure)
-```text
+```
 
 **BGP Configuration:**
+
 - AWS routes: local-preference 200 (preferred)
 - Azure routes: local-preference 100 (backup only)
 - On AWS failure: Routes withdraw, traffic shifts to Azure
@@ -227,9 +239,10 @@ Analytics workload → GCP (BigQuery)
 Cache/Session → AWS (ElastiCache)
   |
   └─ Route-map: destination match, set next-hop AWS vConnection
-```text
+```
 
 **BGP Configuration:**
+
 - Use BGP communities or route-maps to tag routes by cloud
 - Local preference, weight, or MED to steer traffic by application
 
@@ -248,9 +261,10 @@ Low-latency, variable (APIs, user requests)
 
 Batch, archival (backups, logs)
   → Public Internet (lowest cost)
-```text
+```
 
 **Configuration:**
+
 - Size FCR vConnection based on critical workload only
 - Less-critical traffic uses existing internet connectivity
 - Use BGP communities or route filtering to control which traffic uses FCR
@@ -282,19 +296,22 @@ Topology:
     ER ASN 8075
       |
   Azure VNet (192.168.0.0/16)
-```text
+```
 
 **AWS Side (BGP session with DX):**
+
 - Advertises: 10.0.0.0/16 (VPC CIDR)
 - Receives: Routes from FCR (including Azure VNet)
 - BGP session: AWS DX router (16509) ↔ Equinix FCR (65001)
 
 **Azure Side (BGP session with ER):**
+
 - Advertises: 192.168.0.0/16 (VNet CIDR)
 - Receives: Routes from FCR (including AWS VPC)
 - BGP session: Azure ER router (8075) ↔ Equinix FCR (65001)
 
 **Equinix FCR (BGP hub):**
+
 - Receives 10.0.0.0/16 from AWS, advertises to Azure
 - Receives 192.168.0.0/16 from Azure, advertises to AWS
 
@@ -310,7 +327,7 @@ Azure side:
 Connectivity test:
   AWS EC2 → ping Azure VM (192.168.1.10)
   Should work with ~5–15ms latency (same metro)
-```text
+```
 
 ### AWS ↔ GCP via FCR
 
@@ -331,7 +348,7 @@ GCP (ASN 15169, advertises subnet ranges)
 
 AWS routes: 172.31.0.0/16
 GCP routes: 10.128.0.0/9
-```text
+```
 
 #### Notes
 
@@ -352,7 +369,7 @@ Routing table at FCR:
   10.0.0.0/16 (AWS) → Advertise to Azure + GCP
   192.168.0.0/16 (Azure) → Advertise to AWS + GCP
   10.128.0.0/9 (GCP) → Advertise to AWS + Azure
-```text
+```
 
 **Each cloud sees routes from other clouds via FCR.**
 
@@ -387,9 +404,10 @@ router bgp 65000
   exit-address-family
 
 end
-```text
+```
 
 **Verification:**
+
 ```ios
 show bgp ipv4 unicast
 ! Should show:
@@ -398,7 +416,7 @@ show bgp ipv4 unicast
 
 show ip route bgp
 ! Should show Azure routes via BGP
-```text
+```
 
 ---
 
@@ -446,16 +464,17 @@ config firewall policy
     set dstaddr "all"  ! Will match Azure routes learned via BGP
   next
 end
-```text
+```
 
 **Verification:**
+
 ```text
 get router bgp summary
 ! Should show neighbor 10.255.1.2 ESTABLISHED
 
 diagnose ip route list | grep 192.168
 ! Should show Azure routes learned via BGP
-```text
+```
 
 ---
 
@@ -476,7 +495,7 @@ Phase 2: Gradual cutover
 Phase 3: Sunset
   AWS decommissioned
   All traffic on Azure + Equinix FCR
-```text
+```
 
 **Benefit:** Zero-downtime migration with test failover capability.
 
@@ -495,7 +514,7 @@ Real-time sync via Equinix FCR:
 On AWS failure:
   DNS points to Azure
   Failover time: <30 seconds (BGP + DNS)
-```text
+```
 
 **Benefit:** Fast RTO/RPO, proven inter-cloud link.
 
@@ -508,7 +527,7 @@ App tier: GCP (good pricing for this workload)
 
 All connected via Equinix FCR
 Zero egress charges between clouds (only vConnection cost)
-```text
+```
 
 **Benefit:** Use each cloud for its strengths, without cost penalty.
 
@@ -518,7 +537,7 @@ Zero egress charges between clouds (only vConnection cost)
 Service X: Run on AWS, Azure, GCP simultaneously
 Load balancer sends traffic to all three
 Equinix FCR ensures all clouds reachable with <20ms latency
-```text
+```
 
 **Benefit:** Better availability, cost arbitrage, vendor negotiation.
 
@@ -545,11 +564,11 @@ Latency:
   traceroute (AWS → Azure)
   ! Should show ~3–5 hops through FCR
   ! Latency: 1–20ms (same metro)
-```text
+```
 
 ### Troubleshooting Common Issues
 
-**Issue: Azure routes not received at AWS**
+#### Issue: Azure routes not received at AWS
 
 ```text
 Check:
@@ -565,9 +584,9 @@ Fix:
   - Check BGP session timers (may be too aggressive)
 
   - Verify no access lists blocking Azure routes
-```text
+```
 
-**Issue: High latency between clouds (>50ms)**
+#### Issue: High latency between clouds (>50ms)
 
 ```text
 Possible causes:
@@ -589,7 +608,7 @@ Fix:
   - Adjust local preference/weight if path suboptimal
 
   - Consider secondary FCR in different metro if latency critical
-```text
+```
 
 ---
 
@@ -637,9 +656,10 @@ Option B: Equinix FCR (10 Gbps)
   Latency: 5–15ms (predictable)
 
 Break-even: ~70TB/month (not just data cost, but latency/SLA value)
-```text
+```
 
 **Use FCR when:**
+
 - Latency SLA required
 - High-throughput critical workload
 - Willing to pay for consistency
@@ -649,6 +669,7 @@ Break-even: ~70TB/month (not just data cost, but latency/SLA value)
 ## Summary
 
 **Cloud-to-Cloud via Equinix FCR enables:**
+
 - Sub-20ms latency between any clouds (private path)
 - Zero inter-cloud data transfer costs (bandwidth-based pricing only)
 - Automatic failover via BGP (no manual intervention)
@@ -656,12 +677,14 @@ Break-even: ~70TB/month (not just data cost, but latency/SLA value)
 - Application-specific traffic steering
 
 **Best for:**
+
 - Multi-cloud applications
 - Cloud migrations with failover
 - Disaster recovery between clouds
 - Cost-optimized multi-cloud (use each cloud's strengths)
 
 **Not needed for:**
+
 - Single cloud deployments
 - Occasional inter-cloud communication
 - Budget-conscious low-bandwidth scenarios
