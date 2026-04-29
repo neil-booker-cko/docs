@@ -66,6 +66,7 @@ mixed speeds on same network.
 - **10GBase-T over copper** was expensive; most adopted fiber for 10 Gbps
 - **Direct Attach (DA) cables** became popular for short server-to-switch runs
   (cheaper than SFP modules)
+
 - **10GBase-ZR allowed submarine cables** and long-haul terrestrial links
 
 ### 100 Gigabit Era (2010-Present)
@@ -95,12 +96,13 @@ Devices automatically detect the highest common speed and duplex setting.
 ### How It Works
 
 1. Both devices send Fast Link Pulse (FLP) frames
-2. Each advertises supported speeds:
-   - 10 Mbps half/full-duplex
-   - 100 Mbps half/full-duplex
-   - 1000 Mbps full-duplex only
-3. Both agree on fastest common speed
-4. Prefer full-duplex; fallback to half-duplex if forced
+1. Each advertises supported speeds:
+
+    - 10 Mbps half/full-duplex
+    - 100 Mbps half/full-duplex
+    - 1000 Mbps full-duplex only
+1. Both agree on fastest common speed
+1. Prefer full-duplex; fallback to half-duplex if forced
 
 ### Autonegotiation States
 
@@ -286,12 +288,13 @@ Fiber (SMF):
 Problem: show interfaces shows 100 Mbps, expected 1000 Mbps
 
 Causes:
+
 1. Autonegotiation mismatch (see above)
-2. Old cable (Cat3 instead of Cat5e)
+1. Old cable (Cat3 instead of Cat5e)
    → Replace with Cat6
-3. Transceiver issue (if fiber)
+1. Transceiver issue (if fiber)
    → Check with show inventory
-4. NIC driver outdated
+1. NIC driver outdated
    → Update OS/driver
 ```
 
@@ -301,16 +304,17 @@ Causes:
 Problem: Interface keeps bouncing up/down
 
 Causes:
+
 1. Bad cable
    → Test with cable tester
    → Look for: bad continuity, too high insertion loss
-2. Dirty fiber connector
+1. Dirty fiber connector
    → Clean with alcohol wipe
-3. Power level too low (fiber)
+1. Power level too low (fiber)
    → Check RX power with show transceiver
-4. Speed mismatch causing instability
+1. Speed mismatch causing instability
    → Force both sides to auto
-5. EMI causing signal issues
+1. EMI causing signal issues
    → Move cable away from power lines
 ```
 
@@ -320,10 +324,12 @@ Causes:
 Problem: Can copy files at 1 Gbps but latency > 100 ms
 
 Likely cause: Acceptable; check if it's expected:
+
   - 10 km of fiber = ~50 ms latency (speed of light)
   - WAN link = expected delays
 
 If not expected:
+
   - Check for buffers filling up (congestion)
   - Measure latency to nearest hop (ping)
   - Look for retransmits (tcpdump, Wireshark)
@@ -374,11 +380,15 @@ Speeds will continue to 10x; cost per Gbps continues falling.
 
 - [Physical Layer Cabling & Standards](../theory/physical_layer.md) — Twisted-pair and fiber
   specifications
+
 - [Switching Fundamentals](../theory/switching_fundamentals.md) — Hubs, switches, and
   broadcast domains
+
 - [Interface & Routing Fundamentals](../theory/interface_routing_fundamentals.md) — Interface
   configuration and autonegotiation
+
 - [Cisco Interface Configuration](../cisco/cisco_interface_config.md) — Speed and duplex
   tuning
+
 - [Network Troubleshooting: Speed & Duplex Issues](../operations/troubleshooting_speed_duplex.md)
   — Diagnosis and recovery

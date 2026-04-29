@@ -48,13 +48,13 @@ State Advertisements (LSAs). These LSAs are flooded across the area to every rou
    Neighbours are elected based on matching subnet and parameters. Designated Router (DR)
    and Backup Designated Router (BDR) are elected on broadcast networks (Ethernet).
 
-2. **Topology exchange:** Each router sends LSAs listing its connections and costs.
+1. **Topology exchange:** Each router sends LSAs listing its connections and costs.
 
-3. **SPF computation:** When a topology change is detected (LSA update), every router
+1. **SPF computation:** When a topology change is detected (LSA update), every router
    runs Dijkstra's Shortest Path First algorithm to recompute shortest paths to all
    destinations.
 
-4. **Routing table update:** Routes are installed in the RIB and FIB.
+1. **Routing table update:** Routes are installed in the RIB and FIB.
 
 **Key advantage:** Link-state topology awareness is **direct and deterministic**. A
 router knows exactly why it chose a path (the SPF tree).
@@ -77,13 +77,13 @@ Routes**.
 
 1. **Feasible distance:** The best known distance to a destination (lowest metric).
 
-2. **Advertised distance:** The distance a neighbour claims to that destination.
+1. **Advertised distance:** The distance a neighbour claims to that destination.
 
-3. **Feasible successor:** A backup next-hop that satisfies the feasibility condition:
+1. **Feasible successor:** A backup next-hop that satisfies the feasibility condition:
    `advertised_distance < feasible_distance`. A feasible successor can be used without
    re-convergence because it is guaranteed to be loop-free.
 
-4. **Diffusing computation:** When the best route fails and no feasible successor exists,
+1. **Diffusing computation:** When the best route fails and no feasible successor exists,
    EIGRP queries neighbours for alternative paths. This is fast but can cause temporary
    black holes if all neighbours also lack feasible successors.
 
@@ -96,6 +96,7 @@ recomputation.
 - R1 advertises "I can reach 10.0.0.0/24 with distance 2560"
 - R2 receives this and compares: advertised_distance (2560) < my_feasible_distance (3072)?
   Yes, so R1 is a feasible successor for the backup path.
+
 - When the primary path fails, R2 switches to R1 without querying anyone else. Convergence:
   < 100ms.
 
@@ -165,8 +166,8 @@ Path A is chosen despite being 10× faster in bandwidth, because the delay diffe
 OSPF convergence depends on:
 
 1. **Detection time** (hello timeout): 40–120 seconds default, tunable to ~3 seconds
-2. **LSA propagation delay:** ~3–5 seconds to flood across an area
-3. **SPF computation time:** ~1–5 seconds (depends on number of routers and links)
+1. **LSA propagation delay:** ~3–5 seconds to flood across an area
+1. **SPF computation time:** ~1–5 seconds (depends on number of routers and links)
 
 **Total default convergence:** ~30–180 seconds
 
@@ -174,6 +175,7 @@ OSPF convergence depends on:
 
 - Reduce hello/dead timers: `ip ospf hello-interval 1` (1 second) and `ip ospf dead-interval
   4` (4 seconds)
+
 - Use BFD (Bidirectional Forwarding Detection) for sub-second failure detection
 - Precompute unequal-cost paths with local policies to avoid SPF during convergence
 
@@ -183,7 +185,7 @@ EIGRP convergence is **two-tier:**
 
 1. **Feasible successor available:** Convergence is sub-second (~100–500ms). No diffusing
    computation needed.
-2. **No feasible successor:** EIGRP queries neighbours. Convergence is 1–10 seconds,
+1. **No feasible successor:** EIGRP queries neighbours. Convergence is 1–10 seconds,
    depending on topology and query propagation.
 
 **Tuning EIGRP for sub-second convergence:**
@@ -233,6 +235,7 @@ EIGRP is simpler at design time but requires understanding the DUAL algorithm:
 
 - **No areas:** EIGRP works autonomously system-wide; no hierarchy needed for small-to-medium
   networks
+
 - **Route summarization:** Automatic or manual; reduces query scope significantly
 - **Feasible successors:** Must be understood to predict convergence behaviour
 
@@ -248,6 +251,7 @@ EIGRP is simpler at design time but requires understanding the DUAL algorithm:
 - Cisco proprietary (though RFC 7868 exists, third-party support is limited)
 - DUAL algorithm is less intuitive; "why did the route go here?" requires understanding
   advertised distance and feasibility
+
 - Query storms (diffusing computations) can bring down networks if designed poorly
 - Requires understanding of `metric weights`, `offset-lists`, and manual summarization for
   optimal design
@@ -324,8 +328,8 @@ EIGRP.
 Split the network into regions. Migrate each region separately:
 
 1. Region A: OSPF only
-2. Region B: EIGRP + OSPF (redistribution at region border)
-3. Region C: EIGRP only (will migrate next month)
+1. Region B: EIGRP + OSPF (redistribution at region border)
+1. Region C: EIGRP only (will migrate next month)
 
 **Advantages:** Limits blast radius if redistribution goes wrong. Allows operational
 experience with OSPF before full cutover.
@@ -429,13 +433,13 @@ show ip eigrp topology | include Summary
 1. **Vendor diversity:** If any device is non-Cisco or you plan to add non-Cisco devices,
    choose OSPF.
 
-2. **Convergence requirements:** EIGRP's sub-second convergence to feasible successors is
+1. **Convergence requirements:** EIGRP's sub-second convergence to feasible successors is
    hard to beat, but requires redundancy and design discipline.
 
-3. **Operations and training:** OSPF requires more upfront design but is easier to debug.
+1. **Operations and training:** OSPF requires more upfront design but is easier to debug.
    EIGRP is easier to deploy but harder to troubleshoot.
 
-4. **Scale expectations:** OSPF's multi-area model is designed for thousands of routers.
+1. **Scale expectations:** OSPF's multi-area model is designed for thousands of routers.
    EIGRP typically maxes out at hundreds.
 
 ---
@@ -444,13 +448,17 @@ show ip eigrp topology | include Summary
 
 - **RFC 7868:** EIGRP was open-sourced in 2013 as RFC 7868. However, only Cisco has a
   complete, mature implementation. Juniper and others have limited EIGRP support.
+
 - **Administrative Distance:** OSPF has AD 110 (lower is better). EIGRP has AD 90. If
   both run simultaneously, EIGRP routes win. This matters during migrations.
+
 - **DUAL algorithm:** The Diffusing Update Algorithm (DUAL) is Cisco's proprietary
   contribution. It ensures loop-free convergence without requiring full topology knowledge
   — an elegant algorithm but not universally adopted.
+
 - **BFD integration:** Both OSPF and EIGRP can integrate with BFD for sub-second failure
   detection, independent of protocol timers.
+
 - For detailed IGP comparison across three protocols, see [EIGRP vs OSPF vs RIP](igp_comparison.md).
 
 ---

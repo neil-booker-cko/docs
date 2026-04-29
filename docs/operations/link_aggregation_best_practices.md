@@ -125,6 +125,7 @@ show etherchannel 1 summary
   Number of aggregators:           1
 
   Group  Port-channel  Protocol    Ports
+
   ------+-------------+-----------+-----------------------------------------------
   1      Po1(RU)          LACP      Gi0/0(P)   Gi0/1(P)
 
@@ -203,6 +204,7 @@ Incorrect:
   Port 2: 100 Mbps, Full-duplex
   Port 3: 1 Gbps, Full-duplex
   LAG will form, but:
+
     - Effective bandwidth = slowest port (100 Mbps)
     - Traffic hash may distribute unevenly
     - Risk of congestion on Port 2
@@ -214,6 +216,7 @@ Incorrect:
 Port 1: 1 Gbps, Full-duplex
 Port 2: 1 Gbps, Half-duplex
 LAG forms, but:
+
   - Half-duplex can only send OR receive at a time (not both)
   - Full-duplex expects simultaneous send/receive
   - Collisions and retransmissions occur
@@ -299,6 +302,7 @@ end
 
 ```text
 Hash Input Options:
+
   - Layer 2: Source MAC + Destination MAC
   - Layer 3: Source IP + Destination IP
   - Layer 4: Source Port + Destination Port
@@ -658,15 +662,16 @@ Result:
 #### Mitigation
 
 ```text
+
 1. Do NOT mix speeds
    Either: All 1 Gbps
            OR: All 100 Mbps
 
-2. Pre-deployment: Verify all cables/modules
+1. Pre-deployment: Verify all cables/modules
    show interfaces <range> | include "speed"
    Ensure all report same speed
 
-3. Monitor: Create alert for speed mismatch
+1. Monitor: Create alert for speed mismatch
    If any port speed differs from others, page on-call
 ```
 
@@ -694,6 +699,7 @@ Traffic path asymmetry:
 #### Mitigation
 
 ```text
+
 1. Verify LACP state
    show etherchannel 1 detail
    LACP Neighbor Info:
@@ -704,7 +710,7 @@ Traffic path asymmetry:
    If not in use, LACP negotiation failed
    Check peer configuration: Must be mode active or passive
 
-2. Alert on LACP failure
+1. Alert on LACP failure
    If etherchannel members != expected count, alert
 ```
 
@@ -730,14 +736,15 @@ Root cause:
 #### Mitigation
 
 ```text
+
 1. Change hash algorithm to include L4 (port numbers)
    port-channel load-balance src-dst-port
 
-2. This only helps if flows have different source/destination ports
+1. This only helps if flows have different source/destination ports
    If all flows are same (e.g., massive data transfer),
    hash will still concentrate them
 
-3. Alternative: Accept unequal load if total throughput acceptable
+1. Alternative: Accept unequal load if total throughput acceptable
    Example: 50% on Port 1 = 500 Mbps (acceptable if 1 Gbps links)
    Only problematic if approaching link capacity
 ```
@@ -749,6 +756,7 @@ Root cause:
 ```text
 show etherchannel 1 summary
   Group  Port-channel  Protocol    Ports
+
   ------+-------------+-----------+-----------------------------------------------
   1      Po1(RU)          LACP      Gi0/0(P)   Gi0/1(s)
 
@@ -761,14 +769,15 @@ Reason: LACP negotiation issue or duplex mismatch
 #### Mitigation
 
 ```text
+
 1. Check LACP negotiation
    show lacp neighbor Ethernet 0/1
 
-2. Check speed/duplex
+1. Check speed/duplex
    show interfaces Gigabit 0/1 | include "speed\|duplex"
    Compare with other members
 
-3. If persistent: Try no shutdown
+1. If persistent: Try no shutdown
    interface Gi0/1
      shutdown
      no shutdown   ! Force re-negotiation
@@ -793,15 +802,16 @@ If LAG fails:
 #### Mitigation
 
 ```text
+
 1. Configure port-channel cost explicitly
    interface Port-channel 1
      spanning-tree cost 4096   ! Explicitly set higher cost
    end
 
-2. OR: Prefer STP via other topology
+1. OR: Prefer STP via other topology
    Configure root bridge on dedicated switches (not LAG)
 
-3. OR: Use loop-free topology (no redundant links)
+1. OR: Use loop-free topology (no redundant links)
    Eliminates need for STP entirely
 ```
 

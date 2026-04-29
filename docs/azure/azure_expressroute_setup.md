@@ -5,7 +5,8 @@ Azure through a connectivity provider or a direct physical port at an ExpressRou
 Direct
 location. Traffic does not traverse the public internet. This guide covers the circuit
 from creation through to an established BGP session with the Microsoft Enterprise Edge.
-BGP design over an established circuit is in [BGP Stack (Flagship)](bgp_stack_vpn_over_expressroute.md).
+BGP design over an established circuit is in [BGP Stack
+(Flagship)](bgp_stack_vpn_over_expressroute.md).
 
 ---
 
@@ -226,6 +227,7 @@ is flowing on the active path.
 ## Step 5 — Link to a VNet Gateway
 
 The ExpressRoute circuit does not connect to a VNet automatically. A dedicated
+
 **ExpressRoute Gateway** must be deployed in each VNet that requires access.
 
 1. In the target VNet, create a Gateway Subnet (a dedicated /27 or /28 named

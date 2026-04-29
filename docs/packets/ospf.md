@@ -22,8 +22,10 @@ network design with areas.
 ### OSPFv2 Packet Format (IPv4)
 
 ```mermaid
+
 ---
 title: "OSPFv2 Common Header"
+
 ---
 packet-beta
 0-7: "Version"
@@ -58,6 +60,7 @@ Discovers neighbors; establishes adjacency; announces DR/BDR election.
 
 ```text
 RouterA sends Hello every 10s to 224.0.0.5:
+
   - Router ID, Area ID
   - Hello Interval, Dead Interval
   - Network Mask
@@ -79,6 +82,7 @@ Exchanges list of Link State Advertisements (LSAs) during synchronization.
 
 ```text
 RouterA → RouterB:
+
   - Sequence number (DBD seq, for reliable DBD exchange)
   - Flags: I (init), M (more), MS (master/slave)
   - List of LSA headers (Router LSA, Network LSA, Summary LSA, etc.)
@@ -92,6 +96,7 @@ Requests specific LSAs from neighbor (after DBD identifies missing LSAs).
 
 ```text
 RouterA → RouterB:
+
   - LSA Type (1=Router, 2=Network, 3=Summary, etc.)
   - LSA ID
   - Advertising Router ID
@@ -105,6 +110,7 @@ Delivers one or more complete LSAs.
 
 ```text
 RouterA → RouterB (multicast or unicast):
+
   - Full LSA content: Router LSA, Network LSA, Summary LSA, AS External LSA, etc.
 ```
 
@@ -134,6 +140,7 @@ Acknowledges receipt of LSA (reliable delivery).
 
 ```text
 RouterA acknowledges each LSA received:
+
   - LSA Type, LSA ID, Advertising Router
 ```
 

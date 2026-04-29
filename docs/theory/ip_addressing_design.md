@@ -159,7 +159,7 @@ Includes: 10.0.0.0 through 10.0.3.255
 For aggregation to work, subnets must:
 
 1. **Be contiguous** — No gaps in address space
-2. **Align on power-of-2 boundaries** — Start address must be divisible by block size
+1. **Align on power-of-2 boundaries** — Start address must be divisible by block size
 
 **Example (NOT aggregatable):**
 
@@ -451,6 +451,7 @@ Year 4: Gradually phase out IPv4 (or keep for legacy)
 
 - [Interface & Routing Fundamentals](../theory/interface_routing_fundamentals.md) — Applying IP
   addresses to interfaces
+
 - [IPv4 vs IPv6](../theory/ipv4_vs_ipv6.md) — Comparison and migration strategies
 - [VLANS](../theory/vlans.md) — Logical segmentation with IP subnets
 - [BGP Communities & Aggregation](../reference/bgp_communities.md) — Summarization for routing scale

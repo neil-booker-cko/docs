@@ -115,21 +115,21 @@ show interface GigabitEthernet0/0/1 | include HSRP
    shutdown
    ```
 
-2. **On the standby router**, verify it becomes active:
+1. **On the standby router**, verify it becomes active:
 
    ```ios
    show standby
    ! Should show state = "active"
    ```
 
-3. **Bring primary back online** (if it has `preempt`):
+1. **Bring primary back online** (if it has `preempt`):
 
    ```ios
    interface GigabitEthernet0/0/1
    no shutdown
    ```
 
-4. **Primary takes over** (because it has higher priority and `preempt` enabled).
+1. **Primary takes over** (because it has higher priority and `preempt` enabled).
 
 - Add BFD for sub-second failover (see [BFD minimal](bfd-minimal.md))
 - Implement HSRP on multiple subnets for redundancy

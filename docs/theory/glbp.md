@@ -67,12 +67,14 @@ forwarders.
 
 ```text
 AVG responsibilities:
+
   - Manage the GLBP group (similar to HSRP active router)
   - Assign virtual MAC addresses to Active Virtual Forwarders (AVFs)
   - Send hellos (every 3 seconds default)
   - Elect a new AVG if current one fails
 
 AVG election:
+
   - Highest priority value wins
   - If tied, highest router ID wins
 
@@ -88,17 +90,20 @@ Router assigned to forward traffic for the virtual IP.
 
 ```text
 AVF responsibilities:
+
   - Reply to ARP requests for the virtual IP
   - Forward traffic destined for the virtual IP
   - Send hellos to the AVG
   - Respond to ICMP pings to the virtual IP
 
 Number of AVFs:
+
   - Up to 4 AVFs per GLBP group
   - Each gets a unique virtual MAC address
   - All advertise the same virtual IP
 
 AVF election:
+
   - Highest priority in the group becomes primary AVF
   - If primary fails, secondary becomes active
   - Load balancing achieved by returning different MACs

@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Network Resilience Library** is a Zensical-based technical documentation site for network engineering
 focusing on sub-second failover and hybrid-cloud connectivity. Content covers Cisco IOS-XE, Fortinet
-FortiGate, cloud providers (AWS, Azure, GCP), and Equinix Fabric Cloud Router for multi-cloud
-interconnection.
+FortiGate, Cisco Meraki (WiFi), cloud providers (AWS, Azure, GCP), and Equinix Fabric Cloud
+Router for multi-cloud interconnection.
 
 ## Development Commands
 
@@ -61,8 +61,9 @@ docs/
 
 ## Content Guidelines
 
-**Scope:** Primary vendors are Cisco IOS-XE and FortiGate. Also include Equinix Fabric Cloud Router
-(FCR) for multi-cloud and datacenter interconnect. Do not add other vendors (Juniper, Arista, etc.).
+**Scope:** Primary vendors are Cisco IOS-XE and FortiGate. For WiFi/wireless, include Cisco Meraki
+(cloud-based management). Also include Equinix Fabric Cloud Router (FCR) for multi-cloud and
+datacenter interconnect. Do not add other vendors (Juniper, Arista, Ruckus, etc.).
 
 **Pairing Rules:**
 
@@ -78,8 +79,22 @@ docs/
 - Duplicate heading names allowed only across different sections (e.g., multiple "Examples" headers
     in different docs)
 
-**Architecture Diagrams:** Use Mermaid (supported via `pymdownx.superfences`) for flowcharts, sequence
-diagrams, and architecture layouts.
+**Architecture Diagrams:** Use Mermaid (supported via `pymdownx.superfences`) for all topology,
+network, and architecture diagrams. Mermaid provides consistent rendering and is preferred over
+ASCII/box-drawing text diagrams.
+
+**Use Mermaid for:**
+
+- Network topologies (routers, switches, cloud connections)
+- Architecture diagrams (systems, data flow, hierarchies)
+- Flowcharts and decision trees
+- Sequence diagrams for protocol interactions
+
+**Use text blocks for:**
+
+- Configuration examples (CLI commands, configuration output)
+- Routing tables, BGP path attributes, and other tabular data
+- Example output or logs that show actual formatting
 
 ## Theory Document Template & Categories
 
@@ -202,7 +217,7 @@ router bgp 65001
 - **Never** insert blank lines between list items (ordered or unordered) — breaks the list
 - Blank line after entire list is OK; required before next paragraph or heading
 - List items spanning multiple lines: indent continuation with 2 spaces
-- Nested lists: indent sub-items with 2 spaces, starting on new line
+- Nested lists: indent sub-items with 4 spaces (Zensical/Markdown requirement for proper nesting)
 
 **Ordered List — Always Use `1.` (not manual numbering):**
 
@@ -243,6 +258,16 @@ Next paragraph here.
 - Item 3
 ```
 
+**Nested Lists — Correct (4 spaces for nested items):**
+
+```text
+1. **First ordered item:**
+    - Nested bullet point
+    - Another nested bullet
+1. **Second ordered item:**
+    - Nested bullet point
+```
+
 **Common Issues to Avoid:**
 
 | Issue | Symptom | Fix |
@@ -250,6 +275,7 @@ Next paragraph here.
 | Closing fence with language tag | Backticks appear in HTML | Replace ` ```ios `, ` ```text ` with ` ``` ` |
 | Blank line after opening backticks | Syntax highlighting breaks; garbled rendering | Remove blank line after ` ```bash `, start code on next line |
 | Blank lines in list | List breaks into separate lists | Remove blank lines between items |
+| Nested list indentation | Nested bullets render flat (not nested) | Use exactly 4 spaces for nested items under ordered lists |
 | Missing blank line before code block | Parser confusion | Add blank line before opening backticks |
 | Indentation in code blocks | Content as inline code | Use 0-indent; flush left |
 

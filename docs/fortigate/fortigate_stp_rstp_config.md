@@ -99,7 +99,8 @@ end
 
 ### Enable Edge Port (PortFast Equivalent)
 
-Edge ports are connected to end devices (hosts, printers) and don't require STP processing. They transition
+Edge ports are connected to end devices (hosts, printers) and don't require STP processing. They
+transition
 directly to forwarding.
 
 ```text

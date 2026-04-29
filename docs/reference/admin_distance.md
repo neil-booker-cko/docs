@@ -7,6 +7,7 @@ into the routing table. AD is a locally significant value — it is not advertis
 neighbours.
 
 Other vendors use the same concept under different names: Juniper calls it
+
 **route preference** (also lower = better), while some vendors use the term
 **administrative weight**.
 
@@ -129,8 +130,8 @@ FortiGate does not use "administrative distance" in the traditional sense. Inste
 route selection is determined by:
 
 1. **Prefix length** — Longest prefix match always wins
-2. **Static vs Dynamic** — Static routes can override dynamic routes via configurable distance
-3. **Protocol metric** — Within BGP, OSPF, or RIP, the protocol's own metric determines preference
+1. **Static vs Dynamic** — Static routes can override dynamic routes via configurable distance
+1. **Protocol metric** — Within BGP, OSPF, or RIP, the protocol's own metric determines preference
 
 ### Static Route Distance (FortiGate)
 

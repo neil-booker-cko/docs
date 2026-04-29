@@ -68,6 +68,7 @@ Cloud Router is Google's managed BGP routing service. Key characteristics:
    Dedicated Interconnect**
 
 1. Choose the colocation facility and capacity (10 Gbps or 100 Gbps)
+
 1. GCP generates a **Letter of Authorization (LOA)** — download it from the Console
 
 Submit the LOA to the colocation facility to provision a cross-connect between the

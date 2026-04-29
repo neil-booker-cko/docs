@@ -209,7 +209,8 @@ end
 
 ### Advertise Aggregate Only If Component Routes Exist
 
-By default, aggregate is advertised even if no component routes exist. Use conditional aggregation to
+By default, aggregate is advertised even if no component routes exist. Use conditional aggregation
+to
 advertise only when needed.
 
 ```ios

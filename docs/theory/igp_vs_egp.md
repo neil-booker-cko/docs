@@ -213,10 +213,10 @@ At boundary (R3 or eBGP speaker):
 Routes flow across ASes through this chain:
 
 1. **Within AS 65001 (IGP):** OSPF distributes 10.1.0.0/16 to all routers
-2. **At boundary:** R1 (eBGP speaker) advertises 10.1.0.0/16 via BGP to ISP
-3. **At ISP (IGP):** ISP's OSPF carries 10.1.0.0/16 across its network
-4. **At ISP boundary:** ISP's eBGP speaker advertises 10.1.0.0/16 to other ISPs
-5. **Return path:** Reverse flow brings external routes back (via BGP → IGP)
+1. **At boundary:** R1 (eBGP speaker) advertises 10.1.0.0/16 via BGP to ISP
+1. **At ISP (IGP):** ISP's OSPF carries 10.1.0.0/16 across its network
+1. **At ISP boundary:** ISP's eBGP speaker advertises 10.1.0.0/16 to other ISPs
+1. **Return path:** Reverse flow brings external routes back (via BGP → IGP)
 
 ### Why Two Layers?
 

@@ -1,7 +1,9 @@
 # Gateway Redundancy Deployment Best Practices
 
-Gateway redundancy mechanisms (HSRP, VRRP, GLBP) provide high availability for default gateways. Design
-patterns vary from simple active/standby to complex active/active load balancing. Proper implementation
+Gateway redundancy mechanisms (HSRP, VRRP, GLBP) provide high availability for default gateways.
+Design
+patterns vary from simple active/standby to complex active/active load balancing. Proper
+implementation
 ensures sub-second failover and eliminates single points of failure at the access layer.
 
 ---
@@ -112,6 +114,7 @@ graph TD
 #### Characteristics
 
 ```text
+
 - 1 router is ACTIVE (forwards all traffic from clients)
 - N-1 routers are STANDBY (do not forward client traffic; listen for failover)
 - Clients use virtual IP (10.0.1.254) as default gateway
@@ -123,6 +126,7 @@ graph TD
 #### Advantages
 
 ```text
+
 - Simple to understand and troubleshoot
 - Minimal CPU on standby router (only monitoring)
 - Failover is deterministic (always same router path)
@@ -133,6 +137,7 @@ graph TD
 #### Disadvantages
 
 ```text
+
 - Standby router capacity is wasted (only active if primary fails)
 - Single-point-of-failure if active router is overloaded (not fault-tolerant)
 - No load balancing across gateways
@@ -169,6 +174,7 @@ graph TD
 #### Characteristics
 
 ```text
+
 - 1 router is AVG (Active Virtual Gateway; manages virtual IPs)
 - N-1 routers are AVF (Active Virtual Forwarders; each owns virtual IP)
 - Clients get different virtual IPs via DHCP
@@ -180,6 +186,7 @@ graph TD
 #### Advantages
 
 ```text
+
 - All gateways are active (no wasted capacity)
 - Better resource utilization
 - Automatic load balancing without BGP
@@ -188,6 +195,7 @@ graph TD
 #### Disadvantages
 
 ```text
+
 - High complexity (hard to troubleshoot)
 - CPU-intensive on all routers (not just active)
 - GLBP is Cisco-only (no multi-vendor support)
@@ -261,6 +269,7 @@ Issue: Suitable for VoIP and critical applications
 
 ```text
 Active/Standby with:
+
   - HSRP/VRRP enabled
   - BFD for sub-second detection (300/900 ms)
   - Preemption disabled (avoid flapping)
@@ -358,6 +367,7 @@ Default: Disable preemption
           If primary fails, standby takes over and stays until explicitly fixed
 
 Enable only if:
+
   1. Primary router is reliable
   2. Primary has measurably better performance
   3. Network design requires primary to always be active
@@ -412,6 +422,7 @@ end
 
 ```text
 Scenario: Router1 (active) has:
+
   - Gateway connectivity: UP
   - CPU: 95% (busy)
   - BGP: DOWN (unable to process routes)
@@ -426,6 +437,7 @@ Result: Standby Router2 doesn't failover
 
 ```text
 Health check on active router:
+
   1. Can resolve DNS? (dig 8.8.8.8)
   2. Can reach ISP gateway? (ping 203.0.113.1)
   3. Can pass BGP routes? (show ip bgp summary | grep Established)
@@ -571,6 +583,7 @@ Site B (Secondary):
   BGP local preference: 100 (less preferred)
 
 Design:
+
   - Clients at Site A use gateway A1 by default (HSRP)
   - If A1 fails, A2 takes over (HSRP failover)
   - If entire Site A fails, traffic flows to Site B via BGP failover
@@ -751,14 +764,15 @@ Result: HSRP flapping; traffic interrupted every 30 seconds
 #### Mitigation
 
 ```text
+
 1. Disable preemption by default
    Standby takes over on failure; stays until fix applied
 
-2. If preemption required, add delay:
+1. If preemption required, add delay:
    standby 1 preempt delay minimum 60
    Wait 60 seconds before retaking; allows link to stabilize
 
-3. Fix primary router's link instability
+1. Fix primary router's link instability
    Check interface for flapping: show interface | grep flaps
    Root cause: bad cable, module failure, SFP issue
 ```
@@ -776,15 +790,16 @@ Packets from clients never return
 #### Mitigation
 
 ```text
+
 1. Match OSPF cost to HSRP priority
    Active router: Cost 1, Priority 255
    Standby: Cost 10, Priority 200
 
-2. Or: Use BFD + OSPF
+1. Or: Use BFD + OSPF
    BFD detects failure; OSPF immediately flushes route
    No asymmetric window possible
 
-3. Verify with traceroute during failover
+1. Verify with traceroute during failover
    Outbound path should match inbound path
    If different, adjust costs
 ```
@@ -803,12 +818,13 @@ HSRP fails to form
 #### Mitigation
 
 ```text
+
 1. Standard timers for all routers in group
    hello 10, hold 30 (default)
    OR: hello 3, hold 9 (fast failover)
 
-2. Document in configuration template
-3. Verify:
+1. Document in configuration template
+1. Verify:
    show standby 1 | grep "Hel\|Hold"
    Both routers should show same values
 ```
@@ -826,15 +842,16 @@ But traffic is blackholed (no routes to internet)
 #### Mitigation
 
 ```text
+
 1. Enable interface tracking
    track 1 ip route 0.0.0.0/0 reachability
    standby 1 track 1 decrement 50
 
-2. Or: Health check script
+1. Or: Health check script
    Ping ISP gateway every 10 seconds
    If fails, lower priority and failover
 
-3. Monitor BGP session state
+1. Monitor BGP session state
    Alert if neighbor state is not Established
 ```
 
@@ -853,11 +870,12 @@ Both think they're active (split brain)
 #### Mitigation
 
 ```text
+
 1. Use same group number on all routers
    standby 1 ip 10.0.1.254  (Router1)
    standby 1 ip 10.0.1.254  (Router2)
 
-2. Verify:
+1. Verify:
    show standby brief | grep "Grp"
    Verify both routers show "Group 1"
 ```

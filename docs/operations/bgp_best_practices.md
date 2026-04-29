@@ -1,6 +1,7 @@
 # BGP Best Practices
 
-BGP operational best practices encompass route aggregation, filtering, community tagging, local preference
+BGP operational best practices encompass route aggregation, filtering, community tagging, local
+preference
 tuning, and convergence monitoring. Proper implementation dramatically reduces interdomain routing
 failures, prevents route leaks, and improves failover speed.
 
@@ -30,6 +31,7 @@ interconnects, and cloud gateways. Misconfiguration cascades:
 
 ```text
 Scenario: Missing outbound filtering
+
   - Your network advertises 0.0.0.0/0 by mistake
   - ISP accepts and amplifies the route
   - Internet converges to your network for all traffic
@@ -37,12 +39,14 @@ Scenario: Missing outbound filtering
   - Downstream customers lose connectivity
 
 Scenario: Suboptimal aggregation
+
   - 100 individual /26 subnets advertised instead of 1 /24
   - Peers carry 100 route objects vs 1
   - RIB size grows; CPU and memory increase
   - ISPs may rate-limit or filter you
 
 Scenario: No graceful shutdown
+
   - Link drops; BGP session crashes without warning
   - Convergence time = hold timer (180 seconds default)
   - Customer traffic blackholed for 3+ minutes
@@ -54,14 +58,17 @@ Best practice is to implement 3 layers of filters:
 
 ```text
 Layer 1: Inbound (from peers)
+
   - Accept only prefixes that should arrive from this peer
   - Block invalid ASNs, excessive path length, martians
 
 Layer 2: Internal (iBGP policy)
+
   - Tag routes with community
   - Set local preference based on route source
 
 Layer 3: Outbound (to peers)
+
   - Advertise only authorized prefixes for this peer
   - Do not leak customer or internal routes to competitors
 ```
@@ -103,11 +110,13 @@ Decision: Aggregate to 203.0.113.0/24 only if all 4 /26s are yours
 
 ```text
 Bad (route leaking):
+
   - Peer sends you 10.0.0.0/8
   - You aggregate and re-advertise 10.0.0.0/8 to other peers
   - You become the path to that prefix (not your responsibility)
 
 Good (pass-through):
+
   - Accept the /8 and advertise exactly as received
   - If you want to summarize internal routes, only do so for routes you originate
 ```
@@ -205,6 +214,7 @@ Valid path (direct peer): 65000 65001 65002
 Valid path (3 hops):     65000 65001 65002 65003
 
 Suspicious (>10 hops):   65000 65001 65002 65003 65004 65005 65006 65007 65008 65009 65010
+
   - May indicate a loop or an intentional hijack
   - Most legitimate routes have <5 hops
 ```
@@ -324,10 +334,12 @@ Outbound filtering prevents your network from advertising routes you shouldn't o
 ```text
 Your AS: 65000
 Peers:
+
   - Upstream ISP (ASN 65100): Accept all their routes, advertise back only customer routes
   - Customer A (ASN 65001): Accept their routes, advertise them to ISP but NOT to other customers
 
 Route: 10.0.0.0/8 from Customer A
+
   - Advertise to ISP 65100? YES (transit)
   - Advertise to Customer B (ASN 65002)? NO (customer isolation)
 ```
@@ -536,10 +548,12 @@ end
 Rule: Advertise Customer A routes to ISP, but not to other customers
 
 Outbound to ISP (ASN 65100):
+
   - Accept routes tagged 65000:200 (customer routes)
   - Advertise them
 
 Outbound to other customers (ASN 65002, etc.):
+
   - Deny routes tagged 65000:1001 (Customer A specific)
   - Do not advertise Customer A routes to other customers
 ```
@@ -612,7 +626,8 @@ end
 
 ### Local Preference Design
 
-Local preference (default 100) controls which peer is preferred for routes learned from multiple peers.
+Local preference (default 100) controls which peer is preferred for routes learned from multiple
+peers.
 Higher value = preferred.
 
 #### Scenario Dual ISP setup
@@ -625,6 +640,7 @@ ISP2 (Secondary): 210.0.113.1 (ASN 65101)
 Route received from both ISPs: 8.8.8.0/24 (Google DNS)
 
 Desired behavior:
+
   - Outbound traffic for 8.8.8.0/24 via ISP1 (primary)
   - Failover to ISP2 if ISP1 is unreachable
 ```
@@ -743,6 +759,7 @@ Network: 65000
 ISP: 65100 (ASN)
 
 Connections:
+
   - Link1 (primary): 203.0.113.1
   - Link2 (backup): 203.0.113.5
 
@@ -781,10 +798,12 @@ MED only used to compare ISP1-path1 vs ISP1-path2
 
 ```text
 Correct: Set MED on 10.0.0.0/8 when advertising to ISP
+
   - ISP learns the route with MED value
   - ISP uses it to decide which of your links to use
 
 Incorrect: Set MED on routes received from ISP
+
   - Does not affect ISP's behavior
   - Only affects your internal routing (pointless)
 ```
@@ -1114,9 +1133,10 @@ Impact: WAN link overwhelmed; customer network unreachable
 **Mitigation:**
 
 ```text
+
 1. Inbound route-map on ALL external neighbors
-2. Match only expected prefixes (use prefix-list)
-3. Deny all others explicitly
+1. Match only expected prefixes (use prefix-list)
+1. Deny all others explicitly
 
 Cisco:
   route-map INBOUND-FILTER deny 20
@@ -1143,10 +1163,11 @@ ISP response: Rate-limiting or filtering your routes
 **Mitigation:**
 
 ```text
+
 1. Audit all advertised prefixes
-2. Identify aggregatable subnets (contiguous, same AS path)
-3. Summarize to natural CIDR boundaries
-4. Monitor: Routes advertised should be 5-10% of internal routes
+1. Identify aggregatable subnets (contiguous, same AS path)
+1. Summarize to natural CIDR boundaries
+1. Monitor: Routes advertised should be 5-10% of internal routes
 ```
 
 ### Mistake 3: MED Wars (Both Sides Setting MED)
@@ -1162,10 +1183,11 @@ Result: MED becomes meaningless; route selection arbitrary
 **Mitigation:**
 
 ```text
+
 1. Policy: Only the origin AS sets MED (typically not ISP)
-2. Inbound: Ignore MED from peers (do not set on received routes)
-3. Outbound: Set MED to influence peer's ingress path selection
-4. Document: Which AS is responsible for MED in multi-peer topology
+1. Inbound: Ignore MED from peers (do not set on received routes)
+1. Outbound: Set MED to influence peer's ingress path selection
+1. Document: Which AS is responsible for MED in multi-peer topology
 ```
 
 ### Mistake 4: Missing AS-Path Validation
@@ -1182,10 +1204,11 @@ Result: Possible route hijack accepted
 **Mitigation:**
 
 ```text
+
 1. Max AS-path length filter (deny >10 hops)
-2. Reject routes with own ASN (self-loop detection)
-3. Community-based filtering for known-good peers
-4. Outbound: Only advertise routes with reasonable AS-paths
+1. Reject routes with own ASN (self-loop detection)
+1. Community-based filtering for known-good peers
+1. Outbound: Only advertise routes with reasonable AS-paths
 ```
 
 ### Mistake 5: Flapping Routes (BGP Session Instability)
@@ -1202,16 +1225,17 @@ Impact: CPU spike on all routers; convergence delays
 **Mitigation:**
 
 ```text
+
 1. Check hold timer: show ip bgp neighbors <peer> | grep "Hold time"
    Should be >=90 seconds (default 180 recommended)
 
-2. Monitor for dampening: Some peers use route dampening
+1. Monitor for dampening: Some peers use route dampening
    Flapping routes are penalized and suppressed
 
-3. Check interface stability: show interface <intf> | grep "flaps"
+1. Check interface stability: show interface <intf> | grep "flaps"
    Interface flaps cause BGP flaps
 
-4. Check CPU: show processes cpu sorted
+1. Check CPU: show processes cpu sorted
    High CPU can cause keepalive loss and flapping
 ```
 

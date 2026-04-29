@@ -20,6 +20,7 @@ SSH protocol hardening:
 
 - **ssh-hostkey-algorithm rsa2048** = use 2048-bit RSA (sufficient; use rsa4096 for higher
   security)
+
 - **sshd-max-auth-tries 3** = allow 3 failed login attempts before disconnecting
 - **admin-ssh-port 22** = SSH port (change to non-standard port to reduce automated attacks)
 - **admin-ssh-grace-time 120** = 120 seconds for initial connection

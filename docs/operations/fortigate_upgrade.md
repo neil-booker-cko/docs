@@ -94,17 +94,17 @@ reboot of both units, which would cause a full outage.
     get system ha status
     ```
 
-2. Connect to the **secondary** unit directly (use its management IP, not the
+1. Connect to the **secondary** unit directly (use its management IP, not the
 
    cluster virtual IP).
 
-3. Upgrade the secondary unit:
+1. Upgrade the secondary unit:
 
     ```fortios
     execute restore image tftp <filename> <server-ip>
     ```
 
-4. The secondary reboots. The primary handles all traffic during this time. Wait for
+1. The secondary reboots. The primary handles all traffic during this time. Wait for
 
    the secondary to come back online and rejoin the cluster.
 
@@ -114,25 +114,25 @@ reboot of both units, which would cause a full outage.
 
     Confirm the secondary is listed and in sync before proceeding.
 
-5. Force a failover so traffic moves to the upgraded secondary unit:
+1. Force a failover so traffic moves to the upgraded secondary unit:
 
     ```fortios
     execute ha failover set 1
     ```
 
-6. Upgrade the primary unit (now acting as secondary):
+1. Upgrade the primary unit (now acting as secondary):
 
     ```fortios
     execute restore image tftp <filename> <server-ip>
     ```
 
-7. After the original primary reloads and rejoins, clear the forced failover:
+1. After the original primary reloads and rejoins, clear the forced failover:
 
     ```fortios
     execute ha failover unset 1
     ```
 
-8. If HA override is enabled, the higher-priority unit will reclaim the primary role
+1. If HA override is enabled, the higher-priority unit will reclaim the primary role
 
    automatically after syncing.
 

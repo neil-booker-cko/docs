@@ -21,6 +21,7 @@ Since AWS **does not support BFD over VPN**, we must rely on a hierarchy of time
 
 - **Underlay (Cisco):** Uses BFD (300ms x 3) to ensure that if a DX fiber cut occurs,
     the transport path shifts in <1s.
+
 - **Overlay (FortiGate):** Uses aggressive Dead Peer Detection (DPD) and BGP Next-Hop
     Tracking. By linking BGP to the VTI status via `link-down-failover`, we ensure
     that routes are withdrawn the moment the tunnel path is declared dead by DPD,
@@ -31,8 +32,10 @@ Since AWS **does not support BFD over VPN**, we must rely on a hierarchy of time
 ## 2. Architecture
 
 ```mermaid
+
 ---
 title: "AWS Architecture: DX Underlay + VPN Overlay"
+
 ---
 graph LR
     subgraph OnPrem["On-Premises"]

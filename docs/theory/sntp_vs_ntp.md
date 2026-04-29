@@ -81,20 +81,22 @@ graph TD
 1. **Clock filter:** An NTP client sends queries to multiple servers and collects samples.
    It filters outliers and selects the best samples.
 
-2. **Clustering:** The client identifies which servers are reliable and groups them into
+1. **Clustering:** The client identifies which servers are reliable and groups them into
    clusters.
 
-3. **Selection:** From clusters, the client selects the best server (lowest stratum, best
+1. **Selection:** From clusters, the client selects the best server (lowest stratum, best
    roundtrip time).
 
-4. **Clock discipline:** The client adjusts its system clock using two control loops:
-   - **Phase Lock Loop (PLL):** For steady-state frequency adjustment
-   - **Frequency Lock Loop (FLL):** For rapid frequency adjustment when far off
+1. **Clock discipline:** The client adjusts its system clock using two control loops:
 
-5. **Mitigation:** NTP implements protections against:
-   - Falsetickers (servers with incorrect time)
-   - Byzantine attacks (malicious time advertisements)
-   - Network jitter and asymmetric delays
+    - **Phase Lock Loop (PLL):** For steady-state frequency adjustment
+    - **Frequency Lock Loop (FLL):** For rapid frequency adjustment when far off
+
+1. **Mitigation:** NTP implements protections against:
+
+    - Falsetickers (servers with incorrect time)
+    - Byzantine attacks (malicious time advertisements)
+    - Network jitter and asymmetric delays
 
 ### SNTP: Stateless Client-Only Mode
 
@@ -129,12 +131,12 @@ SNTP Client              NTP Server (Stratum 1/2/3)
 1. **No state machine:** SNTP does not maintain peer state or synchronisation state. It
    sends a query and uses the response.
 
-2. **Single sample:** One query, one response. No filtering or outlier removal.
+1. **Single sample:** One query, one response. No filtering or outlier removal.
 
-3. **No clock discipline:** SNTP simply sets the time; it does not use feedback loops to
+1. **No clock discipline:** SNTP simply sets the time; it does not use feedback loops to
    gradually adjust frequency.
 
-4. **No server selection:** SNTP uses a single configured server (or round-robins a list).
+1. **No server selection:** SNTP uses a single configured server (or round-robins a list).
    No clustering or fallback logic.
 
 ---
@@ -148,16 +150,16 @@ NTP achieves high accuracy through multiple mechanisms:
 1. **Multiple servers:** A client queries multiple servers and selects the best one,
    reducing the impact of a single bad server.
 
-2. **Clock filtering:** Samples are collected and filtered over time. Outliers are
+1. **Clock filtering:** Samples are collected and filtered over time. Outliers are
    discarded. The filtered samples improve accuracy.
 
-3. **Frequency discipline:** By adjusting the clock frequency (not just the time), NTP
+1. **Frequency discipline:** By adjusting the clock frequency (not just the time), NTP
    maintains accuracy between polls.
 
-4. **Roundtrip delay compensation:** NTP calculates network delay and compensates for it
+1. **Roundtrip delay compensation:** NTP calculates network delay and compensates for it
    in the time adjustment.
 
-5. **Stratum awareness:** An NTP client prefers servers with lower stratum (closer to the
+1. **Stratum awareness:** An NTP client prefers servers with lower stratum (closer to the
    atomic clock source). Time error accumulates with each hop; lower stratum means
    less accumulated error.
 
@@ -234,10 +236,11 @@ always prefer the Stratum 2 if both are reachable.
 SNTP clients may be **stratum-aware** but typically do not. A simple SNTP client:
 
 ```text
+
 1. Send query to configured server
-2. Receive response
-3. If server reports Stratum 16 (unsynchronised), optionally reject response
-4. Otherwise, set clock to received time
+1. Receive response
+1. If server reports Stratum 16 (unsynchronised), optionally reject response
+1. Otherwise, set clock to received time
 ```text
 
 SNTP does not select among multiple servers based on stratum; it uses a single server or
@@ -252,28 +255,32 @@ round-robins a static list.
 **Full NTP is necessary when:**
 
 1. **High-accuracy timekeeping is required:**
-   - Financial systems (trading, settlement, audit trails)
-   - Telecom networks (CDMA timers, call accounting)
-   - Power grids (synchrophasors, fault timestamps)
-   - Scientific experiments (nanosecond-level precision)
+
+    - Financial systems (trading, settlement, audit trails)
+    - Telecom networks (CDMA timers, call accounting)
+    - Power grids (synchrophasors, fault timestamps)
+    - Scientific experiments (nanosecond-level precision)
 
    **Accuracy needed:** < 1 millisecond
 
-2. **Distributed systems requiring consensus:**
-   - Kubernetes, Consul, ETCD (cluster members must have synchronized clocks)
-   - Database replication and consistency (timestamps for ordering)
-   - Blockchain (consensus depends on time ordering)
+1. **Distributed systems requiring consensus:**
+
+    - Kubernetes, Consul, ETCD (cluster members must have synchronized clocks)
+    - Database replication and consistency (timestamps for ordering)
+    - Blockchain (consensus depends on time ordering)
 
    **Accuracy needed:** < 1–10 milliseconds
 
-3. **Network infrastructure where clock discipline improves reliability:**
-   - Large data centres with thousands of devices
-   - Service provider backbone
-   - Carrier-grade networks
+1. **Network infrastructure where clock discipline improves reliability:**
 
-4. **Multi-hop time distribution:**
-   - NTP is designed for scalable, hierarchical distribution
-   - A single NTP stratum 1 server can support hundreds of clients across multiple
+    - Large data centres with thousands of devices
+    - Service provider backbone
+    - Carrier-grade networks
+
+1. **Multi-hop time distribution:**
+
+    - NTP is designed for scalable, hierarchical distribution
+    - A single NTP stratum 1 server can support hundreds of clients across multiple
      strata
 
 **Typical NTP deployment:**
@@ -281,6 +288,7 @@ round-robins a static list.
 ```text
 ISP Stratum 1 NTP Server (GPS-synchronized)
         |
+
     ----+----
    /    |    \
   /     |     \
@@ -288,6 +296,7 @@ Core-1 Core-2 Core-3 (Stratum 2)
   |      |      |
   +------+------+
         |
+
     ----+-----
    /    |     \
   /     |      \
@@ -301,30 +310,35 @@ Routers/Switches/Servers (Stratum 4)
 **SNTP is sufficient when:**
 
 1. **Simple time keeping for clients:**
-   - PCs, workstations, printers (setting time to ±100ms is fine)
-   - IoT devices, sensors (logging timestamps, daily tasks)
-   - Consumer devices (consumer routers, NAS boxes)
+
+    - PCs, workstations, printers (setting time to ±100ms is fine)
+    - IoT devices, sensors (logging timestamps, daily tasks)
+    - Consumer devices (consumer routers, NAS boxes)
 
    **Accuracy needed:** ±100 milliseconds to ±1 second
 
-2. **Resource-constrained devices:**
-   - Embedded systems, microcontrollers with limited RAM
-   - Devices with limited CPU (cannot run full NTP state machine)
-   - Low-bandwidth links (satellite, cellular with high latency)
+1. **Resource-constrained devices:**
 
-3. **Periodic time sync (not real-time):**
-   - A device syncs once at boot-up or once per day
-   - Does not require continuous discipline
+    - Embedded systems, microcontrollers with limited RAM
+    - Devices with limited CPU (cannot run full NTP state machine)
+    - Low-bandwidth links (satellite, cellular with high latency)
 
-4. **Simple architecture:**
-   - Client devices query a single, trusted NTP server (often in-house)
-   - No need for fallback, clustering, or Byzantine protection
+1. **Periodic time sync (not real-time):**
+
+    - A device syncs once at boot-up or once per day
+    - Does not require continuous discipline
+
+1. **Simple architecture:**
+
+    - Client devices query a single, trusted NTP server (often in-house)
+    - No need for fallback, clustering, or Byzantine protection
 
 **Typical SNTP deployment:**
 
 ```text
 In-house NTP Server (Stratum 2, synced to internet)
         |
+
     ----+----+----
    /    |    |    \
 IoT   PC  Printer Smart-Home

@@ -23,8 +23,10 @@ slow convergence.
 ## Message Header
 
 ```mermaid
+
 ---
 title: "RIP Message Header"
+
 ---
 packet-beta
 0-7: "Command"
@@ -48,6 +50,7 @@ Up to 25 route entries follow the header. Each entry is 20 bytes.
 
 ---
 title: "RIPv2 Route Entry"
+
 ---
 packet-beta
 0-15: "Address Family ID"

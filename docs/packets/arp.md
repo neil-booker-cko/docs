@@ -20,8 +20,10 @@ broadcast-based: a host asks "who has IP x.x.x.x?" and the owner replies with it
 The ARP packet for Ethernet and IPv4 is fixed at 28 bytes (224 bits).
 
 ```mermaid
+
 ---
 title: "ARP Packet (Ethernet / IPv4)"
+
 ---
 packet-beta
 0-15: "Hardware Type"
@@ -54,14 +56,18 @@ packet-beta
 - **ARP requests** are sent to the Ethernet broadcast address (`FF:FF:FF:FF:FF:FF`).
   All hosts on the segment receive and process them; only the owner of the target IP
   sends a unicast reply.
+
 - **Gratuitous ARP** is an ARP request where the sender and target IP are the same.
   Used to announce a new MAC address (e.g. after failover or NIC replacement) and
   to detect IP address conflicts.
+
 - **ARP cache poisoning** exploits the trust model of ARP — replies are accepted
   without a prior request. Mitigation: Dynamic ARP Inspection (DAI) on switches.
+
 - **Proxy ARP** (RFC 1027) allows a router to answer ARP requests on behalf of hosts
   on a different subnet, enabling communication without a default gateway configured
   on the host.
+
 - ARP has **no authentication** and is limited to IPv4. IPv6 replaces ARP with
   Neighbour Discovery Protocol (NDP), which uses ICMPv6 messages and includes
   cryptographic extensions (SEND, RFC 3971).

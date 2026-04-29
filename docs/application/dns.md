@@ -25,8 +25,10 @@ authentication.
 All DNS messages — queries and responses — share the same format.
 
 ```mermaid
+
 ---
 title: "DNS Message"
+
 ---
 packet-beta
 0-15: "ID"
@@ -111,6 +113,7 @@ Answer, Authority, and Additional section entries are Resource Records (RRs).
 
 ---
 title: "DNS Resource Record"
+
 ---
 packet-beta
 0-15: "NAME (variable, compressed)"

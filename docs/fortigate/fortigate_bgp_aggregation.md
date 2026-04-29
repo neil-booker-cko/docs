@@ -42,7 +42,7 @@ Result: 4x smaller routing table, faster convergence
 Subnets must be:
 
 1. **Contiguous** — No gaps
-2. **Aligned** — Start address on power-of-2 boundary
+1. **Aligned** — Start address on power-of-2 boundary
 
 **Example (aggregatable):**
 

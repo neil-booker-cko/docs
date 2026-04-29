@@ -158,6 +158,7 @@ graph LR
 ```
 
 IGMP snooping is enabled by default on most managed switches. The switch must have a
+
 **Querier** to drive IGMP — if no router is present on the VLAN, configure the switch
 as an IGMP snooping querier:
 
@@ -195,21 +196,22 @@ multicast-optimal path), static mroutes may be needed to correct RPF.
 ### PIM-SM — Sparse Mode
 
 PIM Sparse Mode (RFC 7761) is the standard mode for most networks. It uses a
+
 **Rendezvous Point (RP)** as a meeting point for sources and receivers:
 
 1. **Receivers join the shared tree:** A receiver's IGMP Report triggers the local
 
    router to send a PIM Join toward the RP, building a Shared Tree (RPT) from RP to receivers.
 
-2. **Source registers with the RP:** The first-hop router (DR) encapsulates multicast
+1. **Source registers with the RP:** The first-hop router (DR) encapsulates multicast
 
    packets in PIM Register messages and unicasts them to the RP.
 
-3. **RP joins the source tree:** The RP sends a PIM Join toward the source, building a
+1. **RP joins the source tree:** The RP sends a PIM Join toward the source, building a
 
    Shortest Path Tree (SPT) from source to RP.
 
-4. **Last-hop switchover to SPT:** Once traffic begins flowing, the last-hop router can
+1. **Last-hop switchover to SPT:** Once traffic begins flowing, the last-hop router can
 
    send a PIM Join directly toward the source, bypassing the RP. This is the **SPT
    switchover** — the default behaviour on Cisco IOS (controlled by

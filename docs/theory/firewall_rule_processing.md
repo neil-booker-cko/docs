@@ -116,29 +116,29 @@ Return traffic: External:1.1.1.1:443 → Internal:10.0.1.1
 
    ↓ (if match, continue; if no match, skip to next rule)
 
-2. Check protocol (TCP, UDP, ICMP, etc.)
+1. Check protocol (TCP, UDP, ICMP, etc.)
 
    ↓
 
-3. Check source port (if applicable)
+1. Check source port (if applicable)
 
    ↓
 
-4. Check destination port (if applicable)
+1. Check destination port (if applicable)
 
    ↓
 
-5. Check other criteria (DSCP, application, etc.)
+1. Check other criteria (DSCP, application, etc.)
 
    ↓
 
-6. If all criteria match → apply action (Allow/Deny/Log)
+1. If all criteria match → apply action (Allow/Deny/Log)
 
    ↓
 
-7. If any criterion doesn't match → check next rule
+1. If any criterion doesn't match → check next rule
 
-8. If no rule matches → implicit deny
+1. If no rule matches → implicit deny
 ```
 
 ### Example: Multi-Criteria Matching

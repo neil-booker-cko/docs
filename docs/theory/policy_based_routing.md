@@ -235,14 +235,14 @@ Packet arrives
 
    ↓
 
-2. If PBR matches:
+1. If PBR matches:
 
    a. Apply action (set next-hop, mark DSCP, etc.)
    b. Bypass normal routing table
    c. Forward via PBR next-hop
    ↓
 
-3. If PBR doesn't match or PBR not enabled:
+1. If PBR doesn't match or PBR not enabled:
 
    a. Proceed to normal routing table lookup
    b. Route based on destination IP
@@ -320,12 +320,16 @@ PBR good for simple cases. BGP better for complex, large networks.
 
 - **Asymmetric routing trap:** Outbound traffic may take a different path than return traffic,
   triggering firewalls or security monitoring. Always verify both directions before deployment.
+
 - **CPU overhead:** PBR adds per-packet evaluation cost. Modern hardware offloads this, but
   verify on older platforms before deploying at scale.
+
 - **Policy order matters:** PBR rules are evaluated top-to-bottom. Overly broad match criteria
   can redirect unintended traffic. Test with `debug policy-route` on Cisco.
+
 - **No automatic failover by default:** If the next-hop becomes unreachable, traffic is still
   sent to the dead next-hop. Pair PBR with IP SLA or health checks for automatic failover.
+
 - **BGP is the long-term choice:** PBR suits quick, targeted deployments. At 10+ sites,
   migrate to BGP for automatic convergence and scalability.
 

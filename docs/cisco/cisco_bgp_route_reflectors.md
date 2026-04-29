@@ -28,7 +28,8 @@ end
 
 ### iBGP Split Horizon Rule
 
-iBGP has a critical rule: **iBGP routes learned from one iBGP neighbor are NOT advertised to other iBGP
+iBGP has a critical rule: **iBGP routes learned from one iBGP neighbor are NOT advertised to other
+iBGP
 neighbors**.
 
 **Reason:** Prevent routing loops in IBGP.

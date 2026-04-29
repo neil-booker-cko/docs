@@ -20,7 +20,8 @@ end
 
 ## LAG Overview
 
-FortiGate creates **aggregated interfaces** that bundle multiple physical ports into a single logical
+FortiGate creates **aggregated interfaces** that bundle multiple physical ports into a single
+logical
 link.
 
 ### Aggregated Interface vs Port Channel
@@ -296,7 +297,8 @@ interface Port-channel1
 
 ## Load Balancing and Traffic Distribution
 
-FortiGate automatically distributes traffic across member ports using a hash of source/destination MAC
+FortiGate automatically distributes traffic across member ports using a hash of source/destination
+MAC
 and IP.
 
 ### How Traffic Is Distributed

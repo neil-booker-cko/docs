@@ -26,8 +26,10 @@ EIGRP (RFC 7868) superseded IGRP entirely.
 ## Packet Header
 
 ```mermaid
+
 ---
 title: "IGRP Header"
+
 ---
 packet-beta
 0-7: "Version / Opcode"
@@ -59,6 +61,7 @@ Each route entry is 14 bytes, following the header.
 
 ---
 title: "IGRP Route Entry"
+
 ---
 packet-beta
 0-23: "Network Number (3 bytes)"

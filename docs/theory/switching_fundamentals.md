@@ -90,6 +90,7 @@ Local Segment (LAN):
   └─ Layer 2 (MAC) communication
 
 When PC sends to 192.0.2.100 (Internet):
+
   1. PC → Router: uses Router's MAC (via ARP lookup)
   2. Router receives frame (destination MAC = Router's interface)
   3. Router strips MAC header, checks IP header
@@ -211,11 +212,12 @@ Frame arrives on port 1 with:
   Dst MAC: 00:09:B7:AA:BB:CC (Server)
 
 1. LEARN: Add source MAC to table (port 1, VLAN 10)
-2. LOOKUP: Find destination MAC in table
-   - If found on port 3 → forward to port 3 ONLY
-   - If NOT found → FLOOD to all ports in VLAN (except incoming)
-   - If destination is broadcast (FF:FF:FF:FF:FF:FF) → FLOOD
-3. FORWARD: Send frame out port 3
+1. LOOKUP: Find destination MAC in table
+
+    - If found on port 3 → forward to port 3 ONLY
+    - If NOT found → FLOOD to all ports in VLAN (except incoming)
+    - If destination is broadcast (FF:FF:FF:FF:FF:FF) → FLOOD
+1. FORWARD: Send frame out port 3
 ```
 
 ### MAC Table Aging
@@ -228,6 +230,7 @@ If PC1 moves from port 1 to port 5:
               Switch learns: MAC 00:1A:2B on port 5
   Time 5s:    Old entry (port 1) still in table
               New frame arrives for PC1:
+
                 - MAC table has TWO entries for same MAC (bad!)
                 - Flooding occurs until old entry ages out
   Time 300s:  Old entry expires (default = 300 seconds / 5 minutes)
@@ -246,12 +249,14 @@ If PC1 moves from port 1 to port 5:
 
 ```text
 Frame arrives on port 1:
+
   1. Receive entire frame (buffer it)
   2. Check FCS (Frame Check Sequence) for errors
   3. Look up destination MAC
   4. Forward to destination port
 
 Latency: Full frame time (varies by speed)
+
   - 10 Mbps: ~1.2 ms (1500-byte frame)
   - 100 Mbps: ~0.12 ms
   - 1000 Mbps: ~0.012 ms (12 microseconds)
@@ -266,6 +271,7 @@ Disadvantage: Higher latency
 
 ```text
 Frame arrives on port 1:
+
   1. Read destination MAC (first 14 bytes)
   2. Look up destination port
   3. Forward immediately (before entire frame received)
@@ -285,6 +291,7 @@ Modern switches use cut-through for speed.
 
 ```text
 Frame arrives:
+
   1. Receive minimum frame (64 bytes)
   2. Check FCS on fragment
   3. Forward rest
@@ -309,6 +316,7 @@ VLAN assignment:
   Ports 5-6: VLAN 30 (Guest)
 
 Broadcast domains:
+
   - VLAN 10: Can reach ports 1-2
   - VLAN 20: Can reach ports 3-4
   - VLAN 30: Can reach ports 5-6
@@ -345,6 +353,7 @@ Example:
 
 ```text
 Plug-and-play; no configuration.
+
   - All ports in same VLAN
   - Broadcasts flooded to all ports
   - No VLAN support
@@ -357,6 +366,7 @@ Use: Small offices, home networks
 
 ```text
 Full configuration; VLAN support.
+
   - Configure VLAN membership
   - Set port speeds/duplex
   - Monitor via SNMP
@@ -372,11 +382,13 @@ Commands:
 
 ```text
 Combines Layer 2 (switching) + Layer 3 (routing).
+
   - Fast switching within VLANs
   - Inter-VLAN routing via internal router
   - No external router needed for VLAN-to-VLAN traffic
 
 Performance: 1 Tbps+ internal switching fabric
+
   - Can route millions of packets/sec between VLANs
   - Still cheaper than separate router + switch
 
@@ -401,6 +413,7 @@ Multiple switches connected create loops:
     └─ Switch 3 ─┘
 
   Broadcast from PC1:
+
     1. Switch 1 → Switch 2, Switch 3
     2. Switch 2 → Switch 1 (loop!), Switch 3
     3. Switch 3 → Switch 1 (loop!), Switch 2
@@ -419,6 +432,7 @@ Multiple switches connected create loops:
   └─ Switch 3 ─┘
 
   Broadcast from PC1:
+
     1. Switch 1 → Switch 2, Switch 3 (no loop)
     2. Redundant link via Switch 2 is BLOCKED
 
@@ -436,6 +450,7 @@ Multiple switches connected create loops:
 - Verify MAC table size (100k+ entries on modern switches)
 - Monitor for flapping (same MAC appearing on different ports rapidly)
   → Indicates device moving or cable plugged into wrong port
+
 - Set aging timer appropriately (300 seconds standard)
 - Clear MAC table only for troubleshooting (not routine)
 
@@ -473,6 +488,7 @@ Symptom: Network becomes unresponsive; interfaces dropping packets
 Cause: Loop or disabled spanning tree
 
 Fix:
+
   1. Physically trace cabling for loops
   2. Verify STP is enabled
      show spanning-tree
@@ -488,6 +504,7 @@ Fix:
 Symptom: MAC table shows same MAC on different ports
 
 Causes:
+
   1. Device moving (PC unplugged from port 1, plugged into port 2)
   2. Cable in wrong port
   3. Port mirroring loop
@@ -506,6 +523,7 @@ Debug:
 Symptom: Two devices in same VLAN can't reach each other
 
 Causes:
+
   1. Wrong VLAN assignment
      show vlan | include VLAN_NAME
      show interfaces GigabitEthernet0/1 switchport | include VLAN
@@ -544,12 +562,16 @@ Causes:
 
 - **MAC aging trap:** When a device moves ports, the old MAC entry persists for 5 minutes. Frames
   destined for that MAC go to the old port until aging completes, causing temporary packet loss.
+
 - **Broadcast flooding:** Broadcast frames are flooded to all ports in the VLAN. Excessive ARP or
   DHCP broadcasts in large flat VLANs consume bandwidth — use VLANs to segment broadcast domains.
+
 - **Cut-through caveats:** Cut-through forwarding does NOT detect CRC errors, so corrupted frames
   are forwarded. Verify your platform's mode if error rates are a concern.
+
 - **Native VLAN mismatch:** Trunk ports with mismatched native VLANs misinterpret untagged frames.
   Always configure matching native VLANs on both ends of a trunk.
+
 - **STP can mask cabling errors:** STP disables redundant loops, so a cable causing a loop may
   appear silent. Verify STP port states before assuming a cabling issue is resolved.
 

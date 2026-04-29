@@ -1,7 +1,8 @@
 # IPsec VPN Operational Best Practices
 
 IPsec VPN operational best practices focus on site-to-site and remote access VPN design, IKE/IPsec
-parameter tuning, encryption algorithm selection, key rotation, and failover design. Proper implementation
+parameter tuning, encryption algorithm selection, key rotation, and failover design. Proper
+implementation
 ensures secure, reliable connectivity with minimal downtime during rekeying or link failure.
 
 ---
@@ -113,6 +114,7 @@ Output:
   IKEv1 tunnels: 5 (from ISP, partner A, partner B, legacy site, etc.)
 
 Decision: Which can migrate now vs. timeline
+
   - ISP: Can upgrade (modern provider)
   - Partner A: Can upgrade (enterprise; uses IKEv2)
   - Partner B: Cannot upgrade (legacy equipment)
@@ -331,7 +333,8 @@ If high-security required:
 
 ### PFS Overview
 
-PFS ensures that compromise of the long-term key (pre-shared key or private key) does not reveal past
+PFS ensures that compromise of the long-term key (pre-shared key or private key) does not reveal
+past
 session keys.
 
 #### Without PFS
@@ -529,7 +532,8 @@ end
 
 ### DPD Overview
 
-DPD detects non-responsive peers and removes stale SAs. Prevents traffic from being sent to non-existent
+DPD detects non-responsive peers and removes stale SAs. Prevents traffic from being sent to
+non-existent
 peer.
 
 #### Scenario
@@ -783,6 +787,7 @@ show crypto ipsec sa peer 203.0.113.2
 
 ```ios
 debug crypto ipsec sa
+
   *Mar 1 10:00:00.000 UTC: CRYPTO_SA_IKE_SAS: IKE_SA is established
   *Mar 1 10:00:05.000 UTC: CRYPTO_SA_REKEY: Rekey initiated
   *Mar 1 10:00:06.000 UTC: CRYPTO_SA_REKEY: New SA created
@@ -866,16 +871,17 @@ Result: Asymmetric routing; packet loss
 #### Mitigation
 
 ```text
+
 1. Verify policies match on both sides BEFORE deployment
    Site A: 10.0.0.0/8 <-> 203.0.113.0/24
    Site B: 10.0.0.0/8 <-> 203.0.113.0/24 (EXACTLY the same)
 
-2. Test with specific subnets
+1. Test with specific subnets
    ping 10.1.0.1 (should work)
    ping 10.2.0.1 (should work)
    ping 10.3.0.1 (should fail if not in policy)
 
-3. Review logs on both sides
+1. Review logs on both sides
    show crypto ipsec sa | grep "protected vrf"
    (Verify local ident and remote ident match)
 ```
@@ -895,21 +901,22 @@ Fragmentation causes CPU load and latency
 #### Mitigation
 
 ```text
+
 1. Set MTU on tunnel interface to account for IPsec overhead
    Tunnel MTU = Link MTU - IPsec overhead
 
    Typical: 1500 - 73 (ICV + IV + padding) = 1427 bytes
    Or: Conservative 1400 bytes
 
-2. Configure tunnel interface:
+1. Configure tunnel interface:
    Cisco: ip mtu 1400
    FortiGate: set mtu 1400
 
-3. Test end-to-end:
+1. Test end-to-end:
    ping -df -s 1400 <remote-ip>   (don't fragment flag)
    ping -df -s 1500 <remote-ip>   (should fail if fragmented)
 
-4. Alternative: Enable MSS clamping
+1. Alternative: Enable MSS clamping
    Cisco: ip tcp adjust-mss 1350
    FortiGate: set tcp-mss-sender 1350
 ```
@@ -931,18 +938,19 @@ Security risk
 #### Mitigation
 
 ```text
+
 1. Audit current algorithms
    show crypto ipsec proposal
    show crypto ikev2 proposal
 
-2. Plan migration to strong algorithms
+1. Plan migration to strong algorithms
    3DES -> AES-256
    MD5 -> SHA-256
    Group 5 -> Group 14
 
-3. Test new proposal in lab
-4. Migrate to new proposal (restart tunnels)
-5. Decommission old proposal
+1. Test new proposal in lab
+1. Migrate to new proposal (restart tunnels)
+1. Decommission old proposal
 ```
 
 ### Mistake 4: No Key Rotation
@@ -958,17 +966,18 @@ Risk: If PSK leaked, all 6 years of traffic compromised
 #### Mitigation
 
 ```text
+
 1. Implement 90-day PSK rotation
    Generate new PSK quarterly
    Distribute via secure channel
    Update both peers
 
-2. Document rotation dates
+1. Document rotation dates
    Maintain log (not plaintext keys):
      2026-01-15: Rotated PSK (hash: SHA256abcd...)
      2026-04-15: Rotated PSK (hash: SHA256efgh...)
 
-3. Automate reminders
+1. Automate reminders
    Calendar alert 30 days before rotation due
    Ticket in change management system
 ```
@@ -989,6 +998,7 @@ Downtime: Until manual fix
 #### Mitigation
 
 ```text
+
 1. Test failover before production
    Step 1: Verify both tunnels are up
      show crypto sa
@@ -1010,7 +1020,7 @@ Downtime: Until manual fix
    Step 5: Verify return to primary
      Traffic should shift back (if preemption enabled)
 
-2. Schedule annual failover test
+1. Schedule annual failover test
    Change window: 2 hours
    Reason: Validate failover procedures
    Both sites involved; coordinated

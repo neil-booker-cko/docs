@@ -144,6 +144,7 @@ Key limitations:
 
 **IPsec compatibility:** AH (Authentication Header) authenticates the IP header,
 which NAT modifies — AH is incompatible with NAT. ESP can traverse NAT using
+
 **NAT-T (NAT Traversal)**: ESP packets are encapsulated in UDP port 4500, which
 NAT can rewrite without breaking the IPsec payload. See [IPsec and IKE](ipsec.md).
 

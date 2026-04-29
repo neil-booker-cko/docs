@@ -1,0 +1,9 @@
+/* Override Material theme text-transform for acronyms */
+.md-nav__link {
+  text-transform: none !important;
+}
+
+/* Ensure AWS, GCP, and other acronyms display correctly */
+.md-nav__title {
+  text-transform: none !important;
+}

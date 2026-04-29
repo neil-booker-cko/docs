@@ -27,8 +27,10 @@ shared WAN IP cannot be used when the Cisco side places each path in a different
 ## 2. Architecture
 
 ```mermaid
+
 ---
 title: "VRF-Lite Cloud Separation"
+
 ---
 graph LR
     subgraph Cisco["Cisco IOS-XE"]

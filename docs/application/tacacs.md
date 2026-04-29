@@ -20,8 +20,10 @@ managing network device CLI access in Cisco environments.
 ## Packet Header
 
 ```mermaid
+
 ---
 title: "TACACS+ Packet Header (12 bytes)"
+
 ---
 packet-beta
 0-3: "major_version"
@@ -136,14 +138,18 @@ ip tacacs source-interface Loopback0
 - TACACS+ encrypts the entire body using an MD5-based XOR pad. This is not strong by
   modern cryptographic standards. Run TACACS+ only on a dedicated management network
   or over IPsec.
+
 - Per-command authorisation (`aaa authorization commands 15`) provides granular
   control: operators can be restricted to `show` commands while admins receive
   unrestricted access.
+
 - Always configure a local fallback (`... group tacacs+ local`). If the TACACS+
   server is unreachable, the local username/password database prevents a complete
   lockout.
+
 - Cisco ISE and Cisco Secure ACS are common TACACS+ server implementations.
   Open-source alternatives: `tac_plus` (Shrubbery Networks), `tac_plus-ng`.
+
 - The `single-connection` flag (`0x01`) allows multiple AAA sessions to be
   multiplexed on a single TCP connection, reducing connection setup overhead on
   busy devices.

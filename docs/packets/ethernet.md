@@ -18,8 +18,10 @@ layer (not shown) and terminated by a Frame Check Sequence.
 ## Frame Structure
 
 ```mermaid
+
 ---
 title: "Ethernet II Frame"
+
 ---
 packet-beta
 0-47: "Destination MAC Address"

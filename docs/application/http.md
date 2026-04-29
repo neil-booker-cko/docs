@@ -128,6 +128,7 @@ multiplexed over a single TCP connection, each identified by a stream ID.
 
 ---
 title: "HTTP/2 Frame"
+
 ---
 packet-beta
 0-23: "Length"

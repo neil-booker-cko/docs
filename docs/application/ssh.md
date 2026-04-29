@@ -46,6 +46,7 @@ All SSH data after the version string exchange is sent as binary packets:
 
 ---
 title: "SSH Binary Packet"
+
 ---
 packet-beta
 0-31: "Packet Length"

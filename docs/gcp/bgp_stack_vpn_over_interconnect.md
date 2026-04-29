@@ -11,8 +11,10 @@ latency and bandwidth advantages of the dedicated link.
 ### The Protocol Stack
 
 ```mermaid
+
 ---
 title: "Protocol Stack"
+
 ---
 flowchart TD
     A["Application Traffic"]
@@ -58,6 +60,7 @@ flowchart TD
 
 ---
 title: "GCP Architecture"
+
 ---
 graph LR
     subgraph OnPrem["On-Premises"]

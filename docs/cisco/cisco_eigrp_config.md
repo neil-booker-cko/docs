@@ -149,9 +149,9 @@ show ip eigrp neighbors
 For EIGRP neighbors to form, they must have:
 
 1. **Same AS number** — Both routers running EIGRP 100
-2. **Same K-values** — Default K1=1, K3=1 (usually matches automatically)
-3. **IP connectivity** — Can ping each other
-4. **Not passive interface** — Interface must actively send/receive EIGRP packets
+1. **Same K-values** — Default K1=1, K3=1 (usually matches automatically)
+1. **IP connectivity** — Can ping each other
+1. **Not passive interface** — Interface must actively send/receive EIGRP packets
 
 ---
 

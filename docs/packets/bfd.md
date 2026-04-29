@@ -18,8 +18,10 @@ detection event. The mandatory section of a BFD Control packet is 24 bytes.
 ## Packet Structure
 
 ```mermaid
+
 ---
 title: "BFD Control Packet (Mandatory Section)"
+
 ---
 packet-beta
 0-2: "Vers"

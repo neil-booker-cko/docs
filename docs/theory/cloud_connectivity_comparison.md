@@ -188,7 +188,9 @@ connection. The model is the same in each case:
 
 1. Private WAN (DX / ER / Interconnect) carries traffic normally with a higher BGP
    Local Preference
+
 1. VPN tunnel is maintained in hot-standby with a lower Local Preference
+
 1. If the private WAN BGP session drops, traffic fails over to the VPN tunnel within
    the BFD or BGP hold-time window
 
@@ -279,7 +281,8 @@ peerings. Under the hood, it still uses VNet peering; AVNM is an orchestration l
 
 ### GCP Context
 
-GCP has no direct equivalent to AVNM. **Network Connectivity Center (NCC)** already serves both roles:
+GCP has no direct equivalent to AVNM. **Network Connectivity Center (NCC)** already serves both
+roles:
 it's the managed hub for on-prem connectivity (like vWAN) and supports VPC spokes natively. For
 VNet topology management at scale, GCP relies on native global VPC peering (automatic, no
 configuration) and NCC for hub-and-spoke topologies with on-prem. A direct management plane layer

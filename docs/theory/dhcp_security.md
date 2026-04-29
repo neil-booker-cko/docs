@@ -254,12 +254,12 @@ widespread connectivity loss:
    Verify that DHCP exchanges are completing normally and that the binding table is
    populating with correct entries.
 
-2. **Enable DAI.** Enable on the target VLANs. Monitor for dropped ARPs. Verify that
+1. **Enable DAI.** Enable on the target VLANs. Monitor for dropped ARPs. Verify that
 
    static IP devices have ARP ACL entries and that the binding table entries match
    what devices are actually using.
 
-3. **Enable IP Source Guard.** Apply to access ports. This is the most disruptive step.
+1. **Enable IP Source Guard.** Apply to access ports. This is the most disruptive step.
 
    Any device without a binding table entry will lose IP connectivity immediately.
 Verify that all devices — especially static IP devices — have entries before enabling.

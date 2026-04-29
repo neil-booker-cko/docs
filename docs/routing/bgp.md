@@ -24,8 +24,10 @@ graceful restart, and ADD-PATH.
 Every BGP message begins with a 19-byte header.
 
 ```mermaid
+
 ---
 title: "BGP Common Header"
+
 ---
 packet-beta
 0-127: "Marker (16 bytes — all 1s)"
@@ -50,6 +52,7 @@ session parameters.
 
 ---
 title: "BGP OPEN Message"
+
 ---
 packet-beta
 0-127: "Marker"
@@ -91,6 +94,7 @@ may carry both withdrawals and new NLRIs.
 
 ---
 title: "BGP UPDATE Message"
+
 ---
 packet-beta
 0-127: "Marker"
@@ -136,6 +140,7 @@ Sent when an error is detected. The TCP connection is closed immediately after.
 
 ---
 title: "BGP NOTIFICATION Message"
+
 ---
 packet-beta
 0-127: "Marker"

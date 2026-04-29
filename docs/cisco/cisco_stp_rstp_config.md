@@ -42,7 +42,8 @@ show spanning-tree summary
 
 ### Configure Root Bridge
 
-Select which switch becomes the root. The root bridge has priority 0 and all other switches reference
+Select which switch becomes the root. The root bridge has priority 0 and all other switches
+reference
 it.
 
 ```ios
@@ -105,7 +106,8 @@ show spanning-tree interface GigabitEthernet0/1 detail
 
 ### BPDU Guard (Protect Access Ports)
 
-Prevents accidental switch-to-switch connections. If a BPDU arrives on a PortFast port, shut it down.
+Prevents accidental switch-to-switch connections. If a BPDU arrives on a PortFast port, shut it
+down.
 
 ```ios
 
@@ -154,7 +156,8 @@ show spanning-tree interface GigabitEthernet0/48 detail
 
 ### Loop Guard (Blocked Ports)
 
-Prevents loops due to unidirectional link failures. If expected BPDUs stop arriving on a blocked port,
+Prevents loops due to unidirectional link failures. If expected BPDUs stop arriving on a blocked
+port,
 keep it blocked instead of transitioning to forwarding.
 
 ```ios
@@ -456,13 +459,13 @@ spanning-tree vlan 1 priority 0  ! Make this switch root
 ## Best Practices
 
 1. **Use RSTP** (`spanning-tree mode rapid-pvst`) in all new deployments
-2. **Set explicit root priorities** — don't rely on MAC tie-breaking
-3. **Enable PortFast + BPDU Guard** on all access ports
-4. **Enable Root Guard** on uplink ports to prevent rogue takeover
-5. **Enable auto-recovery** from BPDU guard errors
-6. **Document port costs** — keep topology predictable
-7. **Monitor STP health** — check `show spanning-tree` regularly
-8. **Use PVST+** to load-balance across multiple root bridges if multi-VLAN
+1. **Set explicit root priorities** — don't rely on MAC tie-breaking
+1. **Enable PortFast + BPDU Guard** on all access ports
+1. **Enable Root Guard** on uplink ports to prevent rogue takeover
+1. **Enable auto-recovery** from BPDU guard errors
+1. **Document port costs** — keep topology predictable
+1. **Monitor STP health** — check `show spanning-tree` regularly
+1. **Use PVST+** to load-balance across multiple root bridges if multi-VLAN
 
 ---
 

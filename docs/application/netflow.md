@@ -26,8 +26,10 @@ NetFlow v5 exports fixed-format 48-byte flow records. Each UDP datagram carries 
 ### v5 Export Header (24 bytes)
 
 ```mermaid
+
 ---
 title: "NetFlow v5 Export Header"
+
 ---
 packet-beta
 0-15: "Version (2)"
@@ -59,6 +61,7 @@ packet-beta
 
 ---
 title: "NetFlow v5 Flow Record"
+
 ---
 packet-beta
 0-31: "srcaddr (4)"

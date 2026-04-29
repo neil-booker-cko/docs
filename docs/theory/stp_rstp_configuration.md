@@ -270,8 +270,8 @@ Aggregation (manual path tuning):
 RSTP converges in milliseconds (vs STP's 50 seconds) through:
 
 1. **Explicit Handshake:** Root sends agreement immediately upon receiving superior BPDU
-2. **Alternate/Backup Ports:** Pre-computed backup paths ready to use
-3. **Port roles:** Root, Designated, Alternate, Backup (vs STP's Blocking)
+1. **Alternate/Backup Ports:** Pre-computed backup paths ready to use
+1. **Port roles:** Root, Designated, Alternate, Backup (vs STP's Blocking)
 
 ### Configuration (No special config needed)
 
@@ -351,8 +351,8 @@ Cisco:
 **Causes:**
 
 1. STP mode is set to "spanning-tree mode stp" instead of RSTP
-2. Port not configured as portfast (waiting for STP convergence)
-3. Link quality issues causing repeated BPDUs
+1. Port not configured as portfast (waiting for STP convergence)
+1. Link quality issues causing repeated BPDUs
 
 **Check:**
 

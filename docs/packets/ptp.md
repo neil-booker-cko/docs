@@ -1,7 +1,9 @@
 # PTP (Precision Time Protocol)
 
-Precision Time Protocol provides sub-microsecond clock synchronization for time-sensitive applications
-in local networks. PTP is used in data centers, high-frequency trading, telecom, and industrial automation
+Precision Time Protocol provides sub-microsecond clock synchronization for time-sensitive
+applications
+in local networks. PTP is used in data centers, high-frequency trading, telecom, and industrial
+automation
 where nanosecond-level accuracy is critical.
 
 ## Quick Reference
@@ -19,8 +21,10 @@ where nanosecond-level accuracy is critical.
 ### PTPv2 Sync Message (Master → Slave)
 
 ```mermaid
+
 ---
 title: "PTPv2 Sync Message Header"
+
 ---
 packet-beta
 0-3: "transportSpecific"
@@ -151,8 +155,8 @@ class, accuracy, and priority.
 To achieve nanosecond accuracy, PTP requires:
 
 1. **Hardware Timestamp Registers:** Network interface captures exact TX/RX times
-2. **Sync Pulse:** Often outputs PPS (pulse-per-second) signal for external devices
-3. **Oscillator Quality:** Local oscillator must be stable (GPS-disciplined preferred)
+1. **Sync Pulse:** Often outputs PPS (pulse-per-second) signal for external devices
+1. **Oscillator Quality:** Local oscillator must be stable (GPS-disciplined preferred)
 
 Modern enterprise switches and NICs include PTP support:
 

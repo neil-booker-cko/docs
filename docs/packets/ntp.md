@@ -20,8 +20,10 @@ correlation across a network.
 The NTP packet is fixed at 48 bytes (384 bits) for basic messages, plus optional authentication.
 
 ```mermaid
+
 ---
 title: "NTP Packet (NTPv4)"
+
 ---
 packet-beta
 0-1: "LI"
@@ -184,6 +186,7 @@ NTP supports optional authentication via:
 
 - **Symmetric Key (MD5/SHA):** Pre-shared keys; provides protection against
   replay/spoofing
+
 - **Autokey (Public Key):** Asymmetric; more scalable but computationally expensive
 
 ```text

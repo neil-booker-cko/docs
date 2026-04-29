@@ -342,8 +342,8 @@ flowchart TD
 Deploy in this order:
 
 1. Enable DHCP snooping and verify the binding table is populating correctly
-2. Enable DAI and confirm legitimate ARP traffic is passing
-3. Enable IP Source Guard last — it is the most disruptive if misconfigured
+1. Enable DAI and confirm legitimate ARP traffic is passing
+1. Enable IP Source Guard last — it is the most disruptive if misconfigured
 
 ---
 

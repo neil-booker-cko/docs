@@ -48,6 +48,7 @@ HA protocol settings:
 - **session-sync enable** = synchronize sessions (needed for stateful failover)
 - **override disable** = prevent standby from overriding active (use `enable` to allow active
   restart)
+
 - **password** = cluster authentication (minimum 6 characters)
 - **heartbeat-interval 2** = heartbeat period in seconds
 - **heartbeat-lost-threshold 20** = declare peer dead after 20 missed heartbeats (~40 seconds

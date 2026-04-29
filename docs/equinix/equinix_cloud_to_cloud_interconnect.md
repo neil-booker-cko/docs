@@ -553,6 +553,7 @@ Latency:
 
 ```text
 Check:
+
   1. Azure ER connection status (Equinix Console)
   2. FCR BGP session with Azure (status: Established?)
   3. Azure routes advertised by ER partner
@@ -570,6 +571,7 @@ Fix:
 
 ```text
 Possible causes:
+
   1. Traffic not routing through FCR (taking internet path)
   2. FCR in different metro than expected
   3. BGP suboptimal path selection

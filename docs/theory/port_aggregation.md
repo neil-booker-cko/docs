@@ -52,7 +52,8 @@ Logical view:
 
 ### Member Port Selection
 
-When sending a frame, the LAG algorithm hashes the source/destination MAC (and optionally IP) to select
+When sending a frame, the LAG algorithm hashes the source/destination MAC (and optionally IP) to
+select
 which member port to use.
 
 ```text

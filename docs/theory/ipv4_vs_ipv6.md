@@ -42,8 +42,10 @@ and operational differences between them matter for design and troubleshooting.
 ### IPv4 Header Fields (20 bytes minimum)
 
 ```mermaid
+
 ---
 title: "IPv4 Header (20 bytes minimum)"
+
 ---
 packet-beta
 0-3: "Version"
@@ -65,8 +67,10 @@ packet-beta
 ### IPv6 Header Fields (40 bytes fixed)
 
 ```mermaid
+
 ---
 title: "IPv6 Header (40 bytes fixed)"
+
 ---
 packet-beta
 0-3: "Version"

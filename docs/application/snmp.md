@@ -59,6 +59,7 @@ SEQUENCE {
   community  OCTET STRING         -- cleartext community name
   pdu        PDU                  -- GetRequest | GetNextRequest | GetResponse |
 }                                 --   SetRequest | GetBulkRequest |
+
                                   --   InformRequest | SNMPv2-Trap | Report
 ```
 

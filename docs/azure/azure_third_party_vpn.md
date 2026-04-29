@@ -69,9 +69,13 @@ graph LR
 Azure Portal:
 
 1. Virtual Networks → select your VNet
+
 1. Gateways → VPN Gateway → Create
+
 1. Name: `third-party-vpn-gw`
+
 1. SKU: `VpnGw1` (basic, suitable for third-party VPN)
+
 1. Create
 
 Via Azure CLI:
@@ -79,6 +83,7 @@ Via Azure CLI:
 ```bash
 # Create gateway subnet (if not already present)
 az network vnet subnet create \
+
   --name GatewaySubnet \
   --address-prefix 10.0.255.0/24 \
   --vnet-name my-vnet \
@@ -86,6 +91,7 @@ az network vnet subnet create \
 
 # Create VPN Gateway
 az network vnet-gateway create \
+
   --name third-party-vpn-gw \
   --public-ip-address vpn-pip \
   --resource-group my-rg \
@@ -103,16 +109,22 @@ Represents the third-party network and peer IP.
 Azure Portal:
 
 1. Virtual Networks → Local Network Gateways → Create
+
 1. Name: `third-party-lng`
+
 1. Public IP Address: `203.0.113.5` (third-party peer public IP)
+
 1. Address Spaces: `192.168.0.0/16` (third-party network)
+
 1. BGP Settings: Enable BGP → ASN: `65100` (agree with third party)
+
 1. Create
 
 Via Azure CLI:
 
 ```bash
 az network local-gateway create \
+
   --name third-party-lng \
   --location eastus \
   --resource-group my-rg \
@@ -127,9 +139,13 @@ az network local-gateway create \
 Azure Portal:
 
 1. VPN Gateway → Connections → Add
+
 1. Connection Type: `Site-to-Site (IPsec)`
+
 1. Local Network Gateway: `third-party-lng`
+
 1. Shared Key (PSK): generate or provide (must match third party's PSK)
+
 1. Create
 
 Via Azure CLI:
@@ -139,6 +155,7 @@ Via Azure CLI:
 PSK=$(openssl rand -base64 32)
 
 az network vpn-connection create \
+
   --name third-party-vpn-conn \
   --resource-group my-rg \
   --vnet-gateway-name third-party-vpn-gw \
@@ -158,14 +175,18 @@ If using dynamic routing (recommended):
 Azure Portal:
 
 1. VPN Gateway → Configuration
+
 1. Autonomous System Number (ASN): `65515` (default)
+
 1. BGP Peering Address: `169.254.21.1` (Azure-assigned internal address)
+
 1. Save
 
 Via Azure CLI:
 
 ```bash
 az network vnet-gateway update \
+
   --name third-party-vpn-gw \
   --resource-group my-rg \
   --set 'bgpSettings.asn=65515' \
@@ -182,15 +203,20 @@ If the third party cannot support BGP:
 Azure Portal:
 
 1. Route Tables → select your route table
+
 1. Routes → Add
+
 1. Address Prefix: `192.168.0.0/16` (third-party network)
+
 1. Next Hop Type: `Virtual Network Gateway`
+
 1. Save
 
 Via Azure CLI:
 
 ```bash
 az network route-table route create \
+
   --resource-group my-rg \
   --route-table-name my-routes \
   --name to-third-party \
@@ -260,6 +286,7 @@ router bgp 65100
 
 ```bash
 az network vnet-gateway show \
+
   --name third-party-vpn-gw \
   --resource-group my-rg
 ```
@@ -268,6 +295,7 @@ az network vnet-gateway show \
 
 ```bash
 az network vpn-connection show \
+
   --name third-party-vpn-conn \
   --resource-group my-rg \
   --query 'connectionStatus'
@@ -279,6 +307,7 @@ Connection should show: `Connected`.
 
 ```bash
 az network vnet-gateway list-learned-routes \
+
   --name third-party-vpn-gw \
   --resource-group my-rg
 ```
@@ -289,6 +318,7 @@ Third-party routes (e.g., 192.168.0.0/16) should appear here once BGP neighbor e
 
 ```bash
 az network route-table route show-effective \
+
   --resource-group my-rg \
   --name my-routes \
   --vm-name my-vm \

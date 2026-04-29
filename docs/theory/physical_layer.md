@@ -1,6 +1,7 @@
 # Physical Layer (L1) Fundamentals
 
-Layer 1 defines the physical transmission of bits over cabling: copper, fiber, wireless. Understanding
+Layer 1 defines the physical transmission of bits over cabling: copper, fiber, wireless.
+Understanding
 cabling types, distances, and standards is critical for network design and troubleshooting.
 
 ---
@@ -75,6 +76,7 @@ Pin Layout (TIA/EIA-568B - standard):
 
 - **568B (preferred):** Orange-White, Orange, Green-White, Blue, Blue-White, Green,
   Brown-White, Brown
+
 - **568A:** Green-White, Green, Orange-White, Blue, Blue-White, Orange, Brown-White, Brown
 
 **Use 568B on both ends for straight-through cables.** 568A/568B creates crossover
@@ -250,20 +252,22 @@ Four-channel transceiver; supports higher bandwidth (40 Gbps, 100 Gbps).
 Symptoms: Interface shows "administratively down" or "down"
 
 Checklist:
+
 1. Check cable connection (both ends)
    show interfaces GigabitEthernet0/1  # Cisco
 
-2. Test cable with tester (not a light tester)
-   - Check continuity: all 8 wires
-   - Measure insertion loss (should be < -5 dB at 1 Gbps)
+1. Test cable with tester (not a light tester)
 
-3. Check transceiver (if SFP/QSFP)
+    - Check continuity: all 8 wires
+    - Measure insertion loss (should be < -5 dB at 1 Gbps)
+
+1. Check transceiver (if SFP/QSFP)
    show interfaces transceiver
    show inventory  # Cisco
 
-4. Verify speed/duplex (see Speed/Duplex Mismatch below)
+1. Verify speed/duplex (see Speed/Duplex Mismatch below)
 
-5. Check for cable damage (kinks, cuts, EMI)
+1. Check for cable damage (kinks, cuts, EMI)
 ```
 
 ### Speed/Duplex Mismatch
@@ -274,6 +278,7 @@ Symptoms: Interface up but slow, occasional drops, CRC errors
 Common issue: One side set to 1000 Mbps full-duplex, other to 100 Mbps half-duplex
 
 Fix:
+
 - Set both sides to autonegotiate (preferred)
   interface GigabitEthernet0/1
     no speed 1000
@@ -292,19 +297,24 @@ Fix:
 Symptoms: show interfaces | include CRC
 
 Causes:
+
 1. Collisions (half-duplex network)
-   - Upgrade to full-duplex
 
-2. Cable damage
-   - Replace cable
+    - Upgrade to full-duplex
 
-3. EMI from power lines
-   - Reroute cabling away from power
-   - Use shielded cable
+1. Cable damage
 
-4. Transceiver mismatch (fiber)
-   - Ensure SMF-to-SMF or MMF-to-MMF
-   - Check wavelength match (850 nm, 1310 nm, 1550 nm)
+    - Replace cable
+
+1. EMI from power lines
+
+    - Reroute cabling away from power
+    - Use shielded cable
+
+1. Transceiver mismatch (fiber)
+
+    - Ensure SMF-to-SMF or MMF-to-MMF
+    - Check wavelength match (850 nm, 1310 nm, 1550 nm)
 ```
 
 ### Fiber Power Loss Too High
@@ -315,17 +325,21 @@ Symptoms: show interfaces transceiver | include Power
 Typical RX power: -3 dBm (weak signal), -20 dBm (normal)
 
 Causes:
+
 1. Cable exceeds distance limit
-   - 1000Base-SX (550 m max on MMF)
-   - Check with OTDR (Optical Time Domain Reflectometer)
 
-2. Dirty or damaged fiber connectors
-   - Clean with alcohol and lint-free cloth
-   - Replace if scratched
+    - 1000Base-SX (550 m max on MMF)
+    - Check with OTDR (Optical Time Domain Reflectometer)
 
-3. Wrong fiber type
-   - SX modules require MMF, not SMF
-   - Check transceiver/cable pairing
+1. Dirty or damaged fiber connectors
+
+    - Clean with alcohol and lint-free cloth
+    - Replace if scratched
+
+1. Wrong fiber type
+
+    - SX modules require MMF, not SMF
+    - Check transceiver/cable pairing
 ```
 
 ---

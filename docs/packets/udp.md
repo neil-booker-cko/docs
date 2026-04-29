@@ -18,8 +18,10 @@ sensitive traffic such as DNS, DHCP, SNMP, and real-time media.
 ## Header Structure
 
 ```mermaid
+
 ---
 title: "UDP Header"
+
 ---
 packet-beta
 0-15: "Source Port"
@@ -41,10 +43,13 @@ packet-beta
 
 - **No connection state** means UDP has negligible per-flow overhead. Applications
   that need reliability implement it themselves (e.g. QUIC, TFTP, DNS over TCP fallback).
+
 - **BFD** (Bidirectional Forwarding Detection) uses UDP port `3784` for single-hop
   sessions and port `4784` for multi-hop sessions. The lightweight nature of UDP is
   essential for BFD's sub-second hello intervals.
+
 - **QUIC** (HTTP/3) runs over UDP port `443`, implementing its own reliability,
   ordering, and encryption at the application layer.
+
 - The **checksum pseudo-header** includes the source and destination IP addresses,
   ensuring a misdelivered datagram is detected even if the UDP checksum alone passes.

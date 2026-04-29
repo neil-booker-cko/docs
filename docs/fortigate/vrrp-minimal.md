@@ -30,6 +30,7 @@ Configures a VRRP group:
 - **adv-interval 1** = advertisement interval in seconds
 - **preempt enable** = allow higher-priority device to take over (use `disable` for avoid
   flapping)
+
 - **status enable** = enable VRRP on this group
 - **version 2** = VRRPv2 (use `version 3` for VRRPv3 with IPv6 support)
 

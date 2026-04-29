@@ -63,8 +63,8 @@ Example interface states:
 Every interface needs:
 
 1. **IP Address**: Unique identifier in a subnet (e.g., 192.168.1.10)
-2. **Subnet Mask**: Defines which portion is network, which is host (e.g., 255.255.255.0 or /24)
-3. **Default Gateway**: Router to send traffic destined for other networks
+1. **Subnet Mask**: Defines which portion is network, which is host (e.g., 255.255.255.0 or /24)
+1. **Default Gateway**: Router to send traffic destined for other networks
 
 ### Subnet Mask Notation
 
@@ -92,9 +92,9 @@ Every interface needs:
 When a packet arrives at an interface, the router:
 
 1. **Extract destination IP** from packet
-2. **Lookup routing table** for matching destination
-3. **Forward via next-hop** (or default route if no match)
-4. **Decrement TTL** and forward to egress interface
+1. **Lookup routing table** for matching destination
+1. **Forward via next-hop** (or default route if no match)
+1. **Decrement TTL** and forward to egress interface
 
 ```text
 
@@ -237,9 +237,9 @@ A **loopback** is a virtual interface that never goes down (as long as the route
 ### Use Cases
 
 1. **Router ID**: OSPF and BGP use loopback as router identifier
-2. **Management**: Telnet/SSH to loopback (works even if physical link fails)
-3. **Testing**: Source/sink for test traffic
-4. **Route redistribution**: Stable address for announcing services
+1. **Management**: Telnet/SSH to loopback (works even if physical link fails)
+1. **Testing**: Source/sink for test traffic
+1. **Route redistribution**: Stable address for announcing services
 
 ### Configuration
 
@@ -261,8 +261,8 @@ FortiGate:
 Most routing protocols pick router ID in this order:
 
 1. Manually configured router ID
-2. Highest loopback IP address
-3. Highest physical interface IP address
+1. Highest loopback IP address
+1. Highest physical interface IP address
 
 **Best practice:** Manually set router ID to loopback IP.
 

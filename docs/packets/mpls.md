@@ -1,7 +1,8 @@
 # MPLS (Multiprotocol Label Switching)
 
 Multiprotocol Label Switching is a forwarding mechanism that prepends a label stack to packets,
-allowing fast label-based switching instead of IP routing table lookup. MPLS enables traffic engineering,
+allowing fast label-based switching instead of IP routing table lookup. MPLS enables traffic
+engineering,
 VPNs, and QoS optimization.
 
 ## Quick Reference
@@ -20,8 +21,10 @@ VPNs, and QoS optimization.
 ### MPLS Label Stack Entry (Shim Header)
 
 ```mermaid
+
 ---
 title: "MPLS Shim Header (32 bits)"
+
 ---
 packet-beta
 0-19: "Label"

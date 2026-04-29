@@ -27,8 +27,10 @@ over Ethernet (Layer 2 multicast).
 All PTP messages share a 34-byte common header.
 
 ```mermaid
+
 ---
 title: "PTPv2 Common Header"
+
 ---
 packet-beta
 0-3: "transportSpecific"

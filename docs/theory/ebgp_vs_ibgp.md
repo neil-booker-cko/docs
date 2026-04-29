@@ -90,7 +90,7 @@ graph TD
    to their clients. Clients need only peer with RRs, not with each other. Clusters prevent
    loops via `ORIGINATOR_ID` and `CLUSTER_LIST` attributes.
 
-2. **Confederations (RFC 5065):** The AS is split into sub-ASes (confederation sub-ASes).
+1. **Confederations (RFC 5065):** The AS is split into sub-ASes (confederation sub-ASes).
 
    eBGP runs between sub-ASes using private ASNs; the confederation appears as a single
    AS to the outside world. Rarely used in new designs; Route Reflectors are preferred.

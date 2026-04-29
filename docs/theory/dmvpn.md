@@ -33,8 +33,10 @@ DMVPN is composed of four technologies:
 - **GRE (Generic Routing Encapsulation)**: Tunnel protocol; carries IP packets over IP
 - **mGRE (Multipoint GRE)**: Single GRE tunnel interface on hub accepts packets from multiple
   spokes (identified by tunnel source IP + GRE Key field)
+
 - **NHRP (Next Hop Resolution Protocol, RFC 2332)**: Spoke-to-spoke endpoint discovery via a
   central hub; dynamically resolves IP addresses of other spokes
+
 - **IPsec**: Encrypts GRE packets; typically uses transport mode (protects GRE + payload, not
   outer IP)
 
@@ -118,6 +120,7 @@ graph TB
 
 NHRP allows spokes to dynamically discover each other's IP addresses and establish direct IPsec
 tunnels without involving the hub for every packet. Two operations: **registration** and
+
 **resolution**.
 
 ### Registration (Spoke → Hub)
@@ -239,10 +242,10 @@ them. Spokes do not query; they respond to hub shortcuts.
 **How Phase 3 works:**
 
 1. Hub monitors traffic between spokes
-2. When hub sees Spoke A ↔ Spoke B traffic, it sends NHRP shortcut to both
-3. Spokes receive shortcut → build direct tunnel
-4. Hub withdraws routes learned from spokes in IGP updates (split-horizon fully disabled)
-5. Spokes use routing protocol to learn remote subnets from other spokes directly
+1. When hub sees Spoke A ↔ Spoke B traffic, it sends NHRP shortcut to both
+1. Spokes receive shortcut → build direct tunnel
+1. Hub withdraws routes learned from spokes in IGP updates (split-horizon fully disabled)
+1. Spokes use routing protocol to learn remote subnets from other spokes directly
 
 **When Phase 3 is chosen:**
 

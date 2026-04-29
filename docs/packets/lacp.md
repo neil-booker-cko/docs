@@ -1,7 +1,8 @@
 # LACP (Link Aggregation Control Protocol)
 
 Link Aggregation Control Protocol negotiates and maintains link aggregation (bonding) between two
-devices. LACP ensures that only compatible ports form an aggregation group, preventing misconfiguration
+devices. LACP ensures that only compatible ports form an aggregation group, preventing
+misconfiguration
 and enabling dynamic load balancing.
 
 ## Quick Reference
@@ -18,8 +19,10 @@ and enabling dynamic load balancing.
 ## Packet Structure
 
 ```mermaid
+
 ---
 title: "LACP PDU (Type-Length-Value Structure)"
+
 ---
 packet-beta
 0-7: "Subtype"
@@ -53,9 +56,9 @@ Actor and Partner Information TLVs contain the following structure:
 ## TLV (Type-Length-Value) Entries
 
 1. **Actor Information TLV (0x01):** Describes this device's port/system
-2. **Partner Information TLV (0x02):** Describes peer's port/system
-3. **Collector Information TLV (0x03):** Flow collection capabilities
-4. **Terminator TLV (0x00):** End of LACP PDU (optional)
+1. **Partner Information TLV (0x02):** Describes peer's port/system
+1. **Collector Information TLV (0x03):** Flow collection capabilities
+1. **Terminator TLV (0x00):** End of LACP PDU (optional)
 
 ## Actor/Partner State Bits
 

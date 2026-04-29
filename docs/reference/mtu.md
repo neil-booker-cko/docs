@@ -75,10 +75,13 @@ path before sending large packets.
 ### How It Works
 
 1. The source sets DF=1 on all outgoing packets.
+
 1. If an intermediate router cannot forward the packet without fragmenting it, the
     router discards the packet and returns **ICMP Type 3 Code 4** (Fragmentation
     Needed) to the source. The message includes the next-hop MTU in the Type-Specific field.1
+
 1. The source reduces its effective packet size to the advertised MTU and retransmits.
+
 1. The process repeats until the packet traverses the full path without triggering a
     Fragmentation Needed response.
 
@@ -92,6 +95,7 @@ is dropped:
 - TCP sessions using large packets stall silently.
 - Small packets (e.g. ACKs, SYN/SYN-ACK) succeed; large transfers (file downloads, SCP,
     HTTPS with large payloads) hang indefinitely.
+
 - The symptom is sometimes called "black hole routing."
 
 Mitigation: permit ICMP Type 3 (all codes) on all firewall policies, or use TCP MSS
@@ -166,13 +170,17 @@ must be able to forward packets of at least this size without fragmentation.
 - **Jumbo frames must be configured end-to-end.** Any link in the path that does not support
     jumbo frames will silently drop oversized packets. Confirm MTU on every hop before
     enabling jumbo frames.
+
 - **Always configure MTU symmetrically** on both ends of a tunnel. Asymmetric MTU causes
     one-directional fragmentation issues that are difficult to diagnose.
+
 - **FortiGate VTI MTU** is set in the tunnel interface config: `set mtu 1500`. TCP MSS
     clamping is available per-interface or per-policy.
+
 - **Cisco IOS:** `ip mtu <bytes>` sets the IP MTU on an interface (may differ from the
     interface hardware MTU). `ip tcp adjust-mss <bytes>` clamps TCP MSS on SYN packets
     transiting the interface.
+
 - PMTUD black holes are a common cause of unexplained TCP stalls on VPN and tunnel
     deployments. When troubleshooting, test with progressively smaller ping sizes:
     `ping -s 1400 -M do <destination>` on Linux.

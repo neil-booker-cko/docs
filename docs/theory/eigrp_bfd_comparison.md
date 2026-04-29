@@ -22,6 +22,7 @@ calculations once a neighbor failure is detected.
 ### The Role of DUAL in Convergence
 
 EIGRP maintains a topology table containing **Successors** (primary paths) and
+
 **Feasible
 Successors**(backup paths).
 

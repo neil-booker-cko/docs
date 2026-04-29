@@ -196,14 +196,18 @@ one switch only).
 - **Native VLAN mismatch:** Trunk ports with different native VLANs misinterpret untagged frames,
   breaking inter-switch communication. Verify both ends with
   `show interfaces trunk | include Native`.
+
 - **VLAN database vs config:** Cisco stores VLAN definitions in `vlan.dat` and config in NVRAM.
   A VLAN can exist in one without the other. Define VLANs in global config (`vlan <id>`) so
   they appear in `show running-config`.
+
 - **SVI down/down trap:** An SVI comes up only when at least one port in that VLAN is up and
   forwarding. If all ports are down or STP-blocked, the SVI goes down and breaks inter-VLAN
   routing. Use `show vlan brief` and `show spanning-tree` to diagnose.
+
 - **Router-on-a-Stick bottleneck:** All inter-VLAN traffic traverses the uplink twice. This
   becomes a bottleneck at scale — use a Layer 3 switch with SVIs for high-throughput routing.
+
 - **Trunk pruning:** All VLANs are allowed by default. Explicitly set the allowed VLAN list to
   only those that cross each trunk to reduce unnecessary flooding.
 

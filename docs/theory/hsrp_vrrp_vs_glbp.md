@@ -122,6 +122,7 @@ weights to each router to control how many hosts are directed to each. If R1 has
 - **Simplicity:** One router forwards; others are backups. Debugging is straightforward.
 - **Utilization:** Standby routers are idle, wasting capacity. In a 2-router pair, 50% of
   gateway capacity is unused.
+
 - **Convergence:** Depends on hello/failover timers (typically 10–30 seconds).
 - **Scalability:** Any number of standby routers, but only one active.
 
@@ -132,10 +133,13 @@ sufficient capacity.
 
 - **Efficiency:** All routers forward simultaneously. 100% of capacity is utilized in a 4-
   router group.
+
 - **Complexity:** Weighting must be tuned to balance load. Uneven weights result in
   unbalanced load distribution.
+
 - **Convergence:** More complex — failure of one AVG requires reweighting, and hosts
   using that gateway's MAC may experience brief loss.
+
 - **Scalability:** Up to 4 active AVGs (GLBP limit). Beyond 4 routers, some routers must
   be standby.
 
@@ -186,6 +190,7 @@ GLBP uses **Round-Robin or Weighted** ARP responses to distribute hosts:
 
 - **Round-Robin:** Host 1 gets MAC-1, Host 2 gets MAC-2, Host 3 gets MAC-3, Host 4 gets
   MAC-4, Host 5 gets MAC-1 again.
+
 - **Weighted:** If R1 has weight 50 and R2 has weight 50, 50% of ARPs are answered with
   MAC-1, 50% with MAC-2.
 
@@ -277,6 +282,7 @@ single protocol manages redundancy across vendors.
 - **Multiple gateway routers** (3–4) exist and capacity should be fully utilized.
 - **No per-VLAN configuration burden:** GLBP distributes load automatically via ARP
   responses, avoiding complex multi-group setups.
+
 - **Graceful degradation** is important — failure of one gateway doesn't impact all
   traffic.
 
@@ -395,12 +401,15 @@ interface Gi0/0/1
   upstream failures and trigger failover even if the gateway interface is still up. This
   is critical in hub-and-spoke designs where a gateway's uplink can fail independent of
   the gateway interface.
+
 - **Multiple groups for load balancing:** If GLBP is not available (non-Cisco environment),
   admins can simulate active/active by configuring multiple VRRP groups with different
   masters. This is complex and not recommended for more than 2–3 groups.
+
 - **Virtual MAC addresses are deterministic:** Both HSRP and VRRP generate the virtual MAC
   from the group number. This means the MAC is predictable and does not change, which is
   why hosts cache it in ARP. GLBP generates 4 MACs (one per AVG) from the same group number.
+
 - **RFC references:** HSRP is Cisco proprietary (no RFC). VRRP is RFC 5798 (v3) / RFC 3768
   (v2). GLBP is Cisco proprietary (no RFC).
 

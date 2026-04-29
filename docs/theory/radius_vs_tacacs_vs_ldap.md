@@ -647,15 +647,19 @@ end
 - **Shared secret security:** Both RADIUS and TACACS+ use a pre-shared secret. This secret
   must be strong and securely distributed to all NAS/devices. A compromised shared secret
   exposes all credentials.
+
 - **RADIUS accounting:** RFC 2866 defines RADIUS accounting. This is used for usage
   reporting, billing (ISP dial-up), and compliance auditing. TACACS+ has similar
   capabilities but Cisco-specific.
+
 - **Multiple servers:** RADIUS and TACACS+ can be configured with primary and secondary
   servers. If the primary is unreachable, the device falls back to the secondary. LDAP
   replication provides similar resilience via directory replication.
+
 - **Modern alternatives:** OAuth 2.0 and SAML are increasingly used for user authentication
   in cloud and API-based services. RADIUS and TACACS+ remain the standard for network device
   access.
+
 - **RFC references:** RADIUS is RFC 2865 (auth) and RFC 2866 (accounting). TACACS+ was
   proprietary; RFC 6613 is a draft for TACACS+ specification. LDAP is RFC 3389 (simplified
   version of X.500 directory service).

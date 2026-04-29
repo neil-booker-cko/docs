@@ -68,20 +68,26 @@ graph LR
 AWS Console:
 
 1. VPC → Virtual Private Gateways → Create Virtual Private Gateway
+
 1. Name: `third-party-vpn-gw`
+
 1. ASN: `64512` (AWS default) or custom ASN for BGP
+
 1. Create
+
 1. Attach to VPC
 
 Alternatively, via CLI:
 
 ```bash
 aws ec2 create-vpn-gateway \
+
   --type ipsec.1 \
   --amazon-side-asn 64512 \
   --tag-specifications 'ResourceType=vpn-gateway,Tags=[{Key=Name,Value=third-party-vpn-gw}]'
 
 aws ec2 attach-vpn-gateway \
+
   --vpn-gateway-id vgw-1a2b3c4d \
   --vpc-id vpc-12345678
 ```
@@ -93,15 +99,20 @@ Define the third-party peer's public IP and BGP ASN.
 AWS Console:
 
 1. VPC → Customer Gateways → Create Customer Gateway
+
 1. Name: `third-party-cgw`
+
 1. BGP ASN: `65100` (third party's ASN; agree beforehand)
+
 1. Public IP: `203.0.113.5` (third-party peer's public IP, or leave blank for dynamic)
+
 1. Create
 
 Via CLI:
 
 ```bash
 aws ec2 create-customer-gateway \
+
   --type ipsec.1 \
   --public-ip 203.0.113.5 \
   --bgp-asn 65100 \
@@ -113,17 +124,24 @@ aws ec2 create-customer-gateway \
 AWS Console:
 
 1. VPC → Site-to-Site VPN Connections → Create VPN Connection
+
 1. Name: `third-party-vpn`
+
 1. Virtual Private Gateway: `third-party-vpn-gw`
+
 1. Customer Gateway: `third-party-cgw` (or Target Customer Gateway ID)
+
 1. Static Route Propagation: disable (we'll use BGP)
+
 1. Tunnel Options: keep defaults (AWS selects IKEv2, AES-256-GCM, etc.)
+
 1. Create
 
 Via CLI:
 
 ```bash
 aws ec2 create-vpn-connection \
+
   --type ipsec.1 \
   --customer-gateway-id cgw-1a2b3c4d \
   --vpn-gateway-id vgw-1a2b3c4d \
@@ -137,13 +155,16 @@ For dynamic routing, enable BGP route propagation on your route tables.
 AWS Console:
 
 1. VPC → Route Tables → select your route table
+
 1. Route Propagation tab → Edit Route Propagation
+
 1. Select the VGW → Save
 
 Via CLI:
 
 ```bash
 aws ec2 enable-vgw-route-propagation \
+
   --route-table-id rtb-1a2b3c4d \
   --gateway-id vgw-1a2b3c4d
 ```
@@ -155,7 +176,9 @@ Once enabled, AWS will automatically propagate routes learned from the third par
 AWS Console:
 
 1. VPC → Site-to-Site VPN Connections → select your connection
+
 1. Download Configuration button → select your device type (Generic, Cisco, Fortinet, etc.)
+
 1. Download the configuration file
 
 This file contains:
@@ -174,14 +197,18 @@ If the third party cannot support BGP:
 AWS Console:
 
 1. VPC → Site-to-Site VPN Connections → select connection
+
 1. Static Routes tab → Add Static Route
+
 1. Destination: `192.168.0.0/16` (third-party network)
+
 1. Add Route
 
 Via CLI:
 
 ```bash
 aws ec2 create-vpn-connection-route \
+
   --vpn-connection-id vpn-1a2b3c4d \
   --destination-cidr-block 192.168.0.0/16
 ```
@@ -255,6 +282,7 @@ router bgp 65100
 
 ```bash
 aws ec2 describe-vpn-gateways \
+
   --vpn-gateway-ids vgw-1a2b3c4d \
   --query 'VpnGateways[*].[VpnGatewayId,State,Type]'
 ```
@@ -263,6 +291,7 @@ aws ec2 describe-vpn-gateways \
 
 ```bash
 aws ec2 describe-vpn-connections \
+
   --vpn-connection-ids vpn-1a2b3c4d \
   --query 'VpnConnections[*].[VpnConnectionId,State,Options]'
 ```
@@ -274,6 +303,7 @@ connects.
 
 ```bash
 aws ec2 describe-vpn-gateway-routes \
+
   --vpn-gateway-id vgw-1a2b3c4d \
   --filters Name=state,Values=available
 ```
@@ -282,6 +312,7 @@ aws ec2 describe-vpn-gateway-routes \
 
 ```bash
 aws ec2 describe-route-tables \
+
   --route-table-ids rtb-1a2b3c4d \
   --query 'RouteTables[*].Routes[*].[DestinationCidrBlock,State,GatewayId]'
 ```

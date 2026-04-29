@@ -351,12 +351,13 @@ test log message "Connection test"
 #### Issue: Logs not appearing on server
 
 ```text
+
 1. Check IP connectivity: ping 192.0.2.50
-2. Verify logging configured: show logging
-3. Check facility/level: logging trap informational
-4. Firewall rule on server: sudo ufw allow 514/udp
-5. Verify source-interface: logging source-interface Loopback0
-6. Check syslog service running: systemctl status syslog-ng
+1. Verify logging configured: show logging
+1. Check facility/level: logging trap informational
+1. Firewall rule on server: sudo ufw allow 514/udp
+1. Verify source-interface: logging source-interface Loopback0
+1. Check syslog service running: systemctl status syslog-ng
 ```
 
 #### Issue: Duplicate logs
@@ -370,10 +371,11 @@ hostname router1-ny-core1
 #### Issue: Timestamps wrong
 
 ```text
+
 1. Verify NTP sync: show ntp status
-2. Configure NTP: ntp server 10.0.0.1
-3. Check system time: show clock
-4. If NTP unavailable, manually set: clock set HH:MM:SS Mon DD YYYY
+1. Configure NTP: ntp server 10.0.0.1
+1. Check system time: show clock
+1. If NTP unavailable, manually set: clock set HH:MM:SS Mon DD YYYY
 ```
 
 ## 14. Best Practices

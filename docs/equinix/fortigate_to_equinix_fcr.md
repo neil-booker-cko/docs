@@ -695,12 +695,13 @@ execute router bgp neighbor 10.255.1.2 enable
 ### Monitor Convergence Time
 
 ```text
+
 1. Disable BGP neighbor
-2. Check timestamp: T=0
-3. Monitor: diagnose debug flow show summary
-4. Watch for traffic resuming via backup path
-5. Check timestamp: T=X seconds
-6. Calculate convergence = X seconds (should be < 30s)
+1. Check timestamp: T=0
+1. Monitor: diagnose debug flow show summary
+1. Watch for traffic resuming via backup path
+1. Check timestamp: T=X seconds
+1. Calculate convergence = X seconds (should be < 30s)
 ```text
 
 ---

@@ -62,9 +62,10 @@ BGP announces: 10.0.0.0/8 → FCR → Cloud provider
 ### 1.1 Access Equinix Console
 
 ```text
+
 1. Log in to Equinix console
-2. Navigate to Fabric → Fabric Cloud Router
-3. Click "Create"
+1. Navigate to Fabric → Fabric Cloud Router
+1. Click "Create"
 ```text
 
 ### 1.2 Configure FCR Parameters
@@ -240,6 +241,7 @@ show bgp ipv4 unicast summary
 
 show bgp ipv4 unicast
   Network Next Hop Metric LocPrf Weight Path
+
   *> 10.0.0.0/8 0.0.0.0 0 32768 i
   * 172.31.0.0/16 10.255.1.2 0 65001 16509 i  (AWS)
   *> 192.168.0.0/16 10.255.1.2 0 65001 8075 i  (Azure)
@@ -252,6 +254,7 @@ show bgp ipv4 unicast
 ### FCR BGP Configuration Model
 
 FCR acts as a **Route Reflector** or **BGP Hub** peering with:
+
 - Your on-prem routers
 - Cloud provider routers
 - Other FCR instances (multi-metro)
@@ -391,6 +394,7 @@ interface Ethernet1/1
 
 ```bash
 curl -X POST https://api.equinix.com/fabric/v4/auth/tokens \
+
   -H "Content-Type: application/json" \
   -d '{
     "username": "your-api-key",
@@ -404,6 +408,7 @@ Result: `access_token` for subsequent API calls.
 
 ```bash
 curl -X POST https://api.equinix.com/fabric/v4/routers \
+
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -420,6 +425,7 @@ curl -X POST https://api.equinix.com/fabric/v4/routers \
 
 ```bash
 curl -X POST https://api.equinix.com/fabric/v4/connections \
+
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -472,9 +478,9 @@ Your router:
 
 **Fix:**
 1. Ensure vConnection is ACTIVE
-2. Verify BGP neighbor IP is correct
-3. Check firewall allows BGP (port 179)
-4. Verify ASN in BGP neighbor statement matches FCR ASN
+1. Verify BGP neighbor IP is correct
+1. Check firewall allows BGP (port 179)
+1. Verify ASN in BGP neighbor statement matches FCR ASN
 
 ### Issue: Routes Not Received
 
@@ -491,8 +497,8 @@ show bgp ipv4 unicast neighbors 10.255.1.2 received-routes
 
 **Fix:**
 1. Verify FCR has received routes from cloud provider
-2. Check route filtering/access lists on your router
-3. Verify local preference isn't rejecting routes
+1. Check route filtering/access lists on your router
+1. Verify local preference isn't rejecting routes
 
 ---
 
@@ -513,10 +519,10 @@ show bgp ipv4 unicast neighbors 10.255.1.2 received-routes
 ## Summary
 
 1. **Create FCR instance** in Equinix console (specify ASN, BGP timers)
-2. **Create vConnections** (DC-to-FCR, cloud provider vConnections)
-3. **Configure BGP** on your router (peer with FCR, advertise routes)
-4. **Verify status** (BGP Established, routes received)
-5. **Monitor uptime** (track convergence time, test failover)
+1. **Create vConnections** (DC-to-FCR, cloud provider vConnections)
+1. **Configure BGP** on your router (peer with FCR, advertise routes)
+1. **Verify status** (BGP Established, routes received)
+1. **Monitor uptime** (track convergence time, test failover)
 
 ---
 

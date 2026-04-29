@@ -24,8 +24,10 @@ fast convergence with BFD.
 All IS-IS PDUs share a common header:
 
 ```mermaid
+
 ---
 title: "IS-IS PDU Header"
+
 ---
 packet-beta
 0-7: "NLPID"
@@ -57,6 +59,7 @@ Discovers neighbors; establishes adjacency; elects DIS (Designated IS).
 
 ```text
 Point-to-Point IIH:
+
   - System ID
   - Hello Interval
   - Holding Time (Dead Interval)
@@ -64,6 +67,7 @@ Point-to-Point IIH:
   - Neighbor System ID (confirms bidirectional)
 
 LAN IIH (Broadcast Segment):
+
   - System ID
   - Designated Intermediate System (DIS) priority
   - LAN ID (MAC of DIS)
@@ -84,6 +88,7 @@ Floods network topology; lists neighbors, subnets, and routes.
 
 ```text
 RouterA LSP:
+
   - System ID: Router-A
   - PDU Number: Identifies this specific LSP
   - Sequence Number: Incremented each time LSP is updated
@@ -136,7 +141,7 @@ link delay for MPLS TE path calculation).
 IS-IS supports **two-level hierarchy:**
 
 1. **Level 1 (L1):** Intra-area routing; routers form full adjacencies within area
-2. **Level 2 (L2):** Inter-area routing; backbone; connects all areas
+1. **Level 2 (L2):** Inter-area routing; backbone; connects all areas
 
 ```mermaid
 graph TD
@@ -224,6 +229,7 @@ system ID (lower wins).
 
 - ISO 10589: Intermediate System to Intermediate System Intra-domain Routing Information Exchange
   Protocol
+
 - RFC 5308: Routing Extensions for IS-IS
 - RFC 5305: IS-IS Extensions for Traffic Engineering
 - Cisco IOS-XE IS-IS configuration guide

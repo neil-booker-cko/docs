@@ -26,8 +26,10 @@ All NTP messages use the same 48-byte header structure. Optional extension field
 and a MAC trailer may follow for authenticated NTP.
 
 ```mermaid
+
 ---
 title: "NTPv4 Header (48 bytes)"
+
 ---
 packet-beta
 0-1: "LI"
@@ -84,8 +86,10 @@ NTP uses a 64-bit fixed-point timestamp: 32 bits of seconds since **1 January 19
 00:00:00 UTC** and 32 bits of sub-second fraction.
 
 ```mermaid
+
 ---
 title: "NTP Timestamp Format (64-bit)"
+
 ---
 packet-beta
 0-31: "Seconds<br/>(since 1900-01-01 00:00:00 UTC)"

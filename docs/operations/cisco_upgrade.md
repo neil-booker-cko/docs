@@ -180,6 +180,7 @@ copy scp://username@10.0.0.1/path/to/image.bin flash: vrf management
 ```
 
 !!! warning
+
     **Prerequisite:** The user account must have **privilege level 15**. See
     [Device Prerequisites & Configuration](#device-prerequisites--configuration) above
     for setup instructions. If using TACACS+, the account privilege level is the most
@@ -242,6 +243,7 @@ The router will prompt for SSH password (or use public key if configured).
 ### 4. Tune SSH/TCP Window Size for Faster Transfer
 
 By default, SSH uses a small buffer which limits throughput. Tuning TCP window size on the
+
 **source server** dramatically improves transfer speed (10x improvement possible).
 
 #### Linux Server Tuning
@@ -364,6 +366,7 @@ copy scp://admin@10.0.0.1:2222/images/image.bin flash:
 ## Install Mode Upgrade Procedure (IOS-XE 17.x and later)
 
 Install mode uses a three-phase process: **add**, **activate**, and **commit**. This is the
+
 **recommended method for all current releases** (IOS-XE 17.x+).
 
 ### Phase overview

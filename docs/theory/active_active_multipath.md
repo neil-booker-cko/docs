@@ -48,9 +48,9 @@ For BGP configuration see [Cisco BGP & iBGP Design](../cisco/cisco_bgp_ibgp.md) 
 ### Why Multi-Path Matters for DC-to-Cloud
 
 1. **Redundancy** — If one path fails, traffic automatically shifts to others
-2. **Throughput scaling** — Multiple parallel paths aggregate bandwidth
-3. **Sub-second convergence** — BFD detects failures faster than routing protocols alone
-4. **Cost optimization** — Balance load across multiple carriers or connection types
+1. **Throughput scaling** — Multiple parallel paths aggregate bandwidth
+1. **Sub-second convergence** — BFD detects failures faster than routing protocols alone
+1. **Cost optimization** — Balance load across multiple carriers or connection types
 
 ---
 
@@ -321,10 +321,12 @@ ECMP is automatically enabled when multiple routes to the same destination have 
 **Requirements:**
 
 1. **Same metric** — Routes must have identical cost
-   - BGP default: AS-Path length
-   - If AS-Path differs, highest metric loses (longer path deprioritized)
-   - Solution: Use `bestpath as-path ignore` or `local-preference` to override
+
+    - BGP default: AS-Path length
+    - If AS-Path differs, highest metric loses (longer path deprioritized)
+    - Solution: Use `bestpath as-path ignore` or `local-preference` to override
 1. **Same next-hop weight** (optional) — Routes can have different BGP next-hops
+
 1. **Maximum paths configured** — Default is often 1; increase to allow multiple:
 
 ```ios

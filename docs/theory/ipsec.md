@@ -1,8 +1,10 @@
 # IPsec and IKE
 
 IPsec is a suite of protocols that operates at Layer 3 to provide
+
 **authentication** (proof of data origin), **integrity** (detection of
 in-transit modification via HMAC), **confidentiality** (encryption), and
+
 **anti-replay protection** (sequence numbers that reject duplicate or
 out-of-order packets). Because IPsec is implemented in the IP stack rather than
 in applications, it is transparent to the applications using the tunnel — no
@@ -188,15 +190,15 @@ handle TCP/UDP port numbers. NAT-T solves this by wrapping ESP inside UDP port
 Detection and activation:
 
 1. During `IKE_SA_INIT`, both peers include a NAT detection notification payload
-2. Each peer hashes its own IP and port; if the received hash does not match the
+1. Each peer hashes its own IP and port; if the received hash does not match the
 
    observed source address, NAT is present
 
-3. If either peer detects NAT, both peers switch to UDP 4500 for all subsequent
+1. If either peer detects NAT, both peers switch to UDP 4500 for all subsequent
 
    IKE and ESP traffic
 
-4. ESP packets are encapsulated as: `UDP 4500 | Non-ESP Marker | ESP`
+1. ESP packets are encapsulated as: `UDP 4500 | Non-ESP Marker | ESP`
 
 NAT-T is built into IKEv2 and requires no explicit configuration on most
 platforms. IKEv1 requires NAT-T to be explicitly enabled on older implementations.
@@ -255,13 +257,17 @@ encrypted.
 
 - **SPI (Security Parameter Index)**: 32-bit index chosen by the receiving peer; identifies which SA
   to use for decryption
+
 - **Sequence Number**: 32-bit counter incremented for each packet; used for anti-replay protection
   and reordering detection
+
 - **Initialization Vector (IV)**: Random or pseudorandom value for block ciphers; sent in clear
   (not encrypted)
+
 - **Encrypted Payload**: Original IP packet (tunnel mode) or original payload (transport mode)
 - **Padding**: Added to align plaintext to cipher block size; also provides some traffic analysis
   obfuscation
+
 - **Pad Length**: Number of padding bytes added
 - **Next Header**: Identifies protocol of decrypted payload (IP, GRE, etc.)
 - **Authentication Tag (ICV)**: HMAC or AEAD tag covering SPI, sequence number, and encrypted
@@ -279,6 +285,7 @@ IPsec.
 
 - A **single SA** carries encrypted traffic between two peer IP addresses (e.g., 10.0.0.1 ↔
   10.0.0.2)
+
 - **Traffic selectors (TS)** define which application flows are protected by that SA:
   - `TSi` (Initiator Traffic Selector): Initiator's traffic (e.g., source 10.1.0.0/24)
   - `TSr` (Responder Traffic Selector): Responder's traffic (e.g., destination 10.2.0.0/24)
@@ -687,6 +694,7 @@ IPsec adds overhead to packets, reducing MTU available for original traffic.
 
 ```text
 Tunnel Mode Overhead:
+
   - New IP header: 20 bytes (IPv4) or 40 bytes (IPv6)
   - ESP header: 8 bytes (SPI + Seq)
   - ESP trailer: 1-16 bytes (padding + pad-len + next-header)
@@ -694,11 +702,13 @@ Tunnel Mode Overhead:
   Total: ~40-80+ bytes
 
 Example: Standard 1500-byte Ethernet MTU
+
   - IP header: 20 bytes
   - TCP header: 20 bytes
   - Usable payload: 1460 bytes
 
 After IPsec tunnel:
+
   - Outer IP header: 20 bytes
   - ESP header: 8 bytes
   - Encrypted (IP + TCP + payload + padding): ~1490 bytes
@@ -711,8 +721,8 @@ After IPsec tunnel:
 Traditional PMTUD (using ICMP Unreachable - Fragmentation Needed) breaks with IPsec because:
 
 1. ICMP messages do not contain the original packet's SPI
-2. Responder cannot determine which IPsec SA generated the oversized packet
-3. ICMP filtering on firewalls prevents messages reaching the initiator
+1. Responder cannot determine which IPsec SA generated the oversized packet
+1. ICMP filtering on firewalls prevents messages reaching the initiator
 
 #### Solution: IPsec-aware PMTUD
 
@@ -721,6 +731,7 @@ Modern IPsec stacks use:
 - **RFC 4821 (PLPMTUD):** Probe-based MTU discovery (TCP/UDP probes); does not rely on ICMP
 - **MTU configuration:** Administratively reduce tunnel MTU to 1280-1400 bytes (safe for most
   networks)
+
 - **MSS clamping:** Reduce TCP MSS (Maximum Segment Size) via `ip tcp adjust-mss` on the tunnel
   interface
 

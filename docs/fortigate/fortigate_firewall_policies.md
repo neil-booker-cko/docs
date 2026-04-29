@@ -7,6 +7,7 @@ FortiGate.
 
 FortiGate uses **firewall policies** to control traffic flow between interfaces. Unlike
 traditional ACLs (which work on a single device), firewall policies define
+
 **source→destination→action rules** for bidirectional security.
 
 ### Policy vs ACL
@@ -28,12 +29,13 @@ traditional ACLs (which work on a single device), firewall policies define
 When a packet arrives:
 
 ```text
+
 1. Packet enters ingress interface
-2. FortiGate looks up matching policy
-3. Policy specifies: source zone, dest zone, services, action
-4. If allowed: inspect & forward
-5. If denied: drop (optionally log)
-6. Send out egress interface
+1. FortiGate looks up matching policy
+1. Policy specifies: source zone, dest zone, services, action
+1. If allowed: inspect & forward
+1. If denied: drop (optionally log)
+1. Send out egress interface
 ```
 
 ### Key Components

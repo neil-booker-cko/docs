@@ -17,8 +17,10 @@ applications. The minimum header is 20 bytes; the Options field can extend it to
 ## Header Structure
 
 ```mermaid
+
 ---
 title: "TCP Packet"
+
 ---
 packet
 0-15: "Source Port"
@@ -136,7 +138,9 @@ sequenceDiagram
 
 - **Window Scale option** (RFC 1323) shifts the Window Size field left by up to 14
   bits, allowing windows up to 1 GB — essential for high-bandwidth, high-latency paths.
+
 - **SACK (Selective Acknowledgment)** allows the receiver to acknowledge
   non-contiguous blocks, avoiding unnecessary retransmission of already-received data.
+
 - **Timestamps option** enables RTT measurement and protects against sequence number
   wrap-around (PAWS) on fast connections.

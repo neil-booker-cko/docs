@@ -90,54 +90,60 @@ nav:
           - AAA: fortigate/aaa-minimal.md
           - SSH: fortigate/ssh-minimal.md
           - Security Hardening: fortigate/security-hardening-minimal.md
-  - Fundamentals:
-      - Theory:
-          - Protocol & Technology Comparisons:
-              - IGPs vs EGPs: theory/igp_vs_egp.md
-              - eBGP vs iBGP: theory/ebgp_vs_ibgp.md
-              - OSPF vs EIGRP: theory/ospf_vs_eigrp.md
-              - OSPF vs IS-IS: theory/ospf_vs_isis.md
-              - EIGRP vs OSPF vs RIP: theory/igp_comparison.md
-              - Static vs Dynamic Routing: theory/static_vs_dynamic_routing.md
-              - BGP vs BFD: theory/bgp_bfd_comparison.md
-              - OSPF vs BFD: theory/ospf_bfd_comparison.md
-              - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
-              - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
-              - NTP vs PTP: theory/ntp_vs_ptp.md
-              - SNTP vs NTP: theory/sntp_vs_ntp.md
-              - HSRP vs VRRP vs GLBP: theory/hsrp_vrrp_vs_glbp.md
-              - CDP vs LLDP: theory/cdp_vs_lldp.md
-              - RADIUS vs TACACS+ vs LDAP: theory/radius_vs_tacacs_vs_ldap.md
-          - Network Fundamentals:
-              - Physical Layer (L1): theory/physical_layer.md
-              - Ethernet Evolution: theory/ethernet_evolution.md
-              - Switching Fundamentals (L2): theory/switching_fundamentals.md
-              - Interface & Routing Fundamentals: theory/interface_routing_fundamentals.md
-              - IP Addressing & Subnetting Design: theory/ip_addressing_design.md
-              - VLANs & 802.1Q: theory/vlans.md
-              - Port Aggregation (LAG): theory/port_aggregation.md
-              - NAT: theory/nat.md
-          - Protocol & Technology Deep Dives:
-              - Active-Active & Multi-Path: theory/active_active_multipath.md
-              - DMVPN: theory/dmvpn.md
-              - GLBP: theory/glbp.md
-              - MPLS Fundamentals: theory/mpls.md
-              - Multicast: theory/multicast.md
-              - OSPF Advanced: theory/ospf_advanced.md
-              - Policy-Based Routing: theory/policy_based_routing.md
-              - Quality of Service: theory/qos.md
-              - Route Redistribution: theory/route_redistribution.md
-          - Architecture & Design:
-              - Cloud Connectivity Comparison: theory/cloud_connectivity_comparison.md
-              - Cloud Network Design: theory/cloud_network_design.md
-              - Data Centre Topologies: theory/dc_topologies.md
-              - Firewall Rule Processing: theory/firewall_rule_processing.md
-              - Spanning Tree Design: theory/spanning_tree.md
-              - STP/RSTP Configuration: theory/stp_rstp_configuration.md
-              - SD-WAN Design Principles: theory/sdwan.md
-          - Security:
-              - DHCP Security: theory/dhcp_security.md
-              - IPsec & IKE: theory/ipsec.md
+  - Theory:
+      - Protocol & Technology Comparisons:
+          - IGPs vs EGPs: theory/igp_vs_egp.md
+          - eBGP vs iBGP: theory/ebgp_vs_ibgp.md
+          - OSPF vs EIGRP: theory/ospf_vs_eigrp.md
+          - OSPF vs IS-IS: theory/ospf_vs_isis.md
+          - EIGRP vs OSPF vs RIP: theory/igp_comparison.md
+          - Static vs Dynamic Routing: theory/static_vs_dynamic_routing.md
+          - BGP vs BFD: theory/bgp_bfd_comparison.md
+          - OSPF vs BFD: theory/ospf_bfd_comparison.md
+          - EIGRP vs BFD: theory/eigrp_bfd_comparison.md
+          - IPv4 vs IPv6: theory/ipv4_vs_ipv6.md
+          - NTP vs PTP: theory/ntp_vs_ptp.md
+          - SNTP vs NTP: theory/sntp_vs_ntp.md
+          - HSRP vs VRRP vs GLBP: theory/hsrp_vrrp_vs_glbp.md
+          - CDP vs LLDP: theory/cdp_vs_lldp.md
+          - RADIUS vs TACACS+ vs LDAP: theory/radius_vs_tacacs_vs_ldap.md
+      - Network Fundamentals:
+          - Physical Layer (L1): theory/physical_layer.md
+          - Ethernet Evolution: theory/ethernet_evolution.md
+          - Switching Fundamentals (L2): theory/switching_fundamentals.md
+          - Interface & Routing Fundamentals: theory/interface_routing_fundamentals.md
+          - IP Addressing & Subnetting Design: theory/ip_addressing_design.md
+          - VLANs & 802.1Q: theory/vlans.md
+          - Port Aggregation (LAG): theory/port_aggregation.md
+          - NAT: theory/nat.md
+      - Protocol & Technology Deep Dives:
+          - Active-Active & Multi-Path: theory/active_active_multipath.md
+          - DMVPN: theory/dmvpn.md
+          - GLBP: theory/glbp.md
+          - MPLS Fundamentals: theory/mpls.md
+          - Multicast: theory/multicast.md
+          - OSPF Advanced: theory/ospf_advanced.md
+          - Policy-Based Routing: theory/policy_based_routing.md
+          - Quality of Service: theory/qos.md
+          - Route Redistribution: theory/route_redistribution.md
+      - Architecture & Design:
+          - Cloud Connectivity Comparison: theory/cloud_connectivity_comparison.md
+          - Cloud Network Design: theory/cloud_network_design.md
+          - Data Centre Topologies: theory/dc_topologies.md
+          - Firewall Rule Processing: theory/firewall_rule_processing.md
+          - Spanning Tree Design: theory/spanning_tree.md
+          - STP/RSTP Configuration: theory/stp_rstp_configuration.md
+          - SD-WAN Design Principles: theory/sdwan.md
+      - Security:
+          - DHCP Security: theory/dhcp_security.md
+          - IPsec & IKE: theory/ipsec.md
+      - WiFi:
+          - WiFi Standards Comparison: theory/wifi_standards_comparison.md
+          - WiFi RF Fundamentals: theory/wifi_rf_fundamentals.md
+          - WiFi Authentication (802.1X): theory/wifi_authentication_8021x.md
+          - WiFi Roaming (802.11r/k/v): theory/wifi_roaming.md
+          - WiFi Security (WPA/WPA2/WPA3): theory/wifi_security.md
+          - WiFi Network Design: theory/wifi_network_design.md
       - Routing Protocols:
           - Overview: routing/index.md
           - BGP: routing/bgp.md
@@ -148,118 +154,118 @@ nav:
       - Application Protocols:
           - Overview: application/index.md
           - Web:
-              - HTTP / HTTPS: application/http.md
+          - HTTP / HTTPS: application/http.md
           - Infrastructure:
-              - DNS: application/dns.md
-              - DHCP: application/dhcp.md
-              - NTP: application/ntp.md
-              - PTP: application/ptp.md
+          - DNS: application/dns.md
+          - DHCP: application/dhcp.md
+          - NTP: application/ntp.md
+          - PTP: application/ptp.md
           - AAA:
-              - RADIUS: application/radius.md
-              - TACACS+: application/tacacs.md
+          - RADIUS: application/radius.md
+          - TACACS+: application/tacacs.md
           - Management & Monitoring:
-              - SSH: application/ssh.md
-              - SNMP: application/snmp.md
-              - Syslog: application/syslog.md
-              - NetFlow / IPFIX: application/netflow.md
-              - NETCONF / RESTCONF: application/netconf.md
-              - gNMI: application/gnmi.md
+          - SSH: application/ssh.md
+          - SNMP: application/snmp.md
+          - Syslog: application/syslog.md
+          - NetFlow / IPFIX: application/netflow.md
+          - NETCONF / RESTCONF: application/netconf.md
+          - gNMI: application/gnmi.md
       - Packet Headers:
           - Overview: packets/index.md
           - Layer 2 — Data Link:
-              - Ethernet II: packets/ethernet.md
-              - ARP: packets/arp.md
-              - STP / RSTP: packets/stp.md
-              - LLDP: packets/lldp.md
-              - CDP: packets/cdp.md
-              - LACP: packets/lacp.md
+          - Ethernet II: packets/ethernet.md
+          - ARP: packets/arp.md
+          - STP / RSTP: packets/stp.md
+          - LLDP: packets/lldp.md
+          - CDP: packets/cdp.md
+          - LACP: packets/lacp.md
           - Layer 2.5 — MPLS:
-              - MPLS: packets/mpls.md
+          - MPLS: packets/mpls.md
           - Layer 3 — Network & Routing:
-              - IPv4: packets/ipv4.md
-              - IPv6: packets/ipv6.md
-              - ICMP: packets/icmp.md
-              - GRE: packets/gre.md
-              - VXLAN: packets/vxlan.md
-              - OSPF: packets/ospf.md
-              - BGP: packets/bgp.md
-              - IS-IS: packets/isis.md
-              - IGMP: packets/igmp.md
-              - VRRP: packets/vrrp.md
-              - HSRP: packets/hsrp.md
+          - IPv4: packets/ipv4.md
+          - IPv6: packets/ipv6.md
+          - ICMP: packets/icmp.md
+          - GRE: packets/gre.md
+          - VXLAN: packets/vxlan.md
+          - OSPF: packets/ospf.md
+          - BGP: packets/bgp.md
+          - IS-IS: packets/isis.md
+          - IGMP: packets/igmp.md
+          - VRRP: packets/vrrp.md
+          - HSRP: packets/hsrp.md
           - Layer 4 — Transport:
-              - TCP: packets/tcp.md
-              - UDP: packets/udp.md
-              - BFD: packets/bfd.md
+          - TCP: packets/tcp.md
+          - UDP: packets/udp.md
+          - BFD: packets/bfd.md
           - Layer 7 — Application:
-              - NTP: packets/ntp.md
-              - PTP: packets/ptp.md
-              - DNS: packets/dns.md
-              - DHCP: packets/dhcp.md
+          - NTP: packets/ntp.md
+          - PTP: packets/ptp.md
+          - DNS: packets/dns.md
+          - DHCP: packets/dhcp.md
   - Cisco & FortiGate:
       - Cisco:
           - Fundamentals:
-              - Interface & Routing Basics: cisco/cisco_interface_routing_basics.md
-              - VLAN Config: cisco/cisco_vlan_config.md
+          - Interface & Routing Basics: cisco/cisco_interface_routing_basics.md
+          - VLAN Config: cisco/cisco_vlan_config.md
           - Routing Protocols:
-              - EIGRP Config: cisco/cisco_eigrp_config.md
-              - IS-IS Config: cisco/cisco_isis_config.md
-              - OSPF Config: cisco/cisco_ospf_config.md
-              - Route Redistribution: cisco/cisco_route_redistribution.md
-              - BGP & iBGP Design: cisco/cisco_bgp_ibgp.md
-              - BGP Route Reflectors: cisco/cisco_bgp_route_reflectors.md
-              - BGP Route Aggregation: cisco/cisco_bgp_aggregation.md
-              - Policy-Based Routing: cisco/cisco_pbr_config.md
+          - EIGRP Config: cisco/cisco_eigrp_config.md
+          - IS-IS Config: cisco/cisco_isis_config.md
+          - OSPF Config: cisco/cisco_ospf_config.md
+          - Route Redistribution: cisco/cisco_route_redistribution.md
+          - BGP & iBGP Design: cisco/cisco_bgp_ibgp.md
+          - BGP Route Reflectors: cisco/cisco_bgp_route_reflectors.md
+          - BGP Route Aggregation: cisco/cisco_bgp_aggregation.md
+          - Policy-Based Routing: cisco/cisco_pbr_config.md
           - Switching & Redundancy:
-              - STP/RSTP Config: cisco/cisco_stp_rstp_config.md
-              - EtherChannel (LAG) Config: cisco/cisco_etherchannel_config.md
-              - DHCP, Snooping & DAI: cisco/cisco_dhcp_snooping.md
-              - HSRP & VRRP: cisco/cisco_hsrp_vrrp.md
-              - GLBP Config: cisco/cisco_glbp_config.md
+          - STP/RSTP Config: cisco/cisco_stp_rstp_config.md
+          - EtherChannel (LAG) Config: cisco/cisco_etherchannel_config.md
+          - DHCP, Snooping & DAI: cisco/cisco_dhcp_snooping.md
+          - HSRP & VRRP: cisco/cisco_hsrp_vrrp.md
+          - GLBP Config: cisco/cisco_glbp_config.md
           - Security & Access Control:
-              - ACL Config: cisco/cisco_acl_config.md
-              - NAT Config: cisco/cisco_nat_config.md
-              - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
+          - ACL Config: cisco/cisco_acl_config.md
+          - NAT Config: cisco/cisco_nat_config.md
+          - VRF-Lite (Cloud Separation): cisco/cisco_vrf_config.md
           - Network Services:
-              - QoS Config: cisco/cisco_qos_config.md
-              - Multicast & PIM: cisco/cisco_multicast_pim.md
+          - QoS Config: cisco/cisco_qos_config.md
+          - Multicast & PIM: cisco/cisco_multicast_pim.md
           - Reliability & Cloud:
-              - BFD Core Config: cisco/cisco_bfd_config_guide.md
-              - Static BFD: cisco/cisco_static_bfd_guide.md
-              - Multihop BFD: cisco/cisco_multihop_bfd_guide.md
-              - Active/Passive to AWS TGW: cisco/cisco_aws_tgw_dx.md
+          - BFD Core Config: cisco/cisco_bfd_config_guide.md
+          - Static BFD: cisco/cisco_static_bfd_guide.md
+          - Multihop BFD: cisco/cisco_multihop_bfd_guide.md
+          - Active/Passive to AWS TGW: cisco/cisco_aws_tgw_dx.md
           - VPN & Tunneling:
-              - DMVPN Config: cisco/cisco_dmvpn_config.md
+          - DMVPN Config: cisco/cisco_dmvpn_config.md
           - Management & Monitoring:
-              - AAA Config: cisco/cisco_aaa_config.md
-              - Syslog Config: cisco/cisco_syslog_config.md
-              - SNMP Config: cisco/cisco_snmp_config.md
+          - AAA Config: cisco/cisco_aaa_config.md
+          - Syslog Config: cisco/cisco_syslog_config.md
+          - SNMP Config: cisco/cisco_snmp_config.md
       - FortiGate:
           - Fundamentals:
-              - Interface & Routing Basics: fortigate/fortigate_interface_routing_basics.md
+          - Interface & Routing Basics: fortigate/fortigate_interface_routing_basics.md
           - Routing Protocols:
-              - BGP Config: fortigate/fortigate_bgp_config.md
-              - BGP Route Aggregation: fortigate/fortigate_bgp_aggregation.md
-              - OSPF Config: fortigate/fortigate_ospf_config.md
-              - Route Redistribution: fortigate/fortigate_route_redistribution.md
-              - Policy-Based Routing: fortigate/fortigate_pbr_config.md
+          - BGP Config: fortigate/fortigate_bgp_config.md
+          - BGP Route Aggregation: fortigate/fortigate_bgp_aggregation.md
+          - OSPF Config: fortigate/fortigate_ospf_config.md
+          - Route Redistribution: fortigate/fortigate_route_redistribution.md
+          - Policy-Based Routing: fortigate/fortigate_pbr_config.md
           - Switching & Redundancy:
-              - LAG (Link Aggregation) Config: fortigate/fortigate_lag_config.md
-              - STP/RSTP Config: fortigate/fortigate_stp_rstp_config.md
-              - VRRP: fortigate/fortigate_vrrp.md
-              - HA (FGCP): fortigate/fortigate_ha.md
+          - LAG (Link Aggregation) Config: fortigate/fortigate_lag_config.md
+          - STP/RSTP Config: fortigate/fortigate_stp_rstp_config.md
+          - VRRP: fortigate/fortigate_vrrp.md
+          - HA (FGCP): fortigate/fortigate_ha.md
           - Security & Access Control:
-              - Firewall Policies & Access Control: fortigate/fortigate_firewall_policies.md
-              - NAT: fortigate/fortigate_nat.md
+          - Firewall Policies & Access Control: fortigate/fortigate_firewall_policies.md
+          - NAT: fortigate/fortigate_nat.md
           - Network Services:
-              - QoS Configuration: fortigate/fortigate_qos_config.md
+          - QoS Configuration: fortigate/fortigate_qos_config.md
           - Reliability & Cloud:
-              - BFD Core Config: fortigate/fortigate_bfd_config_guide.md
-              - Static BFD & Health Checks: fortigate/fortigate_static_bfd_guide.md
-              - Multihop BFD: fortigate/fortigate_multihop_bfd_guide.md
-              - SD-WAN: fortigate/fortigate_sdwan.md
+          - BFD Core Config: fortigate/fortigate_bfd_config_guide.md
+          - Static BFD & Health Checks: fortigate/fortigate_static_bfd_guide.md
+          - Multihop BFD: fortigate/fortigate_multihop_bfd_guide.md
+          - SD-WAN: fortigate/fortigate_sdwan.md
           - VPN & Tunneling:
-              - Third-Party VPN: fortigate/fortigate_third_party_vpn.md
+          - Third-Party VPN: fortigate/fortigate_third_party_vpn.md
   - Cloud Architecture:
       - AWS:
           - Direct Connect Setup: aws/aws_direct_connect_setup.md

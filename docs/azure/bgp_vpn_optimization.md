@@ -5,6 +5,7 @@
 An active-active Azure VPN Gateway deploys two gateway instances, each with its own
 public IP and BGP peering address. This provides redundancy at the gateway level and
 enables ECMP load balancing across both IPsec tunnels when combined with
+
 **ebgp-multipath** on the FortiGate.
 
 ### Why Active-Active
@@ -37,6 +38,7 @@ risk at default settings.
 
 ---
 title: "Active-Active VPN Gateway"
+
 ---
 graph LR
     FG["FortiGate<br/>AS 65000"]
@@ -231,6 +233,7 @@ end
 ### D. Connection Weight (Azure Side)
 
 If active-active is not desired and one tunnel should be preferred, set a higher
+
 **connection weight** on the preferred tunnel in the Azure portal or via CLI. This
 is the Azure equivalent of Local Preference for VPN paths.
 

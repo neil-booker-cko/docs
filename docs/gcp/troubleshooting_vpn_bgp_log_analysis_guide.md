@@ -6,6 +6,7 @@ This guide covers log signatures for common failure scenarios in the
 Cloud Interconnect + HA VPN overlay architecture: IKEv2 negotiation failures,
 DPD timeouts, BGP session drops, and Cloud Interconnect underlay issues.
 Log sources are FortiGate and Cisco IOS-XE. GCP-side events are visible via
+
 **Cloud Logging** (`gcloud logging`) and the Cloud Console VPN/Router pages.
 
 ---
@@ -75,6 +76,7 @@ circuit metrics or Cisco interface errors if both tunnels DPD simultaneously.
 gcloud logging read \
   'resource.type="vpn_tunnel" AND
    (jsonPayload.message:"DPD" OR jsonPayload.message:"tunnel down")' \
+
   --limit=20 --format=json
 ```
 
@@ -136,11 +138,13 @@ get router info bgp network
 
 # Confirm Cloud Router sees the on-premises prefix
 gcloud compute routers get-status gcp-vpn-router \
+
   --region=europe-west2 \
   --format="json(result.bgpPeerStatus)"
 
 # Check what routes are being advertised to FortiGate
 gcloud compute routers get-status gcp-vpn-router \
+
   --region=europe-west2 \
   --format="json(result.bgpPeerStatus[].advertisedRoutes)"
 ```
@@ -185,6 +189,7 @@ show bgp neighbors 169.254.0.2 | include BGP state|Hold|keepalive
 
 # Check VLAN attachment operational state
 gcloud compute interconnects attachments describe <ATTACHMENT-NAME> \
+
   --region=europe-west2 \
   --format="yaml(operationalStatus,state)"
 
@@ -246,6 +251,7 @@ gcloud logging read \
   'resource.type=("vpn_tunnel" OR "gce_router") AND
    (jsonPayload.message:"BGP" OR
     jsonPayload.message:"IKE" OR jsonPayload.message:"DPD")' \
+
   --freshness=1h \
   --limit=50 \
   --format="table(timestamp,resource.type,jsonPayload.message)"

@@ -31,6 +31,7 @@ to drop; the other tunnel's BGP session is unaffected.
 
 ---
 title: "HA VPN Active-Active"
+
 ---
 graph LR
     FG["FortiGate<br/>AS 65000"]
@@ -79,12 +80,14 @@ Terraform. Key parameters for the HA VPN BGP sessions:
 
 # Create Cloud Router for HA VPN
 gcloud compute routers create gcp-vpn-router \
+
   --network=prod-vpc \
   --asn=65001 \
   --region=europe-west2
 
 # Add BGP interface for Tunnel 1
 gcloud compute routers add-interface gcp-vpn-router \
+
   --interface-name=if-tunnel1 \
   --vpn-tunnel=gcp-havpn-tunnel1 \
   --ip-address=169.254.1.1 \
@@ -93,6 +96,7 @@ gcloud compute routers add-interface gcp-vpn-router \
 
 # Add BGP peer for Tunnel 1
 gcloud compute routers add-bgp-peer gcp-vpn-router \
+
   --peer-name=peer-tunnel1-fortigate \
   --peer-asn=65000 \
   --interface=if-tunnel1 \
@@ -102,6 +106,7 @@ gcloud compute routers add-bgp-peer gcp-vpn-router \
 
 # Repeat for Tunnel 2
 gcloud compute routers add-interface gcp-vpn-router \
+
   --interface-name=if-tunnel2 \
   --vpn-tunnel=gcp-havpn-tunnel2 \
   --ip-address=169.254.2.1 \
@@ -109,6 +114,7 @@ gcloud compute routers add-interface gcp-vpn-router \
   --region=europe-west2
 
 gcloud compute routers add-bgp-peer gcp-vpn-router \
+
   --peer-name=peer-tunnel2-fortigate \
   --peer-asn=65000 \
   --interface=if-tunnel2 \
@@ -131,11 +137,13 @@ per BGP session to make one tunnel preferred for inbound GCP-to-on-premises traf
 
 # Make Tunnel 1 preferred inbound from GCP
 gcloud compute routers update-bgp-peer gcp-vpn-router \
+
   --peer-name=peer-tunnel1-fortigate \
   --advertised-route-priority=100 \
   --region=europe-west2
 
 gcloud compute routers update-bgp-peer gcp-vpn-router \
+
   --peer-name=peer-tunnel2-fortigate \
   --advertised-route-priority=200 \
   --region=europe-west2
@@ -181,11 +189,13 @@ for production use.
 ### B. Route Advertisements from Cloud Router
 
 By default, Cloud Router advertises all VPC subnet routes. For large VPCs, use
+
 **custom route advertisements** to control what is sent to on-premises peers:
 
 ```bash
 
 gcloud compute routers update gcp-vpn-router \
+
   --advertisement-mode=custom \
   --set-advertisement-groups="" \
   --set-advertisement-ranges="10.128.0.0/20" \

@@ -11,8 +11,10 @@ advantages of the dedicated link.
 ### The Protocol Stack
 
 ```mermaid
+
 ---
 title: "Protocol Stack"
+
 ---
 flowchart TD
     A["Application Traffic"]
@@ -52,6 +54,7 @@ flowchart TD
 
 ---
 title: "Redundant Azure Architecture (Active/Failover ER, Active/Active VPN)"
+
 ---
 graph TB
     subgraph OnPrem["On-Premises"]

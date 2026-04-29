@@ -24,8 +24,10 @@ operates over IPv4; OSPFv3 (RFC 5340) operates over IPv6. OSPF runs directly ove
 All OSPF packets share a 24-byte (OSPFv2) common header.
 
 ```mermaid
+
 ---
 title: "OSPF Common Header (OSPFv2)"
+
 ---
 packet-beta
 0-7: "Version"
@@ -60,6 +62,7 @@ periodically on every OSPF-enabled interface.
 
 ---
 title: "OSPF Hello Packet"
+
 ---
 packet-beta
 0-7: "Version"

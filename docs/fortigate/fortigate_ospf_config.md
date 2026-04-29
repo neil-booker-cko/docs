@@ -54,8 +54,8 @@ end
 Every OSPF router needs a unique router ID. FortiGate uses:
 
 1. Explicitly configured router ID (best)
-2. Loopback IP address (if configured)
-3. Highest interface IP address (if no loopback)
+1. Loopback IP address (if configured)
+1. Highest interface IP address (if no loopback)
 
 **Best practice:** Set router ID explicitly to loopback address.
 

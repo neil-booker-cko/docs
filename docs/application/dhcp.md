@@ -22,8 +22,10 @@ is an alternative for IPv6 address assignment.
 ## DHCPv4 Message Format
 
 ```mermaid
+
 ---
 title: "DHCPv4 Message"
+
 ---
 packet-beta
 0-7: "op"

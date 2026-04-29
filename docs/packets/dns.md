@@ -21,8 +21,10 @@ internet-based applications.
 All DNS messages (query and response) share the same header and structure:
 
 ```mermaid
+
 ---
 title: "DNS Message Header (12 bytes fixed)"
+
 ---
 packet-beta
 0-15: "Transaction ID"
@@ -134,8 +136,8 @@ sequenceDiagram
 **Cache Hierarchy:**
 
 1. Client cache (OS)
-2. Recursive resolver cache (ISP/Google/Cloudflare)
-3. Authoritative nameserver (ground truth)
+1. Recursive resolver cache (ISP/Google/Cloudflare)
+1. Authoritative nameserver (ground truth)
 
 ---
 

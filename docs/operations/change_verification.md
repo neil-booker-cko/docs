@@ -76,19 +76,27 @@ management
 
 1. Run all baseline commands from the Cisco IOS-XE and/or FortiGate tables above. Save
     the full output to the change record.
+
 1. Note the exact start time of the change.
+
 1. Implement the change.
+
 1. Note the exact end time of the change.
+
 1. Run the same baseline commands again in the same order.
+
 1. Compare pre- and post-change output:
+
     - Route counts should match, or differ only as expected (e.g., a new static route was
         added intentionally)
+
     - No new interface errors or err-disabled ports
     - All BGP and OSPF neighbours re-established with matching prefix counts
     - CPU and memory have returned to baseline levels
     - Session/NAT counts are in the expected range
 1. Perform an application or service test relevant to the change (ping, traceroute,
     application login, traffic flow test).
+
 1. If all checks pass, close the change. If issues are found, follow the rollback
     triggers table below.
 

@@ -289,30 +289,33 @@ undebug all
 #### Issue: Can't query device (SNMPv2c)
 
 ```text
+
 1. Verify community string: show snmp
-2. Check ACL: show access-list
-3. Test connectivity: ping 10.0.0.1
-4. Check SNMP enabled: show snmp
-5. Verify UDP 161 open: netstat -un | grep 161
+1. Check ACL: show access-list
+1. Test connectivity: ping 10.0.0.1
+1. Check SNMP enabled: show snmp
+1. Verify UDP 161 open: netstat -un | grep 161
 ```
 
 #### Issue: Traps not arriving
 
 ```text
+
 1. Check trap receiver: show snmp host
-2. Verify trap source reachable: ping 192.0.2.50
-3. Verify trap type enabled: show snmp
-4. Check syslog for errors: show logging
+1. Verify trap source reachable: ping 192.0.2.50
+1. Verify trap type enabled: show snmp
+1. Check syslog for errors: show logging
 ```
 
 #### Issue: SNMPv3 authentication failures
 
 ```text
+
 1. Verify user exists: show snmp user
-2. Check username/password: snmp-server user admin GROUP v3
-3. Verify group permissions: show snmp group
-4. Test with wrong password: should fail with auth error
-5. Enable debug: debug snmp authentication
+1. Check username/password: snmp-server user admin GROUP v3
+1. Verify group permissions: show snmp group
+1. Test with wrong password: should fail with auth error
+1. Enable debug: debug snmp authentication
 ```
 
 ## 12. Best Practices

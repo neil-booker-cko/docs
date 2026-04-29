@@ -1,7 +1,8 @@
 # IPsec VPN Troubleshooting
 
 Layered diagnostic approach for IPsec VPN connectivity issues. IPsec VPN establishment proceeds
-through four distinct layers: network reachability, IKE Phase 1 (ISAKMP SA), IPsec Phase 2 (Child SA),
+through four distinct layers: network reachability, IKE Phase 1 (ISAKMP SA), IPsec Phase 2 (Child
+SA),
 and routing/traffic flow. Each layer has specific diagnostic commands and common failure modes.
 
 For IPsec theory see [IPsec & IKE](../theory/ipsec.md). For third-party VPN configuration see
@@ -76,6 +77,7 @@ show route 203.0.113.5
 
 ```bash
 aws ec2 describe-security-groups \
+
   --query 'SecurityGroups[*].[GroupId, GroupName, IpPermissions]' \
   --filters "Name=ip-permission.from-port,Values=500" "Name=ip-permission.to-port,Values=500"
 ```text
@@ -84,6 +86,7 @@ aws ec2 describe-security-groups \
 
 ```bash
 az network nsg rule list \
+
   --resource-group my-rg \
   --nsg-name my-nsg \
   --query "[?protocol=='UDP' && (destinationPortRange=='500' || destinationPortRange=='*')]"
@@ -182,8 +185,8 @@ show vpn ike detailed
 
 **Both sides must have:**
 1. **Same PSK** (string or hex, case-sensitive)
-2. **Peer's public IP** correctly configured
-3. **IKEv2 proposal** (encryption, integrity, DH) matching
+1. **Peer's public IP** correctly configured
+1. **IKEv2 proposal** (encryption, integrity, DH) matching
 
 ---
 
@@ -256,9 +259,9 @@ diagnose debug application ipsec -1
 
 **Both sides must have:**
 1. **Same transform-set** (ESP encryption/authentication)
-2. **Matching traffic selectors** (local subnet ↔ remote subnet)
-3. **Same PFS group** (or both disabled)
-4. **Synchronous SA lifetimes** (or at least similar)
+1. **Matching traffic selectors** (local subnet ↔ remote subnet)
+1. **Same PFS group** (or both disabled)
+1. **Synchronous SA lifetimes** (or at least similar)
 
 ---
 
@@ -288,6 +291,7 @@ show ip route 192.168.0.0
 
 ```bash
 az network route-table route list \
+
   --resource-group my-rg \
   --route-table-name my-routes \
   --query "[*].[name, addressPrefix, nextHopType]"
@@ -297,6 +301,7 @@ az network route-table route list \
 
 ```bash
 aws ec2 describe-route-tables \
+
   --route-table-ids rtb-1a2b3c4d \
   --query 'RouteTables[*].Routes[*].[DestinationCidrBlock, State, GatewayId]'
 ```text
@@ -305,6 +310,7 @@ aws ec2 describe-route-tables \
 
 ```bash
 gcloud compute routes list --filter "network:my-vpc" \
+
   --format "table(name,destination_range,next_hop_gateway,next_hop_vpn_tunnel)"
 ```text
 
@@ -324,14 +330,15 @@ Asymmetric routing occurs when return traffic takes a different path than outbou
 
 **Check:**
 1. Both sides have routes to each other's subnets
-2. Both sides send traffic through the same tunnel
-3. BGP metrics agree on which path is preferred
+1. Both sides send traffic through the same tunnel
+1. BGP metrics agree on which path is preferred
 
 **Example (asymmetric):**
 - Spoke A → Hub → Spoke B (outbound via tunnel)
 - Spoke A ← Spoke B directly (return bypasses hub; no tunnel)
 
 #### Fix:
+
 - Ensure both spokes have static routes or BGP routes pointing via hub for all remote subnets
 - In DMVPN Phase 3, disable split-horizon on hub EIGRP interface
 
@@ -348,6 +355,7 @@ show access-list | include 192.168.0.0
 
 ```bash
 aws ec2 describe-security-groups \
+
   --group-id sg-12345678 \
   --query 'SecurityGroups[0].IpPermissions'
 ```text
@@ -356,6 +364,7 @@ aws ec2 describe-security-groups \
 
 ```bash
 az network nsg rule list \
+
   --resource-group my-rg \
   --nsg-name my-nsg \
   --query "[?destinationAddressPrefix=='192.168.0.0/16']"
@@ -557,29 +566,34 @@ diagnose vpn ike log list
 ## Troubleshooting Flowchart
 
 1. **Tunnel shows down?**
-   - ✓ Check UDP 500/4500 reachability (Layer 1)
-   - ✓ Verify firewall rules allow traffic
-   - ✓ Check IKE Phase 1 status (IKE SA established?)
 
-2. **IKE Phase 1 fails?**
-   - ✓ Verify PSK matches (case-sensitive)
-   - ✓ Verify IKE proposal (encryption, integrity, DH group)
-   - ✓ Check peer IP configuration
+    - ✓ Check UDP 500/4500 reachability (Layer 1)
+    - ✓ Verify firewall rules allow traffic
+    - ✓ Check IKE Phase 1 status (IKE SA established?)
 
-3. **IKE Phase 1 OK, Phase 2 fails?**
-   - ✓ Verify IPsec transform-set matches
-   - ✓ Verify traffic selectors (local/remote subnets)
-   - ✓ Check PFS group mismatch
+1. **IKE Phase 1 fails?**
 
-4. **Tunnel up, traffic not flowing?**
-   - ✓ Verify routes exist (static or BGP)
-   - ✓ Check ACLs / firewall policies
-   - ✓ Verify MTU (1300-1400 bytes typical)
+    - ✓ Verify PSK matches (case-sensitive)
+    - ✓ Verify IKE proposal (encryption, integrity, DH group)
+    - ✓ Check peer IP configuration
 
-5. **Intermittent drops or high packet loss?**
-   - ✓ Check MTU and fragmentation
-   - ✓ Check DPD / keepalive settings
-   - ✓ Monitor SA rekey events
+1. **IKE Phase 1 OK, Phase 2 fails?**
+
+    - ✓ Verify IPsec transform-set matches
+    - ✓ Verify traffic selectors (local/remote subnets)
+    - ✓ Check PFS group mismatch
+
+1. **Tunnel up, traffic not flowing?**
+
+    - ✓ Verify routes exist (static or BGP)
+    - ✓ Check ACLs / firewall policies
+    - ✓ Verify MTU (1300-1400 bytes typical)
+
+1. **Intermittent drops or high packet loss?**
+
+    - ✓ Check MTU and fragmentation
+    - ✓ Check DPD / keepalive settings
+    - ✓ Monitor SA rekey events
 
 ---
 

@@ -263,13 +263,14 @@ Start small, scale on demand:
 ### BGP Metrics (Precedence)
 
 ```text
+
 1. Locally originated routes (highest preference)
-2. iBGP routes (lower distance than eBGP)
-3. eBGP routes
-4. AS path length (shorter preferred)
-5. Local preference (Cisco/FortiGate, higher = preferred)
-6. Weight (Cisco only, higher = preferred)
-7. MED/Metric (multi-exit discriminator, lower = preferred)
+1. iBGP routes (lower distance than eBGP)
+1. eBGP routes
+1. AS path length (shorter preferred)
+1. Local preference (Cisco/FortiGate, higher = preferred)
+1. Weight (Cisco only, higher = preferred)
+1. MED/Metric (multi-exit discriminator, lower = preferred)
 ```text
 
 ### Example: Prefer Primary Cloud via Path Length
@@ -340,16 +341,19 @@ If sub-3-second failover required (e.g., HFT trading):
 
 ```text
 Option A: BFD (Bidirectional Forwarding Detection)
+
   - Detects link failures in sub-100ms
   - Triggers BGP session reset
   - Convergence: <1 second
 
 Option B: Aggressive BGP timers (1s/3s)
+
   - Standard BGP, no extra protocol
   - Convergence: ~3–5 seconds
   - Higher CPU overhead on routers
 
 Option C: Dual active vConnections
+
   - Traffic load-balances across both
   - Failure of one = load shift (50% → 100% on other)
   - No route withdrawal needed (both paths always active)
@@ -376,6 +380,7 @@ Option C: Dual active vConnections
 ```text
 Equinix Console → Fabric → Virtual Connections
 Monitor:
+
   - vConnection status (ACTIVE, ALERTING, DOWN)
   - Bandwidth utilization (real-time graph)
   - BGP neighbor status
@@ -403,6 +408,7 @@ diagnose router bgp paths 172.31.0.0/16  (trace best path)
 
 ```text
 Export metrics:
+
   - BGP neighbor state (up/down)
   - Route count (detected changes)
   - BGP session duration (uptime)
@@ -475,7 +481,7 @@ Alternative: Separate 1 Gbps vConnection for backups
    If DOWN: Wait for Equinix to restore, or open support ticket
 ```text
 
-2. **Check layer 2 link**
+1. **Check layer 2 link**
 ```text
    Cisco: show interface [port]
    Status: up/up?
@@ -483,7 +489,7 @@ Alternative: Separate 1 Gbps vConnection for backups
    If down: Check physical cabling, cross-connect status
 ```text
 
-3. **Check BGP configuration**
+1. **Check BGP configuration**
 ```text
    Cisco: show bgp ipv4 unicast neighbors 10.255.1.2
    Expected: Remote AS 65001, local AS 65000
@@ -491,13 +497,13 @@ Alternative: Separate 1 Gbps vConnection for backups
    If mismatch: Verify ASN config
 ```text
 
-4. **Check BGP timers**
+1. **Check BGP timers**
 ```text
    BGP hello received? Check last message time
    If >9s gap: May hit holdtime, trigger neighbor down
 ```text
 
-5. **Check firewall/access**
+1. **Check firewall/access**
 ```text
    BGP uses port 179 (TCP)
    Cisco: show access-list
@@ -513,23 +519,24 @@ Alternative: Separate 1 Gbps vConnection for backups
    If neighbor DOWN: Fix BGP session first
 ```text
 
-2. **Check what FCR is advertising**
+1. **Check what FCR is advertising**
 ```text
    Cisco: show bgp ipv4 unicast neighbors 10.255.1.2 advertised-routes
 
    If no routes shown: FCR has no routes to advertise (check FCR)
 ```text
 
-3. **Check route filters**
+1. **Check route filters**
 ```text
    Cisco: show bgp ipv4 unicast neighbors 10.255.1.2 received-routes
 
    If routes shown but not in BGP table: Check route-maps, prefix-lists
 ```text
 
-4. **Check cloud provider connectivity**
+1. **Check cloud provider connectivity**
 ```text
    If expecting AWS routes but none received:
+
      - Verify AWS Direct Connect is ACTIVE
      - Check AWS BGP session with FCR
      - Verify AWS is advertising VPC CIDRs
@@ -544,14 +551,14 @@ Alternative: Separate 1 Gbps vConnection for backups
    If >85% utilized: Congestion likely, upgrade needed
 ```text
 
-2. **Check for packet loss**
+1. **Check for packet loss**
 ```text
    Cisco: ping -c 100 [cloud-destination]
 
    If loss >0.1%: Investigate congestion or link issues
 ```text
 
-3. **Measure baseline latency**
+1. **Measure baseline latency**
 ```text
    Cisco: ping [cloud-destination]
 

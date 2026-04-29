@@ -24,8 +24,10 @@ characteristics, not just shortest distance.
 All BGP messages start with a 19-byte header:
 
 ```mermaid
+
 ---
 title: "BGP Message Header (19 bytes minimum)"
+
 ---
 packet-beta
 0-127: "Marker (16 bytes, all 1s)"
@@ -67,10 +69,12 @@ Announces new routes or withdraws previously advertised routes.
 
 ```text
 Withdrawn Routes (NLRI removal):
+
   - 10.1.0.0/16
   - 10.2.0.0/16
 
 Path Attributes:
+
   - ORIGIN: IGP (learned internally) / EGP (from external) / INCOMPLETE
   - AS_PATH: [65001, 65002, 65003] (list of ASes route traversed)
   - NEXT_HOP: 192.0.2.1 (next-hop IP to reach this prefix)
@@ -80,6 +84,7 @@ Path Attributes:
   - EXTENDED COMMUNITIES: [RT:65001:100] (Route Target for VPN)
 
 NLRI (Network Layer Reachability Information):
+
   - 10.3.0.0/24
   - 10.4.0.0/24
   (prefix length + prefix = route being advertised)
@@ -88,12 +93,19 @@ NLRI (Network Layer Reachability Information):
 **Path Attributes Decision Process:**
 
 1. **Weight** (Cisco only): 0-65535; highest wins (local device only)
+
 1. **Local Preference** (IGP to EBGP): Higher wins (within AS)
+
 1. **Shortest AS_PATH**: Fewer ASes wins (loop prevention + efficiency)
+
 1. **ORIGIN**: IGP > EGP > INCOMPLETE
+
 1. **MED** (MULTI_EXIT_DISC): Lower wins (inter-AS preference)
+
 1. **EBGP vs IBGP**: EBGP preferred (true external)
+
 1. **IGP Metric**: Lowest IGP cost to NEXT_HOP wins
+
 1. **Router ID**: Lowest Router ID wins (tiebreaker)
 
 ### 3. Keepalive (Type 4)

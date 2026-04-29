@@ -162,7 +162,8 @@ Result:
 
 ### Problem: Disconnected Backbone
 
-If Area 0 is split by non-backbone routers, traffic between backbone segments must tunnel through non-backbone
+If Area 0 is split by non-backbone routers, traffic between backbone segments must tunnel through
+non-backbone
 area.
 
 ```text
@@ -197,7 +198,7 @@ Result:
 ### When Virtual Links Are Needed
 
 1. **Temporarily**: Maintenance, adding new area
-2. **Permanently**: Design error (Area 0 should be contiguous)
+1. **Permanently**: Design error (Area 0 should be contiguous)
 
 **Best practice:** Redesign to make Area 0 contiguous. Virtual links are temporary fix.
 
@@ -294,10 +295,10 @@ Recommendation: 10-50 areas (can go higher with aggregation).
 For networks with 1000+ routers:
 
 1. **Divide into multiple areas** (~50-100 routers per area)
-2. **Use route aggregation** (summarization)
-3. **Stub/Totally Stub** for edge areas
-4. **Redundant ABRs** in Area 0
-5. **Monitor CPU** on ABRs (most CPU-intensive)
+1. **Use route aggregation** (summarization)
+1. **Stub/Totally Stub** for edge areas
+1. **Redundant ABRs** in Area 0
+1. **Monitor CPU** on ABRs (most CPU-intensive)
 
 ---
 

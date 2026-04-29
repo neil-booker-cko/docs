@@ -22,8 +22,10 @@ The mandatory GRE header is 4 bytes. Optional fields are present only when the
 corresponding flag bits are set.
 
 ```mermaid
+
 ---
 title: "GRE Header (mandatory + optional fields)"
+
 ---
 packet-beta
 0: "C"

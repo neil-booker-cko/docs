@@ -469,6 +469,7 @@ Neighbor V AS MsgRcvd MsgSent InQ OutQ Up/Down State
 ```text
 show bgp ipv4 unicast
   Network Next Hop Metric LocPrf Weight Path
+
   * 10.0.0.0/8 0.0.0.0 0 32768 i
   * 172.31.0.0/16 10.255.1.2 0 100 65001 16509 i  (AWS)
   * 192.168.0.0/16 10.255.1.2 0 100 65001 8075 i  (Azure)

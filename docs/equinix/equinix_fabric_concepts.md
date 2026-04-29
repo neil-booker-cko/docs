@@ -6,7 +6,8 @@ interconnection platform.
 ## Core Concept
 
 **Equinix Fabric** is a software-defined interconnection platform enabling direct, private connections
-between cloud providers, datacenters, and enterprise networks without traversing the public internet.
+between cloud providers, datacenters, and enterprise networks without traversing the public
+internet.
 
 **Fabric Cloud Router (FCR)** is the virtual router component that manages BGP routing, traffic
 steering, and redundancy across Equinix's global network.
@@ -150,6 +151,7 @@ Use case: Gradual cloud migration, cost optimization.
 ### What is a Virtual Connection?
 
 A **logical connection** between:
+
 - Your infrastructure (DC, Equinix Metal, on-prem)
 - FCR instance
 - Cloud provider (AWS, Azure, GCP)
@@ -160,6 +162,7 @@ A **logical connection** between:
 ```text
 Equinix Metal server → (Layer 2 Link) → FCR instance
 ```text
+
 **Use case:** Apps on Metal accessing cloud via FCR.
 **Bandwidth:** Up to Metal device bandwidth (typically 40Gbps – 100Gbps).
 
@@ -167,6 +170,7 @@ Equinix Metal server → (Layer 2 Link) → FCR instance
 ```text
 Your datacenter → (Dark fiber or wavelength) → Equinix IBX → FCR
 ```text
+
 **Use case:** On-prem datacenters to cloud via FCR.
 **Bandwidth:** 1Gbps, 10Gbps, 100Gbps (depending on carrier agreement).
 
@@ -174,6 +178,7 @@ Your datacenter → (Dark fiber or wavelength) → Equinix IBX → FCR
 ```text
 FCR → (Private link to AWS/Azure/GCP) → Cloud Provider
 ```text
+
 **Use case:** Routing from FCR to cloud (BGP-advertised routes).
 **Bandwidth:** Up to 400Gbps (varies by cloud provider).
 
@@ -191,6 +196,7 @@ Provisioning → Configuring → Waiting for BGP → Active
 ### BGP Peering Model
 
 FCR acts as a **BGP router** peering with:
+
 - Your on-prem routers (Cisco, FortiGate)
 - Cloud provider routers (AWS Transit Gateway, Azure VPN Gateway)
 - Other FCR instances (in multi-metro deployments)
@@ -210,6 +216,7 @@ Your Cisco Router
 ### AS Path and Route Propagation
 
 Equinix assigns:
+
 - **Public ASN** (shared, for simplicity)
 - **Private ASN** (dedicated, for complex topologies)
 

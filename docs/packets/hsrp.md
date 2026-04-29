@@ -21,8 +21,10 @@ for hosts using a virtual IP address.
 ### HSRPv1 Packet Format (UDP Port 1985)
 
 ```mermaid
+
 ---
 title: "HSRPv1 Packet"
+
 ---
 packet-beta
 0-3: "Version"

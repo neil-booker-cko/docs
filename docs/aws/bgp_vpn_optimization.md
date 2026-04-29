@@ -9,6 +9,7 @@ balancing (ECMP) across both VPN tunnels.
 ### The "BGP > DPD" Safety Rule
 
 To prevent routing instability, your **BGP Hold Timer** must be greater than your
+
 **Total DPD Detection Time**. If BGP expires before DPD, the session will flap before
 the interface is even marked down.
 

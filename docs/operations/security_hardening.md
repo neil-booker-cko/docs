@@ -40,8 +40,8 @@ expensive. MD5 is fast and vulnerable to rainbow tables.
 Cisco does NOT have built-in password expiration for local users. Enforce via:
 
 1. **External AAA (TACACS+/RADIUS):** Server enforces expiration
-2. **Manual Policy:** Document and enforce password changes every 90 days
-3. **Operational Discipline:** Include in change management procedures
+1. **Manual Policy:** Document and enforce password changes every 90 days
+1. **Operational Discipline:** Include in change management procedures
 
 ```ios
 ! Example: Force password change on next login (operational note only)
@@ -628,15 +628,15 @@ execute restore config sftp backupuser@192.0.2.50:22 backup-fortigate.conf passw
 ## Deployment Order
 
 1. **First:** SSH access, disable telnet
-2. **Second:** Strong local passwords, enable TACACS+
-3. **Third:** Disable unused services
-4. **Fourth:** Configure NTP
-5. **Fifth:** Enable syslog
-6. **Sixth:** Configure SNMP v3
-7. **Seventh:** CoPP / DDoS protection
-8. **Eighth:** Certificate management
-9. **Ninth:** Backup procedures
-10. **Tenth:** Monitoring and alerting
+1. **Second:** Strong local passwords, enable TACACS+
+1. **Third:** Disable unused services
+1. **Fourth:** Configure NTP
+1. **Fifth:** Enable syslog
+1. **Sixth:** Configure SNMP v3
+1. **Seventh:** CoPP / DDoS protection
+1. **Eighth:** Certificate management
+1. **Ninth:** Backup procedures
+1. **Tenth:** Monitoring and alerting
 
 ---
 

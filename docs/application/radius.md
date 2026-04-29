@@ -21,8 +21,10 @@ single exchange; accounting is handled separately (RFC 2866).
 ## Packet Format
 
 ```mermaid
+
 ---
 title: "RADIUS Packet"
+
 ---
 packet-beta
 0-7: "Code"
@@ -69,6 +71,7 @@ packet-beta
 
 ---
 title: "RADIUS Attribute TLV"
+
 ---
 packet-beta
 0-7: "Type (1 byte)"

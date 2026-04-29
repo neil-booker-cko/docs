@@ -296,7 +296,7 @@ Traffic between cloud resources (east-west) uses two layers of control:
    per-resource or per-subnet packet filters. These are the first and lowest-latency
    layer of control. Apply least-privilege rules at this layer.
 
-2. **Centralised firewall inspection**: for deep packet inspection, IDS/IPS, or policy
+1. **Centralised firewall inspection**: for deep packet inspection, IDS/IPS, or policy
 
    that cannot be expressed in Security Groups, route east-west traffic through a
 firewall appliance in the hub VPC. This introduces latency and throughput constraints;

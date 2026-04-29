@@ -17,8 +17,10 @@ extend it to 60 bytes. IHL indicates the actual header length in 32-bit words.
 ## Header Structure
 
 ```mermaid
+
 ---
 title: "IPv4 Header"
+
 ---
 packet-beta
 0-3: "Version"
@@ -62,5 +64,6 @@ packet-beta
   reassembles fragments using the Identification, Flags, and Fragment Offset fields.
   Setting DF prevents fragmentation and triggers an ICMP Type 3 Code 4
   (Fragmentation Needed) message back to the sender — the basis of Path MTU Discovery.
+
 - **DSCP** replaced the original ToS (Type of Service) byte. The two ECN bits were
   carved out of the original ToS field in RFC 3168.

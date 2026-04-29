@@ -4,6 +4,7 @@
 
 Bidirectional Forwarding Detection (BFD) is a low-overhead, short-duration method
 to detect path failures between adjacent forwarding engines. This guide uses the
+
 **BFD Template** approach, which is the modern standard for Cisco IOS-XE.
 
 ### The BFD Template Advantage

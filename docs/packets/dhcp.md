@@ -19,8 +19,10 @@ enterprise and service provider networks.
 ## Packet Structure
 
 ```mermaid
+
 ---
 title: "DHCP Message (Minimum 236 bytes fixed)"
+
 ---
 packet-beta
 0-7: "Op"
@@ -74,6 +76,7 @@ Client sends DHCP DISCOVER to 255.255.255.255 (broadcast):
   Transaction ID: 0x12345678
   Client MAC: 00:11:22:33:44:55
   Options:
+
     - Option 53: DHCPDISCOVER
     - Option 55: Parameter Request List (subnet mask, router, DNS, etc.)
 ```
@@ -88,6 +91,7 @@ Server sends DHCP OFFER (unicast or broadcast per flags):
   Your IP: 10.1.1.100
   Server IP: 10.1.1.1
   Options:
+
     - Option 53: DHCPOFFER
     - Option 1: Subnet Mask (255.255.255.0)
     - Option 3: Router (10.1.1.1)
@@ -105,6 +109,7 @@ Client sends DHCP REQUEST to 255.255.255.255:
   Transaction ID: 0x12345678 (matches DISCOVER/OFFER)
   Client MAC: 00:11:22:33:44:55
   Options:
+
     - Option 53: DHCPREQUEST
     - Option 50: Requested IP Address (10.1.1.100)
     - Option 54: Server Identifier (10.1.1.1)
@@ -119,6 +124,7 @@ Server sends DHCP ACK:
   Op: 2 (Reply)
   Your IP: 10.1.1.100
   Options:
+
     - Option 53: DHCPACK
     - Option 1: Subnet Mask
     - Option 3: Router
@@ -134,6 +140,7 @@ Server denies: "Can't assign that IP (already in use or out of scope)."
 Server sends DHCP NAK:
   Op: 2 (Reply)
   Options:
+
     - Option 53: DHCPNAK
     - Option 56: Message (reason for denial)
 ```
@@ -146,6 +153,7 @@ Client rejects: "That IP is already in use; offer another."
 Client sends DHCP DECLINE:
   Op: 1 (Request)
   Options:
+
     - Option 53: DHCPDECLINE
     - Option 50: Declined IP Address
     - Option 54: Server Identifier
@@ -160,6 +168,7 @@ Client sends DHCP RELEASE:
   Op: 1 (Request)
   Your IP: 10.1.1.100 (being released)
   Options:
+
     - Option 53: DHCPRELEASE
     - Option 54: Server Identifier
 ```
@@ -172,6 +181,7 @@ Client with existing IP requests: "Give me rest of config (not IP)."
 Client sends DHCP INFORM:
   Client IP: 10.1.1.100 (already assigned)
   Options:
+
     - Option 53: DHCPINFORM
     - Option 55: Parameter Request List (DNS, NTP, etc.)
 

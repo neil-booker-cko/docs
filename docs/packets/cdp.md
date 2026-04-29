@@ -24,8 +24,10 @@ CDP uses SNAP encapsulation over IEEE 802.3. After the Ethernet 802.3 + LLC + SN
 headers, the CDP payload begins:
 
 ```mermaid
+
 ---
 title: "CDP Payload Header"
+
 ---
 packet-beta
 0-7: "Version"
@@ -47,6 +49,7 @@ packet-beta
 
 ---
 title: "CDP TLV Structure"
+
 ---
 packet-beta
 0-15: "Type (16 bits)"

@@ -22,8 +22,10 @@ it was published as an informational RFC in 2016 (RFC 7868).
 ## Packet Header
 
 ```mermaid
+
 ---
 title: "EIGRP Header"
+
 ---
 packet-beta
 0-7: "Version"
@@ -98,6 +100,7 @@ Following the header, EIGRP packets carry one or more Type-Length-Value (TLV) fi
 EIGRP avoids routing loops using the **Feasibility Condition**: a neighbour's
 reported distance to a destination must be strictly less than the local router's
 feasible distance (the best known distance). Neighbours meeting this condition are
+
 **Feasible Successors** — pre-computed backup paths installed instantly on failure
 without querying.
 

@@ -1,8 +1,10 @@
 # BFD (Bidirectional Forwarding Detection) Best Practices
 
-BFD provides sub-millisecond to sub-second failure detection for routing protocols and critical links.
+BFD provides sub-millisecond to sub-second failure detection for routing protocols and critical
+links.
 Proper BFD deployment eliminates routing convergence delays, reduces false positives, and integrates
-seamlessly with OSPF, BGP, and HSRP. Hardware offload significantly reduces CPU overhead on high-speed
+seamlessly with OSPF, BGP, and HSRP. Hardware offload significantly reduces CPU overhead on
+high-speed
 links.
 
 ---
@@ -208,6 +210,7 @@ end
 ```text
 BFD 300/900 ms = 3 hellos per second (1000 ms / 300 ms)
 Router CPU must:
+
   1. Receive packet from interface (interrupt)
   2. Check sequence number
   3. Update peer state
@@ -701,6 +704,7 @@ show bfd neighbor detail
 
 ```ios
 debug bfd session
+
   *Mar 1 10:00:00.000 UTC: BFD: SH: IP: 203.0.113.2 Interface: Gi0/0
   *Mar 1 10:00:00.050 UTC: BFD: Session Up for neighbor 203.0.113.2
 
@@ -739,6 +743,7 @@ Symptoms:
   show bfd session counters: High "Transitions" count
 
 Causes:
+
   1. Link jitter/packet loss -> occasional missed hellos
   2. Asymmetric delays -> hellos arrive late
   3. CPU overload -> delayed BFD processing
@@ -754,16 +759,17 @@ Diagnosis:
 #### Mitigation
 
 ```text
+
 1. Increase BFD multiplier (3 -> 4 or 5)
    Requires more misses before timeout; tolerates occasional loss
 
-2. Increase BFD intervals (300 -> 500 or 1000 ms)
+1. Increase BFD intervals (300 -> 500 or 1000 ms)
    Fewer hellos/sec; lower CPU overhead; slower detection
 
-3. Check link quality
+1. Check link quality
    Replace cable, upgrade interface, check for duplex mismatch
 
-4. If CPU issue: reduce other processes
+1. If CPU issue: reduce other processes
    Or enable hardware offload (upgrade to ASR/FortiGate with NPU)
 ```
 
@@ -846,14 +852,15 @@ With 20 BFD sessions:
 #### Prevention
 
 ```text
+
 1. Check CPU baseline before adding BFD
    show processes cpu sorted
    If > 60%, do not add aggressive BFD
 
-2. If CPU high, upgrade hardware
+1. If CPU high, upgrade hardware
    OR: Use conservative timers (1000/3000 ms)
 
-3. Monitor after enabling BFD
+1. Monitor after enabling BFD
    show processes cpu | grep -i bfd
    BFD CPU should be <10% total
 ```
@@ -936,12 +943,13 @@ Result:
 #### Prevention
 
 ```text
+
 1. Enable BFD on interface (platform level)
-2. Enable BFD on EACH routing neighbor
+1. Enable BFD on EACH routing neighbor
    BGP: "fall-over bfd single-hop"
    OSPF: "ip ospf bfd"
 
-3. Verify:
+1. Verify:
    show bfd neighbors (BFD is up)
    show ip bgp neighbors | grep "BFD"
    show ip ospf interface | grep "BFD"

@@ -20,8 +20,10 @@ takes over with minimal traffic loss.
 ### VRRPv2 Packet Format
 
 ```mermaid
+
 ---
 title: "VRRPv2 Packet"
+
 ---
 packet-beta
 0-3: "Version"

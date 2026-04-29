@@ -19,8 +19,10 @@ multicast traffic only to interested segments.
 ### IGMPv2 Packet Format (Most Common)
 
 ```mermaid
+
 ---
 title: "IGMPv2 Packet"
+
 ---
 packet-beta
 0-7: "Type"

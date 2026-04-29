@@ -28,8 +28,10 @@ End TLV. There is no fixed-size header beyond the TLV stream.
 Each TLV begins with a 2-byte type/length word followed by a variable-length value.
 
 ```mermaid
+
 ---
 title: "LLDP TLV Structure"
+
 ---
 packet-beta
 0-6: "Type (7 bits)"
@@ -111,17 +113,22 @@ show lldp interface GigabitEthernet1/0/1
 - **Scope:** LLDP frames are consumed by the immediate Layer 2 neighbour only. They
   are never forwarded by IEEE 802.1D-compliant bridges. This makes LLDP strictly a
   single-hop discovery protocol.
+
 - **Timers:** Default transmit interval is 30 seconds with a hold multiplier of 4,
   giving a TTL of 120 seconds. A neighbour entry expires if no LLDPDU is received
   within the advertised TTL.
+
 - **TTL = 0:** When a port goes down or LLDP is disabled on an interface, a shutdown
   LLDPDU with TTL=0 is sent, instructing neighbours to immediately remove the entry
   rather than waiting for the TTL to expire.
+
 - **Simultaneous CDP:** Cisco IOS-XE can run LLDP and CDP simultaneously on the same
   interface. Both protocols are independent; each maintains its own neighbour table.
+
 - **Security:** LLDP has no authentication. It can reveal interface names, system
   descriptions, IP addresses, and capabilities to any directly connected device.
   Consider disabling LLDP on externally facing or customer-facing interfaces.
+
 - **Comparison with CDP:** See [CDP](cdp.md). LLDP is vendor-neutral and mandatory
   for multi-vendor environments; CDP provides richer Cisco-specific information
   (VoIP VLAN, PoE negotiation details, native VLAN).

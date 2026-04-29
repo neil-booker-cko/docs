@@ -225,6 +225,7 @@ For multi-VPC or multi-region access, use a DX Gateway:
    to the DX Gateway.
 
 1. **Create a Transit VIF** pointing at the DX Gateway rather than a VGW.
+
 1. Configure the customer router as above — the BGP session is the same structure; only
 
    the remote-as and the prefixes advertised by AWS differ.

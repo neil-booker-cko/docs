@@ -1,6 +1,7 @@
 # OSPF Best Practices
 
-OSPF operational best practices encompass area design, router placement, metric planning, convergence
+OSPF operational best practices encompass area design, router placement, metric planning,
+convergence
 tuning, and monitoring. Proper OSPF design dramatically improves network scalability, reduces SPF
 computation time, and enables sub-second convergence with BFD.
 
@@ -31,6 +32,7 @@ OSPF uses link-state technology: every router has a complete view of the network
 #### OSPF advantages
 
 ```text
+
 - Sub-second convergence (with BFD): no hold timers
 - Loop-free by design: SPF (Dijkstra) guarantees shortest path
 - Scales to 1000+ routers with proper area design
@@ -42,17 +44,20 @@ OSPF uses link-state technology: every router has a complete view of the network
 
 ```text
 Scenario 1: Single-area network with 500 routers
+
   - SPF recalculation takes 10+ seconds per topology change
   - One failed link causes network-wide recomputation
   - Convergence time: 30+ seconds (unacceptable)
   - Solution: Split into areas; SPF limited to affected area
 
 Scenario 2: Leaf area (single access router) receives full routing table
+
   - Leaf area routers store 50,000 LSAs
   - Memory pressure; high CPU on low-end routers
   - Solution: Use stub area; LSAs reduced to 10-100
 
 Scenario 3: All routers configured as ABRs
+
   - Multiple paths between areas (not optimal)
   - ABRs flood LSAs to all neighbors
   - Convergence slow and unpredictable
@@ -65,16 +70,19 @@ Best practice is to design OSPF in layers:
 
 ```text
 Layer 1: Backbone (Area 0)
+
   - Core routers only
   - All areas connect via backbone (either directly or through ABRs)
   - No user traffic crosses backbone (in theory; practice allows it)
 
 Layer 2: Area per data center or region
+
   - 50-100 routers max
   - Contains access routers, distribution switches, hosts
   - ABRs connect to backbone
 
 Layer 3: Stub areas (optional, leaf networks)
+
   - Single ABR; no ASBR
   - Routers don't need full routing table
   - Example: branch office with single uplink
@@ -220,6 +228,7 @@ Network layout:
 
 ```text
 Router in Area 1 needing to reach Area 2:
+
   - Sends traffic to ABR (Area 1 exit point)
   - ABR forwards to backbone
   - Backbone ABR forwards to Area 2 ABR
@@ -232,11 +241,13 @@ Benefit: Area 1 routers don't need Area 2 topology (smaller LSDB)
 
 ```text
 At 100 routers:
+
   - LSA count: ~500-1000 (one per router, per link)
   - SPF time: ~100 ms per topology change
   - Memory: ~5-10 MB per router (acceptable)
 
 At 500 routers in single area:
+
   - LSA count: ~2500-5000
   - SPF time: 2-5 seconds per change (unacceptable)
   - Memory: 50-100 MB (unacceptable on edge routers)
@@ -260,6 +271,7 @@ replaced by a default route.
 
 ```text
 Branch network:
+
   - 5 access routers
   - 1 ABR (uplink to backbone)
   - 30,000 external routes (BGP from internet)
@@ -303,13 +315,15 @@ end
 
 ### Totally Stubby Areas
 
-More restrictive than stub areas: not only external routes are blocked, but interarea routes are also
+More restrictive than stub areas: not only external routes are blocked, but interarea routes are
+also
 replaced by a single default route.
 
 #### Use case: Branch with minimal routing needs
 
 ```text
 Branch network:
+
   - Single ABR
   - 5 access routers
   - Only need default route
@@ -401,10 +415,12 @@ ASBRs import external routes (from BGP, static routes, etc.) into OSPF.
 
 ```text
 ASBR in Area 0:
+
   - All areas learn external route via backbone (normal SPF)
   - Convergence time: <100 ms
 
 ASBR in Area 1:
+
   - Other areas learn route via Area 0
   - Interarea route; slightly different SPF calculation
   - Convergence time: 100-150 ms
@@ -961,6 +977,7 @@ Question 4: Are branch sites stable (no frequent flaps)?
 
 ```text
 Problems:
+
   - SPF time: 2-3 seconds per change
   - Convergence: 30+ seconds (unacceptable)
   - Memory: 500+ MB per router
@@ -976,6 +993,7 @@ Area 2 (West DC): 70 routers
 Area 3 (Branch): 55 routers (stub)
 
 Benefits:
+
   - Area 0 SPF: 50 ms (15 routers = 15 LSAs)
   - Area 1 SPF: 80 ms (60 routers = 60 LSAs)
   - Area 3 SPF: 20 ms (stub; 5 LSAs only)
@@ -1014,10 +1032,11 @@ Convergence: 30-60 seconds
 #### Mitigation
 
 ```text
+
 1. Audit router count per area: show ip ospf database summary
-2. Split areas: Define regional boundaries
-3. Use ABRs: Control LSA flooding at area boundaries
-4. Test: Measure SPF time before/after: show ip ospf statistics
+1. Split areas: Define regional boundaries
+1. Use ABRs: Control LSA flooding at area boundaries
+1. Test: Measure SPF time before/after: show ip ospf statistics
 ```
 
 ### Mistake 2: Inconsistent Metrics
@@ -1034,10 +1053,11 @@ Path selection becomes unpredictable
 #### Mitigation
 
 ```text
+
 1. Define corporate metric policy (before deploying)
-2. Set cost on EVERY interface explicitly (no defaults)
-3. Document policy in runbook
-4. Audit: show ip ospf interface | include Cost
+1. Set cost on EVERY interface explicitly (no defaults)
+1. Document policy in runbook
+1. Audit: show ip ospf interface | include Cost
 ```
 
 ### Mistake 3: Timer Mismatches
@@ -1053,12 +1073,13 @@ Routers cannot form adjacency (timers must match)
 #### Mitigation
 
 ```text
+
 1. Standard timers for entire network
    Backbone: hello 10, dead 40
    Regional: hello 5, dead 20 (faster convergence)
 
-2. Document in configuration templates
-3. Verify: show ip ospf interface | include hello
+1. Document in configuration templates
+1. Verify: show ip ospf interface | include hello
 ```
 
 ### Mistake 4: Authentication Key Mismatch
@@ -1074,10 +1095,11 @@ Adjacency down
 #### Mitigation
 
 ```text
+
 1. Store keys in secure vault (not in running config)
-2. Use copy-paste (avoid manual typing)
-3. Test adjacency before production
-4. Verify: show ip ospf neighbor detail (should be Full)
+1. Use copy-paste (avoid manual typing)
+1. Test adjacency before production
+1. Verify: show ip ospf neighbor detail (should be Full)
 ```
 
 ### Mistake 5: ASBR Route Preference Misconfiguration
@@ -1094,9 +1116,10 @@ Sub-optimal routing
 #### Mitigation
 
 ```text
+
 1. Primary ASBR: set metric 100
-2. Secondary ASBR: set metric 200
-3. Verify: show ip route | grep external
+1. Secondary ASBR: set metric 200
+1. Verify: show ip route | grep external
 ```
 
 ---

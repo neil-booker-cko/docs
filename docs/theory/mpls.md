@@ -41,8 +41,10 @@ path
 An MPLS label is a 32-bit header inserted between Layer 2 and Layer 3:
 
 ```mermaid
+
 ---
 title: "MPLS Label"
+
 ---
 packet
 0-20: "Label"
@@ -82,6 +84,7 @@ Any router that performs MPLS forwarding. Three roles:
 - **Ingress LSR (Ingress PE)**: Receives unlabeled packets, assigns top label, forwards into MPLS domain
 - **Transit LSR (P)**: Swaps labels based on LFIB (Label Forwarding Information Base); does not examine
   IP header
+
 - **Egress LSR (Egress PE)**: Removes label(s), hands packet back to IP forwarding
 
 ### PE (Provider Edge)
@@ -171,8 +174,8 @@ A table of label mappings: for each label, which outgoing interface to use and w
 At each LSR:
 
 1. **Look up incoming label** in LFIB (O(1) hardware lookup)
-2. **Perform action**: Swap, Pop, or Push label(s)
-3. **Forward** to outgoing interface (no IP header examination needed at transit hops)
+1. **Perform action**: Swap, Pop, or Push label(s)
+1. **Forward** to outgoing interface (no IP header examination needed at transit hops)
 
 This is much faster than IPv4 longest-prefix-match at each hop.
 
@@ -207,9 +210,9 @@ CE1 generates packet: `SRC=10.1.1.10, DST=10.2.2.20`
 **At PE1 (Ingress):**
 
 1. IP lookup: destination 10.2.0.0/24 → next-hop is PE2
-2. BGP label binding: label=200 for 10.2.0.0/24
-3. Push label 200 (and possibly another label for PE2 reachability)
-4. Forward frame with MPLS label stack to P
+1. BGP label binding: label=200 for 10.2.0.0/24
+1. Push label 200 (and possibly another label for PE2 reachability)
+1. Forward frame with MPLS label stack to P
 
 **Resulting frame structure:**
 
@@ -223,17 +226,17 @@ CE1 generates packet: `SRC=10.1.1.10, DST=10.2.2.20`
 **At P (Transit):**
 
 1. Pop top label (200) from stack
-2. Next label on stack: 300 (PE2's loopback)
-3. Swap 300 → 301 (outgoing label toward PE2)
-4. Forward to PE2
+1. Next label on stack: 300 (PE2's loopback)
+1. Swap 300 → 301 (outgoing label toward PE2)
+1. Forward to PE2
 
 #### Step 4: PE2 Receives and Strips Labels
 
 **At PE2 (Egress):**
 
 1. Remove all labels (this is the egress PE for this destination)
-2. IP lookup: destination 10.2.2.20 → next-hop is CE2
-3. Forward IP packet to CE2
+1. IP lookup: destination 10.2.2.20 → next-hop is CE2
+1. Forward IP packet to CE2
 
 **CE2 receives:** `SRC=10.1.1.10, DST=10.2.2.20` (unmodified IP header)
 

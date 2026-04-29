@@ -2,7 +2,8 @@
 
 ## 1. Overview
 
-AAA (Authentication, Authorization, and Accounting) controls who can access network devices, what they
+AAA (Authentication, Authorization, and Accounting) controls who can access network devices, what
+they
 can do, and what actions are logged. Cisco IOS-XE supports local users and remote authentication
 servers (TACACS+, RADIUS, LDAP).
 
@@ -31,10 +32,10 @@ graph LR
 **Typical Flow:**
 
 1. User connects (SSH/console)
-2. Router queries TACACS+/RADIUS server for credentials
-3. Server validates and returns authorization level
-4. Router logs the session to syslog server
-5. If server unreachable, fall back to local database
+1. Router queries TACACS+/RADIUS server for credentials
+1. Server validates and returns authorization level
+1. Router logs the session to syslog server
+1. If server unreachable, fall back to local database
 
 ## 3. Local Authentication
 
@@ -358,6 +359,7 @@ line vty 0 4
 
 - **ip tacacs source-interface Loopback0 vrf management** — Ensure the source IP for TACACS+
   queries comes from management VRF, not default VRF
+
 - **address ipv4 10.0.0.100 vrf management** — Server lookup uses management VRF routing table
 - **timeout 10** — Increase timeout slightly; cross-VRF lookups may be slower
 
@@ -384,7 +386,7 @@ When using management VRF, the source interface must:
 
 1. **Exist in the management VRF** — If you use `source-interface Loopback0`, that loopback must
    be in the management VRF or dual-homed
-2. **Be reachable from the server** — The server must be able to return traffic to the source IP
+1. **Be reachable from the server** — The server must be able to return traffic to the source IP
 
 #### Option A: Loopback in Management VRF
 
