@@ -272,6 +272,8 @@ nav:
   - Cloud Architecture:
       - AWS:
           - Direct Connect Setup: aws/aws_direct_connect_setup.md
+          - Equinix Fabric + Hosted DX: aws/equinix_fabric_shared_dx.md
+          - Equinix Fabric DX — NOC SOP: aws/equinix_fabric_shared_dx_sop.md
           - BGP Stack (Flagship): aws/bgp_stack_vpn_over_dx.md
           - BGP over VPN Optimization: aws/bgp_vpn_optimization.md
           - FortiGate to TGW (ECMP): aws/fortigate_bgp_vpn_bfd.md

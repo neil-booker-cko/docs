@@ -75,7 +75,7 @@ graph LR
         T2["VPN tunnel<br/>matching our proposal"]
         R2["Routing to reach<br/>our subnets"]
     end
-```text
+```
 
 ---
 
@@ -97,9 +97,10 @@ config vpn ike
     set dpd-retryinterval 60
   next
 end
-```text
+```
 
 **Key settings:**
+
 - `version 2` — IKEv2 (mandatory for modern third parties)
 - `encryption aes256` — AES-256 CBC (common standard)
 - `integrity sha256` — HMAC-SHA256
@@ -136,9 +137,10 @@ config system interface
     set mtu 1400
   next
 end
-```text
+```
 
 **Key settings:**
+
 - `type tunnel` + `tunnel-type ipsec` — Route-based mode
 - `pfs enable` — Perfect Forward Secrecy (new DH per rekey)
 - `remote-ip 198.51.100.5` — Peer public IP (fixed for static peer)
@@ -154,7 +156,7 @@ config router static
     set device "partner-vpn"                  ! Tunnel interface
   next
 end
-```text
+```
 
 ### D. BGP over Tunnel (Dynamic Routing)
 
@@ -174,7 +176,7 @@ config router bgp
     set neighbor 10.255.1.2 soft-reconfiguration inbound
   next
 end
-```text
+```
 
 ### E. Policy-Based VPN (Legacy)
 
@@ -201,7 +203,7 @@ config firewall policy
     set service "all"
   next
 end
-```text
+```
 
 ### F. Dial-Up VPN (Dynamic Peer IP)
 
@@ -225,7 +227,7 @@ config system interface
     set ipsec-policy "partner-dialup"
   next
 end
-```text
+```
 
 The peer initiates the tunnel toward your public IP (203.0.113.1). Tunnel comes up dynamically.
 
@@ -254,7 +256,7 @@ diagnose vpn ike status
 
 diagnose vpn ike log filter ?
 ! Adjust verbosity if needed
-```text
+```
 
 ### Check IPsec Tunnel Status
 
@@ -268,7 +270,7 @@ diagnose vpn tunnel list
 
 show vpn ipsec tunnel status
 ! FortiOS v7+ equivalent
-```text
+```
 
 ### Verify Routing
 
@@ -278,21 +280,21 @@ get router info routing-table all
 
 diagnose ip route list
 ! Detailed routing table
-```text
+```
 
 ### Monitor Traffic over Tunnel
 
 ```text
 diagnose sys session list | grep partner-vpn
 ! Active sessions over the tunnel
-```text
+```
 
 ### If Tunnel Down: Check Pre-Shared Key
 
 ```text
 show vpn ipsec manual
 ! Verify PSK matches peer's PSK exactly (case-sensitive)
-```text
+```
 
 ---
 
