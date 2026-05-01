@@ -21,10 +21,15 @@ import urllib.request
 from pathlib import Path
 from typing import Optional
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(message)s'
-)
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+# Configuration constants
+MMDC_WIDTH = "1200"
+MMDC_SCALE = "2"
+SUBPROCESS_TIMEOUT = 10
+CONFLUENCE_IMAGE_WIDTH = "600"
+KROKI_TIMEOUT = 10
+MMDC_TIMEOUT = 10
 
 try:
     from dotenv import load_dotenv
@@ -39,7 +44,6 @@ class MermaidConverter:
 
     def __init__(self, temp_dir: Optional[str] = None):
         self.temp_dir = temp_dir or tempfile.gettempdir()
-        self.diagrams = []
 
     def extract_mermaid_blocks(self, markdown_content: str) -> list[tuple[int, str]]:
         """
@@ -65,8 +69,8 @@ class MermaidConverter:
                 f.write(diagram_content)
                 temp_mmd = f.name
 
-            cmd = ["mmdc", "-i", temp_mmd, "-o", output_path, "--width", "1200", "--scale", "2"]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10, env=os.environ)
+            cmd = ["mmdc", "-i", temp_mmd, "-o", output_path, "--width", MMDC_WIDTH, "--scale", MMDC_SCALE]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=MMDC_TIMEOUT, env=os.environ)
             os.unlink(temp_mmd)
 
             if result.returncode == 0:
@@ -94,7 +98,7 @@ class MermaidConverter:
             return True
 
         except Exception as e:
-            logging.warning(f" Could not convert diagram: {e}")
+            logging.warning(f"Could not convert diagram: {e}")
             return False
 
     def process_markdown(self, markdown_content: str, output_dir: str) -> tuple[str, dict]:
@@ -218,7 +222,7 @@ class MarkdownToConfluence:
                 img_src = src_match.group(1)
                 # Check if this is a diagram file
                 if img_src in filenames:
-                    return f'<ac:image ac:width="600"><ri:attachment ri:filename="{img_src}"/></ac:image>'
+                    return f'<ac:image ac:width="{CONFLUENCE_IMAGE_WIDTH}"><ri:attachment ri:filename="{img_src}"/></ac:image>'
                 return full_tag
 
             content = re.sub(r"<img[^>]+>", convert_img_to_attachment, content)
@@ -351,10 +355,7 @@ class ConfluencePublisher:
             return page_id
 
         except Exception as e:
-            logging.error(f" publishing page: {e}")
-            import traceback
-
-            traceback.print_exc()
+            logging.exception(f"Error publishing page: {e}")
             return None
 
     def _attach_diagrams(self, page_id: int, attachments: dict[int, str]):
@@ -362,7 +363,7 @@ class ConfluencePublisher:
         try:
             for diagram_id, file_path in attachments.items():
                 if not os.path.exists(file_path):
-                    logging.info(f"   Warning: Diagram file not found: {file_path}")
+                    logging.warning(f"   Diagram file not found: {file_path}")
                     continue
 
                 logging.info(f"   Attaching: {os.path.basename(file_path)}...")
@@ -374,10 +375,10 @@ class ConfluencePublisher:
                 logging.info(f"   ✓ Attached {os.path.basename(file_path)}")
 
         except Exception as e:
-            logging.info(f"   Warning: Could not attach diagrams: {e}")
+            logging.warning(f"   Could not attach diagrams: {e}")
 
 
-def infer_parent_from_path(markdown_file: str) -> str:
+def infer_parent_from_path(markdown_file: str) -> Optional[str]:
     """Extract category from docs/category/file.md -> 'Category'"""
     path_parts = Path(markdown_file).parts
     if len(path_parts) >= 3 and path_parts[0] == "docs":
@@ -388,13 +389,13 @@ def infer_parent_from_path(markdown_file: str) -> str:
 
 def extract_intro_from_markdown(markdown_content: str) -> str:
     """Extract content up to first H2 heading."""
-    lines = markdown_content.split('\n')
+    lines = markdown_content.split("\n")
     intro_lines = []
     for line in lines:
-        if line.startswith('## '):
+        if line.startswith("## "):
             break
         intro_lines.append(line)
-    return '\n'.join(intro_lines).strip()
+    return "\n".join(intro_lines).strip()
 
 
 def main():
@@ -488,12 +489,12 @@ def main():
         # Step 4: Publish to Confluence (if enabled)
         if args.publish:
             if not all([args.confluence_url, args.confluence_email, args.confluence_token]):
-                logging.error("\n❌ ERROR: Missing Confluence credentials")
+                logging.error("❌ ERROR: Missing Confluence credentials")
                 logging.error("Provide via:")
                 logging.error("  --confluence-url <url>")
                 logging.error("  --confluence-email <email>")
                 logging.error("  --confluence-token <token>")
-                logging.info("\nOr set environment variables:")
+                logging.error("Or set environment variables:")
                 logging.error("  CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_TOKEN")
                 return 1
 
@@ -519,22 +520,17 @@ def main():
                     parent_html_conf = MarkdownToConfluence.prepare_for_confluence(parent_html, None)
 
                     # Add children macro
-                    parent_html_conf += (
-                        "\n<p>Child pages:</p>"
-                        "<ac:macro ac:name=\"children\"></ac:macro>"
-                    )
+                    parent_html_conf += '\n<p>Child pages:</p><ac:macro ac:name="children"></ac:macro>'
 
                     # Extract parent title from H1
                     parent_title_match = re.match(r"# (.+)\n", parent_markdown)
                     parent_title = parent_title_match.group(1) if parent_title_match else "Parent"
 
                     # Check if parent already exists
-                    existing_parent = publisher.confluence.get_page_by_title(
-                        args.space_key, parent_title
-                    )
+                    existing_parent = publisher.confluence.get_page_by_title(args.space_key, parent_title)
                     if existing_parent:
                         parent_page_id = int(existing_parent.get("id"))
-                        logging.info(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
+                        logging.info(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id})")
                     else:
                         # Create parent page
                         parent_page_id = publisher.confluence.create_page(
@@ -542,7 +538,7 @@ def main():
                             title=parent_title,
                             body=parent_html_conf,
                         )
-                        logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
+                        logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
                 except Exception as e:
                     logging.info(f"   Warning: Could not publish parent file: {e}")
                     parent_page_id = None
@@ -561,11 +557,11 @@ def main():
                 logging.info("\n❌ Failed to publish to Confluence")
                 return 1
         else:
-            logging.info("\n✓ Conversion complete!")
-            logging.info("\nTo publish to Confluence, add: --publish \\")
-            logging.error("  --confluence-url https://checkout.atlassian.net \\")
-            logging.error("  --confluence-email neil.booker@checkout.com \\")
-            logging.error("  --confluence-token <your-token>")
+            logging.info("✓ Conversion complete!")
+            logging.info("To publish to Confluence, add: --publish \\")
+            logging.info("  --confluence-url https://checkout.atlassian.net \\")
+            logging.info("  --confluence-email neil.booker@checkout.com \\")
+            logging.info("  --confluence-token <your-token>")
 
         logging.info("\nOutput files:")
         logging.info(f"  HTML: {html_file}")

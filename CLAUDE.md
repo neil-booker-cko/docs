@@ -310,17 +310,35 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 logging.info("Normal operation messages")
 logging.warning("Non-critical issues")
 logging.error("Error conditions")
+logging.exception("Error with traceback")
 ```
 
 **Why:** Logging allows filtering by level, redirection to files, and better debugging.
 
-**Confluence Publishing Tool:** See `confluence_poc.py` for the Markdown → Confluence
-pipeline. It uses:
+**Code Style:**
 
-- `logging` for all output (no print statements)
-- Type hints for function parameters
-- Context managers for file handling
-- Proper error handling with specific exception types
+- Type hints for all function parameters and returns
+- Extract magic numbers/strings to named constants
+- Use context managers (`with` statements) for resource handling
+- Catch specific exceptions, not broad `Exception`
+- Use `logging.exception()` in except blocks for stack traces
+- No debug logging in production code
+
+**Testing:** All Python modules should have unit tests:
+
+```python
+import unittest
+
+class TestMyModule(unittest.TestCase):
+    def test_function_returns_expected_value(self):
+        result = my_function("input")
+        self.assertEqual(result, "expected")
+```
+
+Place tests in `tests/` directory with `test_*.py` naming.
+
+**Confluence Publishing Tool:** See `confluence_poc.py` for reference
+implementation with logging, type hints, and error handling.
 
 ## Deployment
 
