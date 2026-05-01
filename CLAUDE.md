@@ -432,8 +432,48 @@ def demote_h1_to_h2(html: str) -> str:
     return re.sub(r"<h1>([^<]+)</h1>", r"<h2>\1</h2>", html)
 ```
 
+**Performance Optimization** (measure first, optimize where it matters):
+
+- **Parallelism:** Use `ThreadPoolExecutor` for I/O-bound work (file conversion, API calls)
+- **Batch operations:** Group multiple operations instead of looping with individual calls
+- **Early exit:** Validate inputs upfront; don't process invalid data
+- **Caching:** Cache expensive operations if the same data is processed multiple times
+- **Profiling:** Use `cProfile` to identify bottlenecks before optimizing
+
+Example — parallel file conversion:
+
+```python
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+def convert_diagrams_parallel(diagrams: list[tuple[int, str]], output_dir: str) -> dict:
+    """Convert multiple Mermaid diagrams in parallel (4 workers)."""
+    diagram_map = {}
+    converter = MermaidConverter()
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        # Submit all conversion tasks
+        futures = {
+            executor.submit(converter.convert_to_png, content, output_path): idx
+            for idx, content in diagrams
+            for output_path in [f"{output_dir}/diagram_{idx}.png"]
+        }
+
+        # Collect results as they complete
+        for future in as_completed(futures):
+            idx = futures[future]
+            try:
+                success = future.result()
+                if success:
+                    diagram_map[idx] = f"{output_dir}/diagram_{idx}.png"
+                    logging.info(f"✓ Converted diagram {idx}")
+            except Exception as e:
+                logging.warning(f"✗ Failed to convert diagram {idx}: {e}")
+
+    return diagram_map
+```
+
 **Confluence Publishing Tool:** See `confluence_poc.py` for reference
-implementation with logging, type hints, and error handling.
+implementation with logging, type hints, error handling, and performance optimizations.
 
 ## Deployment
 

@@ -19,6 +19,7 @@ import re
 import subprocess
 import tempfile
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 
@@ -51,8 +52,11 @@ except ImportError:
 class MermaidConverter:
     """Extract and convert Mermaid diagrams from Markdown to PNG."""
 
-    def __init__(self, temp_dir: Optional[str] = None):
+    DEFAULT_WORKERS = 4
+
+    def __init__(self, temp_dir: Optional[str] = None, max_workers: int = DEFAULT_WORKERS):
         self.temp_dir = temp_dir or tempfile.gettempdir()
+        self.max_workers = max_workers
 
     def extract_mermaid_blocks(self, markdown_content: str) -> list[tuple[int, str]]:
         """Extract Mermaid diagram blocks from Markdown as (index, content) tuples."""
@@ -106,7 +110,7 @@ class MermaidConverter:
 
     def process_markdown(self, markdown_content: str, output_dir: str) -> tuple[str, dict]:
         """
-        Extract Mermaid diagrams and convert to PNG.
+        Extract Mermaid diagrams and convert to PNG (parallel if multiple diagrams).
 
         Returns:
             (modified_markdown, diagram_map)
@@ -116,26 +120,50 @@ class MermaidConverter:
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
         diagrams = self.extract_mermaid_blocks(markdown_content)
-        diagram_map = {}
+        if not diagrams:
+            return markdown_content, {}
+
+        # Convert diagrams in parallel
+        diagram_map = self._convert_diagrams_parallel(diagrams, output_dir)
+
+        # Replace mermaid blocks with image references
         modified_content = markdown_content
-
         for block_num, diagram_content in diagrams:
-            # Generate PNG
-            png_name = DIAGRAM_FILENAME_PATTERN.format(block_num)
-            png_path = str(Path(output_dir) / png_name)
-
-            if self.convert_to_png(diagram_content, png_path):
-                diagram_map[block_num] = png_path
-                logging.info(f"✓ Converted diagram {block_num} → {png_name}")
-
-                # Replace mermaid block with image reference
+            if block_num in diagram_map:
                 mermaid_block = f"```mermaid\n{diagram_content}\n```"
+                png_name = DIAGRAM_FILENAME_PATTERN.format(block_num)
                 image_ref = f"![Diagram {block_num}]({png_name})"
                 modified_content = modified_content.replace(mermaid_block, image_ref, 1)
-            else:
-                logging.warning(f"✗ Failed to convert diagram {block_num}")
 
         return modified_content, diagram_map
+
+    def _convert_diagrams_parallel(self, diagrams: list[tuple[int, str]], output_dir: str) -> dict:
+        """Convert multiple diagrams in parallel using ThreadPoolExecutor."""
+        diagram_map = {}
+        conversion_tasks = {}
+
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all conversion tasks
+            for block_num, diagram_content in diagrams:
+                png_name = DIAGRAM_FILENAME_PATTERN.format(block_num)
+                png_path = str(Path(output_dir) / png_name)
+                future = executor.submit(self.convert_to_png, diagram_content, png_path)
+                conversion_tasks[future] = (block_num, png_name)
+
+            # Collect results as they complete
+            for future in as_completed(conversion_tasks):
+                block_num, png_name = conversion_tasks[future]
+                try:
+                    success = future.result()
+                    if success:
+                        diagram_map[block_num] = str(Path(output_dir) / png_name)
+                        logging.info(f"✓ Converted diagram {block_num} → {png_name}")
+                    else:
+                        logging.warning(f"✗ Failed to convert diagram {block_num}")
+                except Exception as e:
+                    logging.warning(f"✗ Error converting diagram {block_num}: {e}")
+
+        return diagram_map
 
 
 class MarkdownToConfluence:
