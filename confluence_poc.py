@@ -12,6 +12,7 @@ Usage:
 """
 
 import argparse
+import html
 import logging
 import os
 import re
@@ -91,7 +92,7 @@ class MermaidConverter:
                 headers={"Content-Type": "text/plain"},
             )
 
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=KROKI_TIMEOUT) as response:
                 png_data = response.read()
                 with open(output_path, "wb") as f:
                     f.write(png_data)
@@ -235,10 +236,8 @@ class MarkdownToConfluence:
             # Remove all <span> tags but keep content
             cleaned = re.sub(r"<span[^>]*>", "", block)
             cleaned = re.sub(r"</span>", "", cleaned)
-            # Decode HTML entities in code
-            cleaned = cleaned.replace("&lt;", "<").replace("&gt;", ">")
-            cleaned = cleaned.replace("&quot;", '"').replace("&#x27;", "'")
-            cleaned = cleaned.replace("&amp;", "&")
+            # Decode all HTML entities
+            cleaned = html.unescape(cleaned)
             return f"<pre><code>{cleaned}</code></pre>"
 
         content = re.sub(
@@ -540,7 +539,7 @@ def main():
                         )
                         logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
                 except Exception as e:
-                    logging.info(f"   Warning: Could not publish parent file: {e}")
+                    logging.warning(f"   Could not publish parent file: {e}")
                     parent_page_id = None
 
             page_id = publisher.publish_page(
