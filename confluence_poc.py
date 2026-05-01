@@ -380,6 +380,17 @@ def infer_parent_from_path(markdown_file: str) -> str:
     return None
 
 
+def extract_intro_from_markdown(markdown_content: str) -> str:
+    """Extract content up to first H2 heading."""
+    lines = markdown_content.split('\n')
+    intro_lines = []
+    for line in lines:
+        if line.startswith('## '):
+            break
+        intro_lines.append(line)
+    return '\n'.join(intro_lines).strip()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Convert Markdown with Mermaid diagrams → Confluence")
     parser.add_argument("markdown_file", help="Path to markdown file")
@@ -418,6 +429,10 @@ def main():
         "--parent-page-id",
         type=int,
         help="Parent page ID for hierarchy (optional)",
+    )
+    parser.add_argument(
+        "--parent-file",
+        help="Markdown file to use as parent page (e.g., docs/routing/index.md)",
     )
     args = parser.parse_args()
 
@@ -485,39 +500,46 @@ def main():
 
             # Determine parent page ID
             parent_page_id = args.parent_page_id
-            if not parent_page_id:
-                # Try to infer from file path (docs/category/file.md)
-                parent_title = infer_parent_from_path(args.markdown_file)
-                if parent_title:
-                    print(f"   Parent category: {parent_title}")
-                    # Check if parent already exists
-                    try:
-                        existing_parent = publisher.confluence.get_page_by_title(
-                            args.space_key, parent_title
-                        )
-                        if existing_parent:
-                            parent_page_id = int(existing_parent.get("id"))
-                            print(f"   ✓ Found parent page: {parent_title} (ID: {parent_page_id})")
-                    except Exception:
-                        pass
+            if not parent_page_id and args.parent_file:
+                # Publish parent file if provided
+                print(f"\n📤 Publishing parent page from {args.parent_file}...")
+                try:
+                    with open(args.parent_file, "r") as f:
+                        parent_markdown = f.read()
 
-                    # If parent doesn't exist, create it with children macro
-                    if not parent_page_id:
-                        try:
-                            children_body = (
-                                f"<h2>{parent_title}</h2>"
-                                "<p>Child pages:</p>"
-                                "<ac:macro ac:name=\"children\"></ac:macro>"
-                            )
-                            parent_page_id = publisher.confluence.create_page(
-                                space=args.space_key,
-                                title=parent_title,
-                                body=children_body,
-                            )
-                            print(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
-                        except Exception as e:
-                            print(f"   Warning: Could not create parent page: {e}")
-                            parent_page_id = None
+                    # Extract intro (everything before first H2)
+                    parent_intro = extract_intro_from_markdown(parent_markdown)
+                    parent_html = MarkdownToConfluence.convert_markdown_to_html(parent_intro)
+                    parent_html_conf = MarkdownToConfluence.prepare_for_confluence(parent_html, None)
+
+                    # Add children macro
+                    parent_html_conf += (
+                        "\n<p>Child pages:</p>"
+                        "<ac:macro ac:name=\"children\"></ac:macro>"
+                    )
+
+                    # Extract parent title from H1
+                    parent_title_match = re.match(r"# (.+)\n", parent_markdown)
+                    parent_title = parent_title_match.group(1) if parent_title_match else "Parent"
+
+                    # Check if parent already exists
+                    existing_parent = publisher.confluence.get_page_by_title(
+                        args.space_key, parent_title
+                    )
+                    if existing_parent:
+                        parent_page_id = int(existing_parent.get("id"))
+                        print(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
+                    else:
+                        # Create parent page
+                        parent_page_id = publisher.confluence.create_page(
+                            space=args.space_key,
+                            title=parent_title,
+                            body=parent_html_conf,
+                        )
+                        print(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
+                except Exception as e:
+                    print(f"   Warning: Could not publish parent file: {e}")
+                    parent_page_id = None
 
             page_id = publisher.publish_page(
                 space_key=args.space_key,
