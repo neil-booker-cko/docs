@@ -308,18 +308,16 @@ class ConfluencePublisher:
             Page ID if found, None if doesn't exist
         """
         try:
-            # Search for existing page by title
-            cql = f'type = page AND title ~ "{title}" AND space = "{space_key}"'
-            results = self.confluence.cql(cql)
-
-            if results["results"]:
-                page_id = results["results"][0]["id"]
+            # Search for existing page by title using Confluence search
+            pages = self.confluence.get_page_by_title(space_key, title)
+            if pages:
+                page_id = pages.get("id")
                 print(f"✓ Found existing page: ID {page_id}")
                 return page_id
 
             return None
         except Exception as e:
-            print(f"Warning: Could not search for existing page: {e}")
+            # If search fails, return None to create new page
             return None
 
     def publish_page(
