@@ -50,9 +50,8 @@ class MermaidConverter:
         """
         Convert Mermaid diagram to PNG.
         Tries (in order):
-        1. Local mmdc (npm install -g @mermaid-js/mermaid-cli)
-        2. Playwright (pure Python, no dependencies)
-        3. Kroki online API (fallback, may be blocked by corporate proxy)
+        1. Local mmdc (npm install -g @mermaid-js/mermaid-cli) — Recommended
+        2. Kroki online API (fallback, may be blocked by corporate proxy)
         """
         # Try local mermaid-cli first
         try:
@@ -60,8 +59,8 @@ class MermaidConverter:
                 f.write(diagram_content)
                 temp_mmd = f.name
 
-            cmd = ["mmdc", "-i", temp_mmd, "-o", output_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+            cmd = ["mmdc", "-i", temp_mmd, "-o", output_path, "--width", "1200", "--scale", "2"]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=10, env=os.environ)
             os.unlink(temp_mmd)
 
             if result.returncode == 0:
@@ -69,13 +68,6 @@ class MermaidConverter:
 
         except (FileNotFoundError, subprocess.TimeoutExpired):
             pass
-
-        # Try Playwright (pure Python, works offline)
-        try:
-            print("   → Using Playwright for diagram conversion...")
-            return self._convert_with_playwright(diagram_content, output_path)
-        except Exception as e:
-            print(f"   → Playwright failed: {e}")
 
         # Fallback to Kroki online API
         try:
@@ -96,55 +88,7 @@ class MermaidConverter:
             return True
 
         except Exception as e:
-            print(f"ERROR converting diagram: {e}")
-            return False
-
-    def _convert_with_playwright(self, diagram_content: str, output_path: str) -> bool:
-        """Render Mermaid diagram using Playwright headless browser."""
-        try:
-            from playwright.sync_api import sync_playwright
-        except ImportError:
-            return False
-
-        html_template = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-            <style>
-                body {{ margin: 0; padding: 20px; background: white; }}
-                .mermaid {{ display: flex; justify-content: center; }}
-            </style>
-        </head>
-        <body>
-            <div class="mermaid">
-{diagram_content}
-            </div>
-            <script>
-                mermaid.initialize({{ startOnLoad: true }});
-                mermaid.contentLoaded();
-            </script>
-        </body>
-        </html>
-        """
-
-        try:
-            with sync_playwright() as p:
-                browser = p.chromium.launch()
-                page = browser.new_page()
-
-                # Set content and wait for Mermaid to render
-                page.set_content(html_template)
-                page.wait_for_load_state("networkidle")
-
-                # Take screenshot
-                page.screenshot(path=output_path)
-                browser.close()
-
-            return True
-
-        except Exception as e:
-            print(f"Playwright error: {e}")
+            print(f"WARNING: Could not convert diagram: {e}")
             return False
 
     def process_markdown(self, markdown_content: str, output_dir: str) -> tuple[str, dict]:
@@ -244,16 +188,34 @@ class MarkdownToConfluence:
         return html
 
     @staticmethod
-    def prepare_for_confluence(html_content: str) -> str:
+    def prepare_for_confluence(html_content: str, diagram_map: Optional[dict] = None) -> str:
         """
         Prepare HTML for Confluence publishing.
 
         - Convert <h1> to <h2> (Confluence pages have auto-generated h1)
+        - Convert diagram image references to Confluence attachment macro syntax
         - Strip syntax highlighting spans from code blocks for Confluence compatibility
         - Preserve code blocks with proper whitespace
         """
         # Demote h1 → h2 (Confluence auto-generates page title)
         content = re.sub(r"<h1>([^<]+)</h1>", r"<h2>\1</h2>", html_content)
+
+        # Convert image references to Confluence attachment macro syntax
+        if diagram_map:
+            filenames = {os.path.basename(path): path for path in diagram_map.values()}
+
+            def convert_img_to_attachment(match):
+                full_tag = match.group(0)
+                src_match = re.search(r'src="([^"]+)"', full_tag)
+                if not src_match:
+                    return full_tag
+                img_src = src_match.group(1)
+                # Check if this is a diagram file
+                if img_src in filenames:
+                    return f'<ac:image ac:width="600"><ri:attachment ri:filename="{img_src}"/></ac:image>'
+                return full_tag
+
+            content = re.sub(r"<img[^>]+>", convert_img_to_attachment, content)
 
         # Strip codehilite spans but preserve code content and structure
         # Replace <div class="codehilite"><pre><span></span><code>...<span class="w"> </span>..
@@ -316,7 +278,7 @@ class ConfluencePublisher:
                 return page_id
 
             return None
-        except Exception as e:
+        except Exception:
             # If search fails, return None to create new page
             return None
 
@@ -409,6 +371,15 @@ class ConfluencePublisher:
             print(f"   Warning: Could not attach diagrams: {e}")
 
 
+def infer_parent_from_path(markdown_file: str) -> str:
+    """Extract category from docs/category/file.md -> 'Category'"""
+    path_parts = Path(markdown_file).parts
+    if len(path_parts) >= 3 and path_parts[0] == "docs":
+        category = path_parts[1]
+        return category.replace("_", " ").title()
+    return None
+
+
 def main():
     parser = argparse.ArgumentParser(description="Convert Markdown with Mermaid diagrams → Confluence")
     parser.add_argument("markdown_file", help="Path to markdown file")
@@ -483,7 +454,7 @@ def main():
 
         # Step 3: Prepare for Confluence
         print("\n🔄 Preparing for Confluence...\n")
-        confluence_html = MarkdownToConfluence.prepare_for_confluence(html_content)
+        confluence_html = MarkdownToConfluence.prepare_for_confluence(html_content, diagram_map)
         print("✓ HTML prepared for Confluence")
 
         # Write output files
@@ -512,9 +483,45 @@ def main():
                 api_token=args.confluence_token,
             )
 
+            # Determine parent page ID
+            parent_page_id = args.parent_page_id
+            if not parent_page_id:
+                # Try to infer from file path (docs/category/file.md)
+                parent_title = infer_parent_from_path(args.markdown_file)
+                if parent_title:
+                    print(f"   Parent category: {parent_title}")
+                    # Check if parent already exists
+                    try:
+                        existing_parent = publisher.confluence.get_page_by_title(
+                            args.space_key, parent_title
+                        )
+                        if existing_parent:
+                            parent_page_id = int(existing_parent.get("id"))
+                            print(f"   ✓ Found parent page: {parent_title} (ID: {parent_page_id})")
+                    except Exception:
+                        pass
+
+                    # If parent doesn't exist, create it with children macro
+                    if not parent_page_id:
+                        try:
+                            children_body = (
+                                f"<h2>{parent_title}</h2>"
+                                "<p>Child pages:</p>"
+                                "<ac:macro ac:name=\"children\"></ac:macro>"
+                            )
+                            parent_page_id = publisher.confluence.create_page(
+                                space=args.space_key,
+                                title=parent_title,
+                                body=children_body,
+                            )
+                            print(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
+                        except Exception as e:
+                            print(f"   Warning: Could not create parent page: {e}")
+                            parent_page_id = None
+
             page_id = publisher.publish_page(
                 space_key=args.space_key,
-                parent_page_id=args.parent_page_id,
+                parent_page_id=parent_page_id,
                 title=title,
                 html_content=confluence_html,
                 attachments=diagram_map if diagram_map else None,
