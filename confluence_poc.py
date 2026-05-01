@@ -20,6 +20,13 @@ import urllib.request
 from pathlib import Path
 from typing import Optional
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()  # Load .env file
+except ImportError:
+    pass  # If python-dotenv not installed, just use env vars
+
 
 class MermaidConverter:
     """Extract and convert Mermaid diagrams from Markdown to PNG."""
@@ -362,8 +369,8 @@ def main():
     )
     parser.add_argument(
         "--space-key",
-        default="~neil_booker",
-        help="Confluence space key (default: personal space)",
+        default=os.getenv("CONFLUENCE_SPACE_KEY", "~neil_booker"),
+        help="Confluence space key (or set CONFLUENCE_SPACE_KEY)",
     )
     parser.add_argument(
         "--parent-page-id",

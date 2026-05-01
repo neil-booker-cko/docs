@@ -11,6 +11,7 @@ dev = [
     "pre-commit>=4.0",
     "atlassian-python-api>=3.41",
     "markdown>=3.5",
+    "python-dotenv>=1.0",
 ]
 
 [tool.ruff]
