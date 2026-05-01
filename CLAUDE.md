@@ -379,18 +379,32 @@ def publish_docs(markdown_files: list[str], confluence_url: str) -> bool:
         # Process file...
 ```
 
-**Testing:** All Python modules should have unit tests:
+**Testing:** All Python modules should have unit tests using pytest:
 
 ```python
-import unittest
+import pytest
 
-class TestMyModule(unittest.TestCase):
-    def test_function_returns_expected_value(self):
-        result = my_function("input")
-        self.assertEqual(result, "expected")
+def test_function_returns_expected_value():
+    """Descriptive test name (why it matters)."""
+    result = my_function("input")
+    assert result == "expected"
+
+def test_function_handles_error_case():
+    """Test error conditions explicitly."""
+    with pytest.raises(ValueError):
+        my_function(invalid_input)
 ```
 
-Place tests in `tests/` directory with `test_*.py` naming.
+**Running tests:**
+
+```bash
+uv run pytest tests/              # Run all tests
+uv run pytest -v                  # Verbose output
+uv run pytest --cov=confluence_poc tests/  # Coverage
+```
+
+Place tests in `tests/` directory with `test_*.py` naming. Use mocking for external
+dependencies (APIs, file I/O). See `tests/test_confluence_poc.py` for patterns.
 
 **Code Quality Checklist** (readability, maintainability, testability):
 
