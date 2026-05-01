@@ -1,10 +1,11 @@
-# Confluence Integration POC
+# Confluence Integration
 
 ## Summary
 
-A Python-based pipeline to publish Markdown docs to Confluence with automatic Mermaid diagram conversion.
+Complete pipeline to publish Markdown docs to Confluence with Mermaid
+diagrams, folder hierarchy, and auto-generated navigation.
 
-**Status:** Functional POC — Markdown → HTML conversion works; Mermaid conversion needs local setup.
+**Status:** ✅ Production-ready
 
 ---
 

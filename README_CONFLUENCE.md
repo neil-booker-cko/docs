@@ -1,8 +1,9 @@
-# Confluence Publishing Setup
+# Confluence Publishing
 
-## Status: ✅ Working
+## Status: ✅ Fully Functional
 
-You can now publish documentation from the repo to Confluence automatically.
+Pipeline: Markdown → Mermaid diagrams → HTML → Confluence with folder
+hierarchy and auto-generated navigation.
 
 ## Quick Start
 
@@ -66,24 +67,59 @@ uv run python confluence_poc.py docs/routing/bgp.md --publish
 - **Space Key:** `~5fe0839e642089014165d146`
 - **Name:** Neil Charles Booker (personal space)
 
-## Tested Features
+## Features
 
-✅ Markdown → HTML conversion
-✅ Tables, code blocks, headers, links preserved
-✅ Confluence API authentication
-✅ Page creation
-✅ Page updates (if page already exists, updates instead of duplicate)
-✅ Image attachments ready (just need mmdc installed for diagrams)
+✅ Markdown → HTML conversion (tables, code, headers, links)
+✅ Mermaid diagram extraction and PNG conversion (mmdc + Kroki fallback)
+✅ Diagram embedding with proper sizing (600px width)
+✅ Folder hierarchy mirroring (docs/category/ → Confluence parent pages)
+✅ Parent pages from index.md with auto-generated children macro
+✅ Page creation and updates
+✅ Confluence API authentication and publishing
 
-## Next Steps
+## Folder Hierarchy & Navigation
 
-### To Enable Diagram Support
-Install mermaid-cli locally:
+### Auto-generated Parent Pages
+
+Use `--parent-file` to publish an `index.md` as the parent page:
+
+```bash
+uv run python confluence_poc.py docs/routing/bgp.md \
+  --publish \
+  --parent-file docs/routing/index.md
+```
+
+This:
+- Publishes `index.md` intro as the parent page
+- Publishes `bgp.md` as a child under it
+- Adds auto-generated "Child pages" list using Confluence's children macro
+
+### Structure Example
+
+```text
+docs/routing/
+├── index.md           ← Publish with --parent-file (becomes parent page)
+├── bgp.md             ← Child page under "Routing"
+├── ospf.md            ← Child page under "Routing"
+└── eigrp.md           ← Child page under "Routing"
+```
+
+Results in Confluence:
+
+- **Routing** (parent page from index.md)
+  - BGP
+  - OSPF
+  - EIGRP
+
+## Diagram Support
+
+Install mermaid-cli for automatic diagram conversion:
+
 ```bash
 npm install -g @mermaid-js/mermaid-cli
 ```
 
-Then diagrams will auto-convert to PNG and attach to pages.
+Diagrams auto-convert to PNG (1200px, 2x scale) and attach to pages.
 
 ### To Publish Multiple Docs
 Create a batch script:
@@ -116,14 +152,16 @@ Add to GitHub Actions or GitLab CI:
 uv run python confluence_poc.py <markdown_file> [options]
 
 Options:
-  --output-dir PATH               Output directory for HTML/PNGs (default: ./confluence_output)
-  --no-convert                    Skip Mermaid diagram conversion
-  --publish                       Publish to Confluence (requires creds)
-  --confluence-url URL            Confluence base URL
-  --confluence-email EMAIL        Email for API auth
-  --confluence-token TOKEN        API token for auth
-  --space-key KEY                 Confluence space key (default: personal space)
-  --parent-page-id ID             Parent page ID for hierarchy (optional)
+  --output-dir PATH        Output directory for HTML/diagrams
+  --no-convert             Skip Mermaid diagram conversion
+  --publish                Publish to Confluence
+  --confluence-url URL     Confluence base URL
+  --confluence-email EMAIL Email for API auth
+  --confluence-token TOK   API token for auth
+  --space-key KEY          Confluence space key
+  --parent-file FILE       Publish index.md as parent (e.g.,
+                           docs/routing/index.md)
+  --parent-page-id ID      Parent page ID (overrides auto-detect)
 ```
 
 ## Troubleshooting

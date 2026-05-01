@@ -1,9 +1,9 @@
 # Routing Protocol Reference
 
 Packet format, state machine, and behaviour reference for routing protocols used in
-enterprise and data-centre networks. For convergence timing and BFD integration see the
-[Theory](../theory/bgp_bfd_comparison.md) guides; for vendor configuration see the
-[Cisco](../cisco/cisco_ospf_config.md) and [FortiGate](../fortigate/fortigate_bfd_config_guide.md)
+enterprise and data-centre networks. For convergence timing and BFD integration
+see the [Theory](../theory/bgp_bfd_comparison.md) guides; for vendor configuration
+see the [Cisco](../cisco/cisco_ospf_config.md) and [FortiGate](../fortigate/fortigate_bfd_config_guide.md)
 sections.
 
 ---

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-POC: Markdown → Confluence publisher with Mermaid diagram conversion.
+Markdown → Confluence publisher with Mermaid diagram conversion.
 
 Requirements:
-- mermaid-cli (npm install -g @mermaid-js/mermaid-cli) — OPTIONAL, uses online API as fallback
-- markdown (pip install markdown) — for Markdown → HTML conversion
-- atlassian-python-api (pip install atlassian-python-api) — for Confluence publishing
+- mermaid-cli (npm install -g @mermaid-js/mermaid-cli)
+- markdown (pip install markdown)
+- atlassian-python-api (pip install atlassian-python-api)
 
 Usage:
-    python confluence_poc.py <markdown_file> [--output-dir ./output]
+    python confluence_poc.py <markdown_file> [--output-dir ./output] [--publish]
 """
 
 import argparse
+import logging
 import os
 import re
 import subprocess
@@ -19,6 +20,11 @@ import tempfile
 import urllib.request
 from pathlib import Path
 from typing import Optional
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s'
+)
 
 try:
     from dotenv import load_dotenv
@@ -71,7 +77,7 @@ class MermaidConverter:
 
         # Fallback to Kroki online API
         try:
-            print("   → Using Kroki online API for diagram conversion...")
+            logging.info("   → Using Kroki online API for diagram conversion...")
             kroki_url = "https://kroki.io/mermaid/png"
 
             diagram_bytes = diagram_content.encode("utf-8")
@@ -88,7 +94,7 @@ class MermaidConverter:
             return True
 
         except Exception as e:
-            print(f"WARNING: Could not convert diagram: {e}")
+            logging.warning(f" Could not convert diagram: {e}")
             return False
 
     def process_markdown(self, markdown_content: str, output_dir: str) -> tuple[str, dict]:
@@ -113,14 +119,14 @@ class MermaidConverter:
 
             if self.convert_to_png(diagram_content, png_path):
                 diagram_map[block_num] = png_path
-                print(f"✓ Converted diagram {block_num} → {png_name}")
+                logging.info(f"✓ Converted diagram {block_num} → {png_name}")
 
                 # Replace mermaid block with image reference
                 mermaid_block = f"```mermaid\n{diagram_content}\n```"
                 image_ref = f"![Diagram {block_num}]({png_name})"
                 modified_content = modified_content.replace(mermaid_block, image_ref, 1)
             else:
-                print(f"✗ Failed to convert diagram {block_num}")
+                logging.warning(f"✗ Failed to convert diagram {block_num}")
 
         return modified_content, diagram_map
 
@@ -149,7 +155,7 @@ class MarkdownToConfluence:
             return html
 
         except ImportError:
-            print("WARNING: markdown not installed. Falling back to basic conversion...")
+            logging.warning("WARNING: markdown not installed. Falling back to basic conversion...")
             return MarkdownToConfluence._simple_html_fallback(markdown_content)
 
     @staticmethod
@@ -258,8 +264,8 @@ class ConfluencePublisher:
                 password=api_token,  # API token goes in password field
             )
         except ImportError:
-            print("ERROR: atlassian-python-api not installed")
-            print("Install with: pip install atlassian-python-api")
+            logging.error("ERROR: atlassian-python-api not installed")
+            logging.error("Install with: pip install atlassian-python-api")
             self.confluence = None
 
     def get_or_create_page(self, space_key: str, title: str, parent_page_id: Optional[int] = None) -> Optional[int]:
@@ -274,7 +280,7 @@ class ConfluencePublisher:
             pages = self.confluence.get_page_by_title(space_key, title)
             if pages:
                 page_id = pages.get("id")
-                print(f"✓ Found existing page: ID {page_id}")
+                logging.info(f"✓ Found existing page: ID {page_id}")
                 return page_id
 
             return None
@@ -304,21 +310,21 @@ class ConfluencePublisher:
             Page ID if successful, None otherwise
         """
         if not self.confluence:
-            print("ERROR: Confluence client not initialized")
+            logging.error("ERROR: Confluence client not initialized")
             return None
 
         try:
-            print("\n📤 Publishing to Confluence...")
-            print(f"   Space: {space_key}")
-            print(f"   Title: {title}")
-            print(f"   Content: {len(html_content)} chars")
+            logging.info("\n📤 Publishing to Confluence...")
+            logging.info(f"   Space: {space_key}")
+            logging.info(f"   Title: {title}")
+            logging.info(f"   Content: {len(html_content)} chars")
 
             # Check if page already exists
             existing_id = self.get_or_create_page(space_key, title, parent_page_id)
 
             if existing_id:
                 # Update existing page
-                print(f"   Updating page {existing_id}...")
+                logging.info(f"   Updating page {existing_id}...")
                 self.confluence.update_page(
                     page_id=existing_id,
                     title=title,
@@ -328,7 +334,7 @@ class ConfluencePublisher:
                 page_id = existing_id
             else:
                 # Create new page
-                print("   Creating new page...")
+                logging.info("   Creating new page...")
                 page_id = self.confluence.create_page(
                     space=space_key,
                     title=title,
@@ -336,7 +342,7 @@ class ConfluencePublisher:
                     parent_id=parent_page_id,
                 )
 
-            print(f"✓ Page published: {self.base_url}/wiki/spaces/{space_key}/pages/{page_id}")
+            logging.info(f"✓ Page published: {self.base_url}/wiki/spaces/{space_key}/pages/{page_id}")
 
             # Attach diagrams if provided
             if attachments:
@@ -345,7 +351,7 @@ class ConfluencePublisher:
             return page_id
 
         except Exception as e:
-            print(f"ERROR publishing page: {e}")
+            logging.error(f" publishing page: {e}")
             import traceback
 
             traceback.print_exc()
@@ -356,19 +362,19 @@ class ConfluencePublisher:
         try:
             for diagram_id, file_path in attachments.items():
                 if not os.path.exists(file_path):
-                    print(f"   Warning: Diagram file not found: {file_path}")
+                    logging.info(f"   Warning: Diagram file not found: {file_path}")
                     continue
 
-                print(f"   Attaching: {os.path.basename(file_path)}...")
+                logging.info(f"   Attaching: {os.path.basename(file_path)}...")
                 self.confluence.attach_file(
                     filename=file_path,
                     page_id=page_id,
                     title=f"Diagram {diagram_id}",
                 )
-                print(f"   ✓ Attached {os.path.basename(file_path)}")
+                logging.info(f"   ✓ Attached {os.path.basename(file_path)}")
 
         except Exception as e:
-            print(f"   Warning: Could not attach diagrams: {e}")
+            logging.info(f"   Warning: Could not attach diagrams: {e}")
 
 
 def infer_parent_from_path(markdown_file: str) -> str:
@@ -440,8 +446,8 @@ def main():
     with open(args.markdown_file, "r") as f:
         markdown_content = f.read()
 
-    print(f"📄 Processing: {args.markdown_file}")
-    print(f"   Size: {len(markdown_content)} chars\n")
+    logging.info(f"📄 Processing: {args.markdown_file}")
+    logging.info(f"   Size: {len(markdown_content)} chars\n")
 
     # Extract title from H1
     title_match = re.match(r"# (.+)\n", markdown_content)
@@ -450,48 +456,48 @@ def main():
     # Step 1: Convert Mermaid diagrams to PNG
     diagram_map = {}
     if not args.no_convert:
-        print("🔄 Converting Mermaid diagrams...\n")
+        logging.info("🔄 Converting Mermaid diagrams...\n")
         converter = MermaidConverter()
         markdown_content, diagram_map = converter.process_markdown(markdown_content, args.output_dir)
 
         if diagram_map:
-            print(f"\n✓ Generated {len(diagram_map)} PNG(s)")
+            logging.info(f"✓ Generated {len(diagram_map)} PNG(s)")
             for idx, path in diagram_map.items():
-                print(f"   Diagram {idx}: {path}")
+                logging.info(f"   Diagram {idx}: {path}")
 
     # Step 2: Convert Markdown to HTML
-    print("\n🔄 Converting Markdown → HTML...\n")
+    logging.info("\n🔄 Converting Markdown → HTML...\n")
     html_content = MarkdownToConfluence.convert_markdown_to_html(markdown_content)
 
     if html_content:
-        print("✓ Markdown converted to HTML")
-        print(f"   HTML size: {len(html_content)} chars")
+        logging.info("✓ Markdown converted to HTML")
+        logging.info(f"   HTML size: {len(html_content)} chars")
 
         # Step 3: Prepare for Confluence
-        print("\n🔄 Preparing for Confluence...\n")
+        logging.info("\n🔄 Preparing for Confluence...\n")
         confluence_html = MarkdownToConfluence.prepare_for_confluence(html_content, diagram_map)
-        print("✓ HTML prepared for Confluence")
+        logging.info("✓ HTML prepared for Confluence")
 
         # Write output files
         Path(args.output_dir).mkdir(parents=True, exist_ok=True)
         html_file = os.path.join(args.output_dir, "output.html")
         with open(html_file, "w") as f:
             f.write(confluence_html)
-        print(f"   Saved to: {html_file}")
+        logging.info(f"   Saved to: {html_file}")
 
         # Step 4: Publish to Confluence (if enabled)
         if args.publish:
             if not all([args.confluence_url, args.confluence_email, args.confluence_token]):
-                print("\n❌ ERROR: Missing Confluence credentials")
-                print("Provide via:")
-                print("  --confluence-url <url>")
-                print("  --confluence-email <email>")
-                print("  --confluence-token <token>")
-                print("\nOr set environment variables:")
-                print("  CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_TOKEN")
+                logging.error("\n❌ ERROR: Missing Confluence credentials")
+                logging.error("Provide via:")
+                logging.error("  --confluence-url <url>")
+                logging.error("  --confluence-email <email>")
+                logging.error("  --confluence-token <token>")
+                logging.info("\nOr set environment variables:")
+                logging.error("  CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_TOKEN")
                 return 1
 
-            print("\n🔄 Publishing to Confluence...\n")
+            logging.info("\n🔄 Publishing to Confluence...\n")
             publisher = ConfluencePublisher(
                 base_url=args.confluence_url,
                 username=args.confluence_email,
@@ -502,7 +508,7 @@ def main():
             parent_page_id = args.parent_page_id
             if not parent_page_id and args.parent_file:
                 # Publish parent file if provided
-                print(f"\n📤 Publishing parent page from {args.parent_file}...")
+                logging.info(f"📤 Publishing parent page from {args.parent_file}...")
                 try:
                     with open(args.parent_file, "r") as f:
                         parent_markdown = f.read()
@@ -528,7 +534,7 @@ def main():
                     )
                     if existing_parent:
                         parent_page_id = int(existing_parent.get("id"))
-                        print(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
+                        logging.info(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
                     else:
                         # Create parent page
                         parent_page_id = publisher.confluence.create_page(
@@ -536,9 +542,9 @@ def main():
                             title=parent_title,
                             body=parent_html_conf,
                         )
-                        print(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
+                        logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id}, type: {type(parent_page_id)})")
                 except Exception as e:
-                    print(f"   Warning: Could not publish parent file: {e}")
+                    logging.info(f"   Warning: Could not publish parent file: {e}")
                     parent_page_id = None
 
             page_id = publisher.publish_page(
@@ -550,24 +556,24 @@ def main():
             )
 
             if page_id:
-                print("\n✅ Success! Published to Confluence")
+                logging.info("\n✅ Success! Published to Confluence")
             else:
-                print("\n❌ Failed to publish to Confluence")
+                logging.info("\n❌ Failed to publish to Confluence")
                 return 1
         else:
-            print("\n✓ Conversion complete!")
-            print("\nTo publish to Confluence, add: --publish \\")
-            print("  --confluence-url https://checkout.atlassian.net \\")
-            print("  --confluence-email neil.booker@checkout.com \\")
-            print("  --confluence-token <your-token>")
+            logging.info("\n✓ Conversion complete!")
+            logging.info("\nTo publish to Confluence, add: --publish \\")
+            logging.error("  --confluence-url https://checkout.atlassian.net \\")
+            logging.error("  --confluence-email neil.booker@checkout.com \\")
+            logging.error("  --confluence-token <your-token>")
 
-        print("\nOutput files:")
-        print(f"  HTML: {html_file}")
+        logging.info("\nOutput files:")
+        logging.info(f"  HTML: {html_file}")
         if diagram_map:
             for idx, path in diagram_map.items():
-                print(f"  Diagram {idx}: {path}")
+                logging.info(f"  Diagram {idx}: {path}")
     else:
-        print("✗ Failed to convert Markdown")
+        logging.error("✗ Failed to convert Markdown")
         return 1
 
     return 0
