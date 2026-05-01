@@ -48,10 +48,11 @@ class MermaidConverter:
 
     def convert_to_png(self, diagram_content: str, output_path: str) -> bool:
         """
-        Convert Mermaid diagram to PNG using mermaid-cli (local) or online API.
-
-        First tries: mermaid-cli (npm install -g @mermaid-js/mermaid-cli)
-        Falls back to: Kroki online API (diagrams.net alternative)
+        Convert Mermaid diagram to PNG.
+        Tries (in order):
+        1. Local mmdc (npm install -g @mermaid-js/mermaid-cli)
+        2. Playwright (pure Python, no dependencies)
+        3. Kroki online API (fallback, may be blocked by corporate proxy)
         """
         # Try local mermaid-cli first
         try:
@@ -66,12 +67,17 @@ class MermaidConverter:
             if result.returncode == 0:
                 return True
 
-        except FileNotFoundError:
-            pass
-        except subprocess.TimeoutExpired:
+        except (FileNotFoundError, subprocess.TimeoutExpired):
             pass
 
-        # Fallback to Kroki online API (no auth required, free tier)
+        # Try Playwright (pure Python, works offline)
+        try:
+            print("   → Using Playwright for diagram conversion...")
+            return self._convert_with_playwright(diagram_content, output_path)
+        except Exception as e:
+            print(f"   → Playwright failed: {e}")
+
+        # Fallback to Kroki online API
         try:
             print("   → Using Kroki online API for diagram conversion...")
             kroki_url = "https://kroki.io/mermaid/png"
@@ -91,6 +97,54 @@ class MermaidConverter:
 
         except Exception as e:
             print(f"ERROR converting diagram: {e}")
+            return False
+
+    def _convert_with_playwright(self, diagram_content: str, output_path: str) -> bool:
+        """Render Mermaid diagram using Playwright headless browser."""
+        try:
+            from playwright.sync_api import sync_playwright
+        except ImportError:
+            return False
+
+        html_template = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+            <style>
+                body {{ margin: 0; padding: 20px; background: white; }}
+                .mermaid {{ display: flex; justify-content: center; }}
+            </style>
+        </head>
+        <body>
+            <div class="mermaid">
+{diagram_content}
+            </div>
+            <script>
+                mermaid.initialize({{ startOnLoad: true }});
+                mermaid.contentLoaded();
+            </script>
+        </body>
+        </html>
+        """
+
+        try:
+            with sync_playwright() as p:
+                browser = p.chromium.launch()
+                page = browser.new_page()
+
+                # Set content and wait for Mermaid to render
+                page.set_content(html_template)
+                page.wait_for_load_state("networkidle")
+
+                # Take screenshot
+                page.screenshot(path=output_path)
+                browser.close()
+
+            return True
+
+        except Exception as e:
+            print(f"Playwright error: {e}")
             return False
 
     def process_markdown(self, markdown_content: str, output_dir: str) -> tuple[str, dict]:
