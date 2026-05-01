@@ -17,22 +17,45 @@ You'll need:
 
 Install **Node.js 20.x LTS or newer** (latest LTS is 22.x as of 2026).
 
-### macOS / Linux
+### macOS / Linux (Recommended: NVM)
+
+**Use NVM (Node Version Manager)** — avoids old apt/brew versions:
 
 ```bash
-# Option A: Download from official site (recommended)
-# https://nodejs.org/ → Download LTS version (20.x or 22.x)
+# Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 
-# Option B: Using Homebrew (macOS)
+# Reload your shell
+source ~/.bashrc
+# or if using zsh:
+source ~/.zshrc
+
+# Install latest LTS
+nvm install --lts
+
+# Use it
+nvm use --lts
+```
+
+### macOS Alternative: Homebrew
+
+```bash
 brew install node
+```
 
-# Option C: Using apt (Ubuntu/Debian)
-sudo apt-get update && sudo apt-get install nodejs npm
+### Ubuntu/Debian Alternative: NodeSource PPA
+
+⚠️ **Note:** `apt` has very old Node.js versions. Use nvm instead, or:
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
 ### Windows
 
-Download from https://nodejs.org/ and run the installer. Choose **LTS version** (currently 22.x).
+Download from [nodejs.org](https://nodejs.org/) and run the installer.
+Choose **LTS version** (currently 22.x).
 
 **Verify installation:**
 
@@ -40,11 +63,6 @@ Download from https://nodejs.org/ and run the installer. Choose **LTS version** 
 node --version   # Should be v20.x or newer (v22.x recommended)
 npm --version    # Should be v10.x or newer
 ```
-
-**If you have an older version:**
-- macOS: `brew upgrade node`
-- Ubuntu: `sudo apt-get upgrade nodejs npm`
-- Windows: Re-run the installer with the latest LTS version
 
 ---
 
