@@ -195,14 +195,33 @@ class MarkdownToConfluence:
         Prepare HTML for Confluence publishing.
 
         - Convert <h1> to <h2> (Confluence pages have auto-generated h1)
-        - Preserve code blocks with language hints
-        - Convert HTML tables (already compatible)
+        - Strip syntax highlighting spans from code blocks for Confluence compatibility
+        - Preserve code blocks with proper whitespace
         """
         # Demote h1 → h2 (Confluence auto-generates page title)
         content = re.sub(r"<h1>([^<]+)</h1>", r"<h2>\1</h2>", html_content)
 
-        # Preserve code blocks with info strings (will be handled by Confluence code macro)
-        # Note: Pandoc wraps code in <pre><code> which Confluence understands
+        # Strip codehilite spans but preserve code content and structure
+        # Replace <div class="codehilite"><pre><span></span><code>...<span class="w"> </span>..
+        # with simple <pre><code>...\n...</code></pre>
+        def clean_code_block(match):
+            block = match.group(1)
+            # Remove all <span> tags but keep content
+            cleaned = re.sub(r"<span[^>]*>", "", block)
+            cleaned = re.sub(r"</span>", "", cleaned)
+            # Decode HTML entities in code
+            cleaned = cleaned.replace("&lt;", "<").replace("&gt;", ">")
+            cleaned = cleaned.replace("&quot;", '"').replace("&#x27;", "'")
+            cleaned = cleaned.replace("&amp;", "&")
+            return f"<pre><code>{cleaned}</code></pre>"
+
+        content = re.sub(
+            r'<div class="codehilite"><pre>.*?<code>(.*?)</code></pre></div>',
+            clean_code_block,
+            content,
+            flags=re.DOTALL,
+        )
+
         return content
 
 
