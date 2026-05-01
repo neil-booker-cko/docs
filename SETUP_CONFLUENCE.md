@@ -52,10 +52,31 @@ curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-### Windows
+### Windows (Recommended: WSL2 + Ubuntu)
 
-Download from [nodejs.org](https://nodejs.org/) and run the installer.
-Choose **LTS version** (currently 22.x).
+**Use WSL (Windows Subsystem for Linux)** — much better for development:
+
+**1. Install WSL2 with Ubuntu:**
+
+```powershell
+# Run in PowerShell as Administrator
+wsl --install -d Ubuntu
+```
+
+See [WSL docs](https://learn.microsoft.com/en-us/windows/wsl/install) for detailed instructions.
+
+**2. Then follow the Linux/macOS instructions above** (use nvm in Ubuntu):
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+```
+
+### Windows Native (Alternative)
+
+If you prefer not to use WSL, download from [nodejs.org](https://nodejs.org/).
+Choose **LTS version** (currently 22.x) and run the installer.
 
 **Verify installation:**
 
