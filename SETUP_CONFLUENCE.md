@@ -5,6 +5,7 @@ Complete instructions for publishing your documentation from this repo to Conflu
 ## Prerequisites
 
 You'll need:
+
 - **Python 3.12+** (for the publishing script)
 - **Node.js LTS** (for Mermaid diagram conversion)
 - **uv** (Python package manager — already used by this project)
@@ -14,11 +15,13 @@ You'll need:
 
 ## Step 1: Install Node.js
 
+Install **Node.js 20.x LTS or newer** (latest LTS is 22.x as of 2026).
+
 ### macOS / Linux
 
 ```bash
 # Option A: Download from official site (recommended)
-# https://nodejs.org/ → Download LTS version
+# https://nodejs.org/ → Download LTS version (20.x or 22.x)
 
 # Option B: Using Homebrew (macOS)
 brew install node
@@ -29,13 +32,19 @@ sudo apt-get update && sudo apt-get install nodejs npm
 
 ### Windows
 
-Download from https://nodejs.org/ and run the installer.
+Download from https://nodejs.org/ and run the installer. Choose **LTS version** (currently 22.x).
 
 **Verify installation:**
+
 ```bash
-node --version
-npm --version
+node --version   # Should be v20.x or newer (v22.x recommended)
+npm --version    # Should be v10.x or newer
 ```
+
+**If you have an older version:**
+- macOS: `brew upgrade node`
+- Ubuntu: `sudo apt-get upgrade nodejs npm`
+- Windows: Re-run the installer with the latest LTS version
 
 ---
 
@@ -46,11 +55,12 @@ npm install -g @mermaid-js/mermaid-cli
 ```
 
 **Verify it works:**
+
 ```bash
 mmdc --version
 ```
 
-You should see a version number like `10.x.x`.
+You should see a version number like `10.x.x` or newer.
 
 ---
 
@@ -71,6 +81,7 @@ nano .env  # or your favorite editor
 ```
 
 Fill in:
+
 ```bash
 CONFLUENCE_URL=https://checkout.atlassian.net
 CONFLUENCE_EMAIL=neil.booker@checkout.com
@@ -79,10 +90,11 @@ CONFLUENCE_SPACE_KEY=~5fe0839e642089014165d146
 ```
 
 **How to get your API token:**
+
 1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
-2. Click **Create API token**
-3. Give it a name like "Confluence Publisher"
-4. Copy the token and paste it into `.env`
+1. Click **Create API token**
+1. Give it a name like "Confluence Publisher"
+1. Copy the token and paste it into `.env`
 
 ### Protect your credentials
 
@@ -93,6 +105,7 @@ cat .gitignore | grep "\.env"
 ```
 
 Should show:
+
 ```
 .env
 ```
@@ -108,6 +121,7 @@ uv sync --all-groups
 ```
 
 This installs:
+
 - `playwright` — For diagram rendering (fallback)
 - `markdown` — For Markdown → HTML conversion
 - `atlassian-python-api` — For Confluence REST API
@@ -134,6 +148,7 @@ uv run python confluence_poc.py docs/theory/bgp_bfd_comparison.md --output-dir .
 This will convert Mermaid diagrams to PNG in `test_output/diagram_*.png`.
 
 **Expected output:**
+
 ```
 ✓ Converted diagram 0 → diagram_0.png
 ✓ Converted diagram 1 → diagram_1.png
@@ -150,6 +165,7 @@ uv run python confluence_poc.py docs/reference/admin_distance.md --publish
 Check your Confluence space: https://checkout.atlassian.net/wiki/spaces/~5fe0839e642089014165d146/
 
 The page should appear with:
+
 - ✅ Proper formatting
 - ✅ Code blocks with line breaks
 - ✅ Tables and headers
@@ -200,18 +216,21 @@ uv run python confluence_poc.py docs/routing/bgp.md --publish --space-key NETDOC
 The script tries these in order:
 
 ### 1. Local mmdc (Fastest)
+
 Requires `npm install -g @mermaid-js/mermaid-cli`
 
 **Pros:** Fast, reliable, offline
 **Cons:** Requires Node.js
 
 ### 2. Playwright (Pure Python)
+
 Built-in, no extra install
 
 **Pros:** No Node.js needed, pure Python
 **Cons:** Requires internet to download Mermaid.js from CDN
 
 ### 3. Kroki Online API (Fallback)
+
 Free online service
 
 **Pros:** No local installation
@@ -222,9 +241,11 @@ Free online service
 ## Troubleshooting
 
 ### `mmdc: command not found`
+
 **Problem:** mermaid-cli not installed or not in PATH
 
 **Solution:**
+
 ```bash
 npm install -g @mermaid-js/mermaid-cli
 # Verify:
@@ -232,9 +253,11 @@ mmdc --version
 ```
 
 ### `ERROR: Missing Confluence credentials`
+
 **Problem:** `.env` file not found or incomplete
 
 **Solution:**
+
 ```bash
 # Verify .env exists and has all fields:
 cat .env
@@ -247,23 +270,28 @@ CONFLUENCE_SPACE_KEY=~5fe0839e642089014165d146
 ```
 
 ### `A page with this title already exists`
+
 **Problem:** Page already published, script is trying to create instead of update
 
 **Solution:** The script should auto-detect and update. If this happens, just run the command again—it now updates existing pages.
 
 ### Diagrams show as code blocks instead of PNG
+
 **Problem:** Diagram conversion failed (network restricted or mmdc not installed)
 
 **Solutions:**
+
 1. Ensure Node.js is installed: `node --version`
 2. Ensure mmdc is installed: `mmdc --version`
 3. Check internet access (Playwright needs to download Mermaid.js)
 4. Run with `--no-convert` flag if you just want to publish without diagrams
 
 ### `playwright install chromium` errors
+
 **Problem:** Playwright browser download failed
 
 **Solution:**
+
 ```bash
 playwright install chromium
 # Or reinstall:
