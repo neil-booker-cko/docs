@@ -298,6 +298,30 @@ on the right. Top-level categories expand/collapse; subsections are nested for a
 navigation tree is defined in `mkdocs.yml` under the `nav:` section — keep it current when adding new
 docs.
 
+## Python Code Standards
+
+**Logging:** Use the `logging` module for all output, not `print()`:
+
+```python
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+
+logging.info("Normal operation messages")
+logging.warning("Non-critical issues")
+logging.error("Error conditions")
+```
+
+**Why:** Logging allows filtering by level, redirection to files, and better debugging.
+
+**Confluence Publishing Tool:** See `confluence_poc.py` for the Markdown → Confluence
+pipeline. It uses:
+
+- `logging` for all output (no print statements)
+- Type hints for function parameters
+- Context managers for file handling
+- Proper error handling with specific exception types
+
 ## Deployment
 
 See `DEPLOYMENT.md` for Docker, Traefik, CI/CD (GitHub Actions / GitLab CI), and Watchtower container
