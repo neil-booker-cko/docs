@@ -32,6 +32,14 @@ CONFLUENCE_IMAGE_WIDTH = "600"
 KROKI_TIMEOUT = 10
 MMDC_TIMEOUT = 10
 
+# Output and formatting constants
+DIAGRAM_FILENAME_PATTERN = "diagram_{}.png"
+MERMAID_BLOCK_PATTERN = r"```mermaid\n(.*?)\n```"
+MERMAID_FALLBACK_MESSAGE = "   → Using Kroki online API for diagram conversion..."
+CONFLUENCE_CHILDREN_MACRO = '<p>Child pages:</p><ac:macro ac:name="children"></ac:macro>'
+H1_PATTERN = r"# (.+)\n"
+H2_PATTERN = r"## "
+
 try:
     from dotenv import load_dotenv
 
@@ -47,14 +55,8 @@ class MermaidConverter:
         self.temp_dir = temp_dir or tempfile.gettempdir()
 
     def extract_mermaid_blocks(self, markdown_content: str) -> list[tuple[int, str]]:
-        """
-        Extract Mermaid diagram blocks from Markdown.
-
-        Returns:
-            List of (block_number, diagram_content) tuples
-        """
-        pattern = r"```mermaid\n(.*?)\n```"
-        matches = list(re.finditer(pattern, markdown_content, re.DOTALL))
+        """Extract Mermaid diagram blocks from Markdown as (index, content) tuples."""
+        matches = list(re.finditer(MERMAID_BLOCK_PATTERN, markdown_content, re.DOTALL))
         return [(i, m.group(1)) for i, m in enumerate(matches)]
 
     def convert_to_png(self, diagram_content: str, output_path: str) -> bool:
@@ -82,7 +84,7 @@ class MermaidConverter:
 
         # Fallback to Kroki online API
         try:
-            logging.info("   → Using Kroki online API for diagram conversion...")
+            logging.info(MERMAID_FALLBACK_MESSAGE)
             kroki_url = "https://kroki.io/mermaid/png"
 
             diagram_bytes = diagram_content.encode("utf-8")
@@ -119,8 +121,8 @@ class MermaidConverter:
 
         for block_num, diagram_content in diagrams:
             # Generate PNG
-            png_name = f"diagram_{block_num}.png"
-            png_path = os.path.join(output_dir, png_name)
+            png_name = DIAGRAM_FILENAME_PATTERN.format(block_num)
+            png_path = str(Path(output_dir) / png_name)
 
             if self.convert_to_png(diagram_content, png_path):
                 diagram_map[block_num] = png_path
@@ -391,10 +393,62 @@ def extract_intro_from_markdown(markdown_content: str) -> str:
     lines = markdown_content.split("\n")
     intro_lines = []
     for line in lines:
-        if line.startswith("## "):
+        if line.startswith(H2_PATTERN):
             break
         intro_lines.append(line)
     return "\n".join(intro_lines).strip()
+
+
+def extract_title_from_markdown(markdown_content: str) -> str:
+    """Extract H1 title from markdown (e.g., '# Title' → 'Title')."""
+    match = re.match(H1_PATTERN, markdown_content)
+    return match.group(1) if match else "Untitled"
+
+
+def publish_parent_page(
+    publisher: "ConfluencePublisher",
+    parent_file: str,
+    space_key: str,
+) -> Optional[int]:
+    """Publish parent page from index.md with auto-generated children macro.
+
+    Returns:
+        Parent page ID if successful, None otherwise
+    """
+    try:
+        with open(parent_file, "r") as f:
+            parent_markdown = f.read()
+
+        # Extract intro (everything before first H2)
+        parent_intro = extract_intro_from_markdown(parent_markdown)
+        parent_html = MarkdownToConfluence.convert_markdown_to_html(parent_intro)
+        parent_html_conf = MarkdownToConfluence.prepare_for_confluence(parent_html, None)
+
+        # Add children macro
+        parent_html_conf += "\n" + CONFLUENCE_CHILDREN_MACRO
+
+        # Extract parent title from H1
+        parent_title = extract_title_from_markdown(parent_markdown)
+
+        # Check if parent already exists
+        existing_parent = publisher.confluence.get_page_by_title(space_key, parent_title)
+        if existing_parent:
+            parent_page_id = int(existing_parent.get("id"))
+            logging.info(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id})")
+        else:
+            # Create parent page
+            parent_page_id = publisher.confluence.create_page(
+                space=space_key,
+                title=parent_title,
+                body=parent_html_conf,
+            )
+            logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
+
+        return parent_page_id
+
+    except Exception as e:
+        logging.warning(f"   Could not publish parent file: {e}")
+        return None
 
 
 def main():
@@ -480,8 +534,7 @@ def main():
     logging.info(f"   Size: {len(markdown_content)} chars\n")
 
     # Extract title from H1
-    title_match = re.match(r"# (.+)\n", markdown_content)
-    title = title_match.group(1) if title_match else "Untitled"
+    title = extract_title_from_markdown(markdown_content)
 
     # Step 1: Convert Mermaid diagrams to PNG
     diagram_map = {}
@@ -509,7 +562,7 @@ def main():
         logging.info("✓ HTML prepared for Confluence")
 
         # Write output files
-        html_file = os.path.join(args.output_dir, "output.html")
+        html_file = str(Path(args.output_dir) / "output.html")
         with open(html_file, "w") as f:
             f.write(confluence_html)
         logging.info(f"   Saved to: {html_file}")
@@ -526,40 +579,8 @@ def main():
             # Determine parent page ID
             parent_page_id = args.parent_page_id
             if not parent_page_id and args.parent_file:
-                # Publish parent file if provided
                 logging.info(f"📤 Publishing parent page from {args.parent_file}...")
-                try:
-                    with open(args.parent_file, "r") as f:
-                        parent_markdown = f.read()
-
-                    # Extract intro (everything before first H2)
-                    parent_intro = extract_intro_from_markdown(parent_markdown)
-                    parent_html = MarkdownToConfluence.convert_markdown_to_html(parent_intro)
-                    parent_html_conf = MarkdownToConfluence.prepare_for_confluence(parent_html, None)
-
-                    # Add children macro
-                    parent_html_conf += '\n<p>Child pages:</p><ac:macro ac:name="children"></ac:macro>'
-
-                    # Extract parent title from H1
-                    parent_title_match = re.match(r"# (.+)\n", parent_markdown)
-                    parent_title = parent_title_match.group(1) if parent_title_match else "Parent"
-
-                    # Check if parent already exists
-                    existing_parent = publisher.confluence.get_page_by_title(args.space_key, parent_title)
-                    if existing_parent:
-                        parent_page_id = int(existing_parent.get("id"))
-                        logging.info(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id})")
-                    else:
-                        # Create parent page
-                        parent_page_id = publisher.confluence.create_page(
-                            space=args.space_key,
-                            title=parent_title,
-                            body=parent_html_conf,
-                        )
-                        logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
-                except Exception as e:
-                    logging.warning(f"   Could not publish parent file: {e}")
-                    parent_page_id = None
+                parent_page_id = publish_parent_page(publisher, args.parent_file, args.space_key)
 
             page_id = publisher.publish_page(
                 space_key=args.space_key,

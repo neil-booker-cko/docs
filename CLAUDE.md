@@ -392,6 +392,46 @@ class TestMyModule(unittest.TestCase):
 
 Place tests in `tests/` directory with `test_*.py` naming.
 
+**Code Quality Checklist** (readability, maintainability, testability):
+
+- **Consistency:** Use one style throughout (e.g., `Path()` everywhere, not mixed with `os.path`)
+- **Single responsibility:** Each function does one thing; break up multi-step functions
+- **Constants:** Extract repeated strings/magic values to named constants at module level
+- **Regex clarity:** Document complex patterns with verbose mode or break into named functions
+- **Error specificity:** Catch specific exceptions, not bare `Exception`
+- **Testability:** Design functions to be testable in isolation (avoid side effects in pure logic)
+- **Docstrings:** Document *why*, not *what* (well-named functions show what they do)
+- **Naming:** Prefer clarity over brevity (`convert_html_to_confluence_format` > `process`)
+
+Example — before (unclear):
+
+```python
+def process(content):
+    x = re.sub(r"<h1>([^<]+)</h1>", r"<h2>\1</h2>", content)
+    x = re.sub(r"<img[^>]+>", img_handler, x)
+    return x
+```
+
+After (clear):
+
+```python
+def convert_html_for_confluence(html: str, diagrams: Optional[dict] = None) -> str:
+    """Convert standard HTML to Confluence XHTML format.
+
+    Demotes h1 → h2 and converts image references to attachment macros.
+    """
+    # Demote page title (Confluence auto-generates h1)
+    content = demote_h1_to_h2(html)
+    # Convert image refs to Confluence attachment syntax
+    if diagrams:
+        content = convert_images_to_attachments(content, diagrams)
+    return content
+
+def demote_h1_to_h2(html: str) -> str:
+    """Replace <h1> with <h2> (Confluence auto-generates page title)."""
+    return re.sub(r"<h1>([^<]+)</h1>", r"<h2>\1</h2>", html)
+```
+
 **Confluence Publishing Tool:** See `confluence_poc.py` for reference
 implementation with logging, type hints, and error handling.
 
