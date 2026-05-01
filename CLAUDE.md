@@ -324,6 +324,61 @@ logging.exception("Error with traceback")
 - Use `logging.exception()` in except blocks for stack traces
 - No debug logging in production code
 
+**Input Validation & Error Handling** (prioritized: bugs, quality, performance):
+
+*Bugs:* Validate at system boundaries (user input, file I/O, external APIs). Exit early with clear errors:
+
+```python
+from pathlib import Path
+
+# File I/O: check existence upfront
+if not Path(user_file).exists():
+    logging.error(f"File not found: {user_file}")
+    return None
+
+# User input: validate before processing
+if not email or "@" not in email:
+    logging.error(f"Invalid email: {email}")
+    return None
+
+# External API: check credentials early
+if not all([api_url, api_key]):
+    logging.error("Missing API credentials")
+    return None
+```
+
+*Quality:* Validate only at boundaries; trust internal code. Don't validate things that can't happen:
+
+```python
+# ❌ Don't validate internal contract violations
+def process_items(items: list[Item]) -> None:
+    if not isinstance(items, list):  # Wrong: caller must pass list
+        raise TypeError()
+
+# ✅ Do validate user input
+def process_file(path: str) -> Optional[str]:
+    if not Path(path).exists():
+        logging.error(f"File not found: {path}")
+        return None
+```
+
+*Performance:* Let early validation prevent cascading errors:
+
+```python
+# Early exit avoids unnecessary work
+def publish_docs(markdown_files: list[str], confluence_url: str) -> bool:
+    # Validate all inputs first, once
+    if not confluence_url:
+        logging.error("Missing Confluence URL")
+        return False
+
+    for file in markdown_files:
+        if not Path(file).exists():
+            logging.error(f"Skipping: {file} not found")
+            continue  # Don't attempt to process non-existent files
+        # Process file...
+```
+
 **Testing:** All Python modules should have unit tests:
 
 ```python

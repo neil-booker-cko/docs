@@ -442,9 +442,39 @@ def main():
     )
     args = parser.parse_args()
 
+    # Validate markdown file exists
+    markdown_path = Path(args.markdown_file)
+    if not markdown_path.exists():
+        logging.error(f"File not found: {args.markdown_file}")
+        return 1
+
     # Read markdown file
     with open(args.markdown_file, "r") as f:
         markdown_content = f.read()
+
+    # Validate output directory is writable
+    try:
+        Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    except (OSError, PermissionError) as e:
+        logging.error(f"Cannot write to output directory: {e}")
+        return 1
+
+    # Validate Confluence credentials early (if publishing)
+    if args.publish:
+        if not all([args.confluence_url, args.confluence_email, args.confluence_token]):
+            logging.error("❌ ERROR: Missing Confluence credentials")
+            logging.error("Provide via:")
+            logging.error("  --confluence-url <url>")
+            logging.error("  --confluence-email <email>")
+            logging.error("  --confluence-token <token>")
+            logging.error("Or set environment variables:")
+            logging.error("  CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_TOKEN")
+            return 1
+
+    # Validate parent file if provided
+    if args.parent_file and not Path(args.parent_file).exists():
+        logging.error(f"Parent file not found: {args.parent_file}")
+        return 1
 
     logging.info(f"📄 Processing: {args.markdown_file}")
     logging.info(f"   Size: {len(markdown_content)} chars\n")
@@ -479,7 +509,6 @@ def main():
         logging.info("✓ HTML prepared for Confluence")
 
         # Write output files
-        Path(args.output_dir).mkdir(parents=True, exist_ok=True)
         html_file = os.path.join(args.output_dir, "output.html")
         with open(html_file, "w") as f:
             f.write(confluence_html)
@@ -487,16 +516,6 @@ def main():
 
         # Step 4: Publish to Confluence (if enabled)
         if args.publish:
-            if not all([args.confluence_url, args.confluence_email, args.confluence_token]):
-                logging.error("❌ ERROR: Missing Confluence credentials")
-                logging.error("Provide via:")
-                logging.error("  --confluence-url <url>")
-                logging.error("  --confluence-email <email>")
-                logging.error("  --confluence-token <token>")
-                logging.error("Or set environment variables:")
-                logging.error("  CONFLUENCE_URL, CONFLUENCE_EMAIL, CONFLUENCE_TOKEN")
-                return 1
-
             logging.info("\n🔄 Publishing to Confluence...\n")
             publisher = ConfluencePublisher(
                 base_url=args.confluence_url,
