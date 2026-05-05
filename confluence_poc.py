@@ -368,12 +368,13 @@ class ConfluencePublisher:
             else:
                 # Create new page
                 logging.info("   Creating new page...")
-                page_id = self.confluence.create_page(
+                created_page = self.confluence.create_page(
                     space=space_key,
                     title=title,
                     body=html_content,
                     parent_id=parent_page_id,
                 )
+                page_id = int(created_page.get("id"))
 
             logging.info(f"✓ Page published: {self.base_url}/wiki/spaces/{space_key}/pages/{page_id}")
 
@@ -465,11 +466,12 @@ def publish_parent_page(
             logging.info(f"   ✓ Found existing parent: {parent_title} (ID: {parent_page_id})")
         else:
             # Create parent page
-            parent_page_id = publisher.confluence.create_page(
+            created_page = publisher.confluence.create_page(
                 space=space_key,
                 title=parent_title,
                 body=parent_html_conf,
             )
+            parent_page_id = int(created_page.get("id"))
             logging.info(f"   ✓ Created parent page: {parent_title} (ID: {parent_page_id})")
 
         return parent_page_id
