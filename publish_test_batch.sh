@@ -23,12 +23,8 @@ uv run python confluence_poc.py docs/routing/eigrp.md \
 
 # Reference docs with parent
 echo ""
-echo "📦 Reference Documentation (parent + 2 children)"
+echo "📦 Reference Documentation (parent + 1 child)"
 uv run python confluence_poc.py docs/reference/admin_distance.md \
-  --publish \
-  --parent-file docs/reference/index.md
-
-uv run python confluence_poc.py docs/reference/osi_model.md \
   --publish \
   --parent-file docs/reference/index.md
 
@@ -43,7 +39,7 @@ echo ""
 echo "✅ Batch publish complete!"
 echo ""
 echo "📊 Summary:"
-echo "  - 6 documents published"
+echo "  - 5 documents published"
 echo "  - 3 parent pages (with children macro)"
 echo "  - Multiple diagrams converted and embedded"
 echo ""
