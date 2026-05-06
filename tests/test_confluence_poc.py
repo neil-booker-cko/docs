@@ -152,6 +152,15 @@ class TestMarkdownToConfluence:
         assert "&lt;" not in result or "<" in result
         assert "&gt;" not in result or ">" in result
 
+    def test_prepare_for_confluence_converts_newlines_in_paragraphs(self):
+        """Convert literal newlines in paragraphs to <br> tags for Confluence."""
+        html = "<p>Line one\nLine two</p>"
+        result = MarkdownToConfluence.prepare_for_confluence(html)
+
+        # Newlines should be converted to <br> tags
+        assert "<br>" in result
+        assert "Line one<br>Line two" in result
+
 
 class TestHelperFunctions:
     """Test utility functions."""
@@ -243,7 +252,7 @@ class TestPublishParentPage:
 
         mock_confluence = Mock()
         mock_confluence.get_page_by_title.return_value = None
-        mock_confluence.create_page.return_value = "11111"
+        mock_confluence.create_page.return_value = {"id": "11111"}
 
         publisher = ConfluencePublisher.__new__(ConfluencePublisher)
         publisher.confluence = mock_confluence
@@ -251,7 +260,7 @@ class TestPublishParentPage:
 
         parent_id = publish_parent_page(publisher, str(index_file), "SPACE")
 
-        assert parent_id == "11111"
+        assert parent_id == 11111
         mock_confluence.create_page.assert_called_once()
 
     def test_publish_parent_page_file_not_found(self):

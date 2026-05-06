@@ -236,7 +236,7 @@ class MarkdownToConfluence:
         - Convert <h1> to <h2> (Confluence pages have auto-generated h1)
         - Convert diagram image references to Confluence attachment macro syntax
         - Strip syntax highlighting spans from code blocks for Confluence compatibility
-        - Preserve code blocks with proper whitespace
+        - Replace literal newlines in paragraphs with <br> tags for proper rendering
         """
         # Demote h1 → h2 (Confluence auto-generates page title)
         content = re.sub(r"<h1>([^<]+)</h1>", r"<h2>\1</h2>", html_content)
@@ -276,6 +276,15 @@ class MarkdownToConfluence:
             content,
             flags=re.DOTALL,
         )
+
+        # Convert literal newlines within paragraph tags to <br> for proper Confluence rendering
+        def fix_paragraph_newlines(match):
+            paragraph_content = match.group(1)
+            # Replace literal newlines with <br> tags
+            paragraph_content = paragraph_content.replace("\n", "<br>")
+            return f"<p>{paragraph_content}</p>"
+
+        content = re.sub(r"<p>(.*?)</p>", fix_paragraph_newlines, content, flags=re.DOTALL)
 
         return content
 
