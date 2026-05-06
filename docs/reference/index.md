@@ -1,9 +1,10 @@
 # Reference
 
-Quick-reference tables and cheat sheets for common networking values. These pages
-are lookup aids — protocol packet formats are in
-[Packet Headers](../packets/index.md), [Routing Protocols](../routing/index.md),
-and [Application Protocols](../application/index.md).
+Quick-reference tables and cheat sheets for common networking values.
+
+These pages are lookup aids. Protocol packet formats are documented in
+[Packet Headers](../packets/index.md), [Routing Protocols](../routing/index.md), and
+[Application Protocols](../application/index.md).
 
 ---
 
