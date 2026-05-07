@@ -67,26 +67,54 @@ graph LR
 
 vrf definition AWS
  rd 65000:100
+ route-target export 65000:100
+ route-target import 65000:100
  !
  address-family ipv4
  exit-address-family
 !
 vrf definition AZURE
  rd 65000:200
+ route-target export 65000:200
+ route-target import 65000:200
  !
  address-family ipv4
  exit-address-family
 !
 vrf definition GCP
  rd 65000:300
+ route-target export 65000:300
+ route-target import 65000:300
  !
  address-family ipv4
  exit-address-family
 !
 ```
 
-> A route distinguisher (`rd`) is required for BGP to operate within a VRF even in a
-> VRF-Lite design (no MPLS). Use a simple `<local-AS>:<unique-id>` convention.
+### Numbering Scheme
+
+The RD and RT use a consistent `<local-AS>:<VRF-ID>` pattern tied to the VRF's purpose:
+
+| VRF | RD | RT Export | RT Import | Meaning |
+| --- | --- | --- | --- | --- |
+| AWS | `65000:100` | `65000:100` | `65000:100` | AWS-only routes (fully isolated) |
+| AZURE | `65000:200` | `65000:200` | `65000:200` | Azure-only routes (fully isolated) |
+| GCP | `65000:300` | `65000:300` | `65000:300` | GCP-only routes (fully isolated) |
+
+**Why this design:**
+
+- **Route Distinguisher (RD)** — Makes overlapping IP prefixes globally unique in BGP.
+  Required even in VRF-Lite (no MPLS). Each VRF's RD must be unique on the router.
+
+- **Route Target (RT) Export** — Tags routes when advertising. Each VRF exports with its
+  own RT value.
+
+- **Route Target (RT) Import** — Selects which routes to accept. In this cloud separation
+  design, each VRF only accepts routes tagged with its own RT, preventing cross-cloud
+  traffic leaking.
+
+**For route leaking** (if needed in future): Spokes could also import the hub's RT
+(e.g., `65000:999`) to reach shared services in the hub VRF.
 
 ---
 
