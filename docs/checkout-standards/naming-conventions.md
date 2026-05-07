@@ -1,89 +1,189 @@
-# Naming Conventions
+# Naming Standards
 
-Standards for device, interface, and logical resource naming.
-
----
-
-## Device Naming
-
-### Cisco Routers
-
-Format: `ck-[region]-[type]-[instance]`
-
-| Example | Meaning |
-| --- | --- |
-| `ck-us-core-01` | Checkout US core router, instance 01 |
-| `ck-eu-edge-02` | Checkout EU edge router, instance 02 |
-
-### FortiGate Firewalls
-
-Format: `ck-[region]-fw-[instance]`
-
-| Example | Meaning |
-| --- | --- |
-| `ck-us-fw-01` | Checkout US firewall, instance 01 |
+Consistent naming across physical devices, interfaces, and logical resources ensures clarity,
+enables automation, and allows easy identification of equipment type, location, and purpose.
 
 ---
 
-## Interface Naming
+## Physical Device Naming
 
-### Physical Interfaces (Cisco)
+Device names follow a hierarchical structure for on-premises equipment:
 
-Use Cisco default: `GigabitEthernet0/0`, `GigabitEthernet0/1`, etc.
+**Format: `SSSS-RRR[FF]-NN[M]`**
 
-Description format: `[peer-type]–[purpose]–[destination]`
+| Component | Length | Required | Example | Purpose |
+| --- | --- | --- | --- | --- |
+| Site (SSSS) | 4 chars | Yes | LON1, ELD7 | Location identifier |
+| Role (RRR) | 3 chars | Yes | CSW, ASW, PFW | Device role (not vendor) |
+| Floor (FF) | 2 chars | No | 01-99, 0G, B1 | Physical floor/level |
+| Device (NN) | 2 chars | Yes | 01-99 | Sequential number |
+| Member (M) | 1 char | No | A, B, C | Stack/cluster member |
 
-| Interface | Description | Purpose |
-| --- | --- | --- |
-| `Gi0/1` | `DX–AWS–TGW-64512` | AWS Direct Connect to TGW |
-| `Gi0/2` | `ER–Azure–MSEE-12076` | Azure ExpressRoute to MSEE |
-| `Gi0/3` | `IC–GCP–CloudRouter` | GCP Cloud Interconnect |
+### Site Identifiers
+
+**Data Centers:**
+
+| Identifier | Location |
+| --- | --- |
+| EDB3 | Dublin |
+| EDC4 | Ashburn |
+| ELD7 | Slough |
+| ELD8 | Docklands |
+| ESG3 | Singapore |
+
+**Offices** (IATA airport codes):
+
+| Identifier | Location | Identifier | Location |
+| --- | --- | --- | --- |
+| LON | London | BER | Berlin |
+| MRU | Mauritius | NYC | New York |
+| OPO | Porto | SFO | San Francisco |
+| DXB | Dubai | TLL | Tallinn |
+| SNG | Singapore | HKG | Hong Kong |
+| SHG | Shanghai | PER | Perth |
+| MEL | Melbourne | | |
+
+### Role Identifiers
+
+| Identifier | Role |
+| --- | --- |
+| ASW | Access Switch |
+| CSW | Core Switch |
+| ISW | Internet Switch |
+| WSW | Wireless Switch |
+| PFW | Physical Firewall |
+| VFW | Virtual Firewall |
+| SRV | Server |
+| WAP | Wireless Access Point |
+| CON | Console Server |
+
+### Floor Identifiers
+
+| Identifier | Floor |
+| --- | --- |
+| 01-99 | Floors 1-99 |
+| 0G | Ground floor |
+| B1-B9 | Basements 1-9 |
+| MZ | Mezzanine |
+
+### Device/Member Identifiers
+
+| Identifier | Meaning |
+| --- | --- |
+| 01-99 | Sequential device number |
+| A | Primary/first member of stack/cluster |
+| B | Secondary/second member |
+| C-Z | Additional stack members |
+
+### Physical Device Examples
+
+**Data Center Core Switch:**
+
+- `ELD7-CSW-01` — Slough datacenter, core switch, device 01
+
+**Office Access Switch Stack:**
+
+- `LON1-ASW04-01A` — London office, access switch, floor 4, device 01, primary
+- `LON1-ASW04-01B` — London office, access switch, floor 4, device 01, secondary
+
+**Office Firewall Pair:**
+
+- `LON1-PFW-01A` — London office, physical firewall, device 01, active
+- `LON1-PFW-01B` — London office, physical firewall, device 01, standby
+
+**Wireless Access Point:**
+
+- `LON1-WAP04-16` — London office, WAP on floor 4, device 16
+
+**Console Server:**
+
+- `ELD7-CON-01` — Slough datacenter, console server, device 01
+
+---
+
+## Interface and Logical Resource Naming
+
+### Physical Interface Descriptions
+
+Use Cisco native interface naming: `GigabitEthernet0/0`, `GigabitEthernet0/1`, etc.
+
+Configure interface descriptions with this format: `[Attached-Device]_[Attached-Interface]`
+
+| Interface | Description | Connected Device | Purpose |
+| --- | --- | --- | --- |
+| `Gi0/1` | `AWSTGW_GI0/1` | AWS TGW | AWS Direct Connect handoff |
+| `Gi0/2` | `AZUREMSEE_GI0/1` | Azure MSEE | Azure ExpressRoute handoff |
+| `Gi0/3` | `GCPIC_GI0/1` | GCP Cloud Router | GCP Cloud Interconnect handoff |
+| `Gi1/0` | `LONFWPRI_GI0/0` | LON-PFW-01A | Local firewall link (primary) |
+| `Gi1/1` | `LONFWSEC_GI0/0` | LON-PFW-01B | Local firewall link (secondary) |
 
 ### VLAN Subinterfaces
 
-Format: `[physical].[vlan]` with description `[VRF]–[purpose]`
+Format: `[physical].[vlan]` with description: `[Attached-Device]_[Attached-Interface]`
 
-| Interface | VLAN | Description | Purpose |
-| --- | --- | --- | --- |
-| `Gi0/1.100` | 100 | `AWS–transport–FG` | FortiGate AWS transport |
-| `Gi0/1.200` | 200 | `AZURE–transport–FG` | FortiGate Azure transport |
-| `Gi0/1.300` | 300 | `GCP–transport–FG` | FortiGate GCP transport |
+| Subinterface | VLAN | Description | VRF | Purpose |
+| --- | --- | --- | --- | --- |
+| `Gi0/1.100` | 100 | `LONFWPRI_GI0/1` | AWS | FortiGate AWS transport |
+| `Gi0/1.200` | 200 | `LONFWPRI_GI0/2` | Azure | FortiGate Azure transport |
+| `Gi0/1.300` | 300 | `LONFWPRI_GI0/3` | GCP | FortiGate GCP transport |
 
----
+### VRF Naming
 
-## VRF Naming
-
-**Standard:** Uppercase, cloud provider name or purpose
+Standard VRF names by purpose:
 
 | VRF | Purpose |
 | --- | --- |
+| `Mgmt` | Management plane (Cisco IOS-XE built-in) |
 | `AWS` | Amazon Web Services |
-| `AZURE` | Microsoft Azure |
+| `Azure` | Microsoft Azure |
 | `GCP` | Google Cloud Platform |
-| `Mgmt` | Management plane (IOS-XE built-in) |
 
----
+### Route Map Naming
 
-## Route Map and Prefix List Naming
+Format: `RM_[source]_[direction]`
 
-**Route Maps:** `RM-[source]-[direction]`
+| Route Map | Direction | Purpose |
+| --- | --- | --- |
+| `RM_AWS_IN` | Inbound | AWS route filtering/manipulation |
+| `RM_AWS_OUT` | Outbound | AWS route filtering/manipulation |
+| `RM_AZURE_IN` | Inbound | Azure route filtering/manipulation |
+| `RM_AZURE_OUT` | Outbound | Azure route filtering/manipulation |
+| `RM_GCP_IN` | Inbound | GCP route filtering/manipulation |
+| `RM_GCP_OUT` | Outbound | GCP route filtering/manipulation |
 
-- `RM-AWS-IN` — AWS inbound filtering
-- `RM-FG-AWS-OUT` — FortiGate AWS outbound
+### Prefix List Naming
 
-**Prefix Lists:** `PFX-[vrf]-[purpose]`
+Format: `PL_[vrf]_[purpose]`
 
-- `PFX-AWS-TRANSPORT` — AWS transport link addressing
-- `PFX-GCP-INTERNAL` — GCP internal routes
-
----
-
-## BGP Neighbor Descriptions
-
-Format: `[peer-type]–[purpose]–[AS]–[region]`
-
-| Description | Purpose |
+| Prefix List | Purpose |
 | --- | --- |
-| `AWS-TGW-DX-64512-us` | AWS TGW via Direct Connect, AS 64512 |
-| `FG-WAN-AWS-65001` | FortiGate WAN peer for AWS, AS 65001 |
-| `ER-MSEE-PRIMARY-12076` | Azure MSEE primary, AS 12076 |
+| `PL_AWS_TRANSPORT` | AWS transport link addressing (handoff subnet) |
+| `PL_AWS_INTERNAL` | AWS internal routes to advertise to TGW |
+| `PL_AZURE_TRANSPORT` | Azure ExpressRoute handoff subnet |
+| `PL_AZURE_INTERNAL` | Azure internal routes to advertise |
+| `PL_GCP_TRANSPORT` | GCP Cloud Interconnect handoff subnet |
+| `PL_GCP_INTERNAL` | GCP internal routes to advertise |
+| `PL_BOGON` | Bogon/invalid IP ranges (ingress filtering) |
+
+### BGP Neighbor Descriptions
+
+Format: `[peer-type]-[purpose]-[AS]-[region]` or `[peer-type]-[REGION]-[purpose]-[AS]`
+
+| Description | Peer Type | Purpose |
+| --- | --- | --- |
+| `AWS-TGW-DX-64512-us` | Cloud | AWS TGW via Direct Connect, AS 64512 |
+| `AZURE-MSEE-12076-primary` | Cloud | Azure ExpressRoute MSEE primary, AS 12076 |
+| `GCP-CloudRouter-64514-primary` | Cloud | GCP Cloud Interconnect, AS 64514 |
+| `FG-LON-AWS-65001` | Internal | FortiGate London WAN peer for AWS, AS 65001 |
+| `CORE-EU-iBGP-65000` | Internal | EU core iBGP peer, AS 65000 |
+
+### Access Control List Naming
+
+Format: `ACL_[REASON]_IN` or `ACL_[REASON]_OUT`
+
+| ACL | Direction | Purpose |
+| --- | --- | --- |
+| `ACL_BOGON_IN` | Inbound | Blocks RFC1918, loopback, multicast, documentation ranges |
+| `ACL_MGMT_IN` | Inbound | Restricts management access to approved subnets |
+| `ACL_SNMP_IN` | Inbound | Restricts SNMP queries to NMS hosts |
+| `ACL_DEFAULT_OUT` | Outbound | Default outbound filtering rules |

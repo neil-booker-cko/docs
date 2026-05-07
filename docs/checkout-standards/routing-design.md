@@ -15,16 +15,22 @@ Checkout's routing architecture standards and design patterns.
 
 ## VRF Strategy: Cloud Provider Separation
 
-**Standard:** Use VRF-Lite with one VRF per cloud provider.
+**Standard:** Use VRF-Lite with one VRF per cloud provider and management.
 
-| VRF | Cloud | AS | RD | RT Export | RT Import |
-| --- | --- | --- | --- | --- | --- |
-| AWS | Amazon Web Services | 65000 | `65000:100` | `65000:100` | `65000:100` |
-| AZURE | Microsoft Azure | 65000 | `65000:200` | `65000:200` | `65000:200` |
-| GCP | Google Cloud Platform | 65000 | `65000:300` | `65000:300` | `65000:300` |
+| VRF | Purpose | RT (Export/Import) | RD |
+| --- | --- | --- | --- |
+| Mgmt | Management plane isolation | `1` | `65000:1` |
+| AWS | Amazon Web Services | `100` | `65000:100` |
+| Azure | Microsoft Azure | `110` | `65000:110` |
+| GCP | Google Cloud Platform | `120` | `65000:120` |
 
-**Rationale:** Each cloud provider connects via distinct WAN paths (Direct Connect, ExpressRoute,
-Cloud Interconnect). VRF isolation prevents accidental route leaking between clouds.
+**Rationale:**
+
+- Each cloud provider connects via distinct WAN paths (Direct Connect, ExpressRoute, Cloud
+  Interconnect). VRF isolation prevents accidental route leaking between clouds.
+- RT values (1, 100, 110, 120) are simple and human-readable; RD prepends ASN for BGP
+  uniqueness.
+- Mgmt VRF isolates management traffic from data plane; uses built-in VRF in IOS-XE.
 
 **Reference:** [VRF Theory](../theory/vrf.md) | [Cloud Separation Config](../cisco/cisco_vrf_config.md)
 
