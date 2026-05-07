@@ -83,7 +83,6 @@ end
 Meraki does **not** support external syslog. Instead:
 
 - **Dashboard native:** 30-day retention (Meraki cloud)
-- **SNMP traps:** Send critical alerts to SNMP trap receiver
 - **Webhooks:** Send events to external systems (PagerDuty, Slack)
 
 ---
@@ -133,22 +132,6 @@ config system snmp community
     next
 end
 ```
-
-### SNMP Trap Events
-
-**Required traps to send to NMS:**
-
-| Trap Type | Event | Severity |
-| --- | --- | --- |
-| Link Status | Interface up/down | Critical |
-| Device Status | Device offline/online | Critical |
-| Temperature | High temp alert | Warning |
-| Power Supply | PSU failure | Critical |
-| Memory | >80% usage | Warning |
-| CPU | >80% utilization | Warning |
-| HA State | Active-standby transition | Critical |
-| BGP | BGP session down | Critical |
-| OSPF | OSPF adjacency change | Warning |
 
 ---
 
@@ -262,16 +245,6 @@ config log eventfilter
 next
 end
 ```
-
-### SNMP Trap Receiver (NMS)
-
-**Host:** 10.0.1.50 (Network Management System)
-
-**Traps received:**
-
-- Link state changes (immediate)
-- Device status changes (immediate)
-- Resource thresholds (via periodic polling)
 
 ---
 
