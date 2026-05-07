@@ -1,41 +1,66 @@
 # VLAN Configuration Standards
 
 VLAN allocation, tagging, trunking, and naming conventions for Cisco IOS-XE and FortiGate.
+VLANs differ between datacenters and office locations.
 
 ---
 
 ## VLAN Allocation Scheme
 
-### Standard VLAN Ranges
+### Datacenter VLAN Ranges
 
 | VLAN Range | Purpose | Allocation | Notes |
 | --- | --- | --- | --- |
 | 1 | Default VLAN | Reserved | Do not use for data; must untagged native VLAN on trunks |
-| 10-99 | Management | Static allocation | Out-of-band, not routed to data VLANs by default |
-| 100-199 | Data - Primary | Dynamic or static | Primary business applications |
-| 200-299 | Data - Secondary | Dynamic or static | Secondary/backup applications |
-| 300-399 | Voice/VoIP | Static allocation | QoS priority, no data traffic |
-| 400-499 | IoT/Sensors | Static allocation | Isolated, restricted routing |
-| 500-599 | Guest/Temporary | Dynamic or static | No access to internal resources |
-| 600-699 | DMZ/Public | Static allocation | Inbound-only, firewalled |
-| 700-799 | Reserved | N/A | Future use |
-| 800-999 | Cloud/WAN | Static allocation | AWS, Azure, GCP VPN transport |
-| 1000-1094 | Extended range | Static allocation | If 802.1Q extended VLANs needed |
+| 10-19 | Management | Static allocation | Out-of-band, not routed to data VLANs |
+| 20-29 | Reserved | N/A | Future use |
+| 100-199 | Production Data | Static allocation | Primary business applications |
+| 200-299 | DR/Backup | Static allocation | Disaster recovery, backup systems |
+| 300-399 | Voice/SIP | Static allocation | Voice gateways, SIP signaling |
+| 400-499 | Storage (SAN) | Static allocation | iSCSI, NAS traffic isolation |
+| 500-599 | Reserved | N/A | Future use |
+| 800-899 | AWS Direct Connect | Static allocation | AWS VPC transport |
+| 900-999 | Azure/GCP | Static allocation | Azure ER, GCP IC transport |
 
-### Per-Site VLAN Assignment
+### Office VLAN Ranges
+
+| VLAN Range | Purpose | Allocation | Notes |
+| --- | --- | --- | --- |
+| 1 | Default VLAN | Reserved | Do not use for data; must untagged native VLAN on trunks |
+| 10-19 | Management | Static allocation | Out-of-band network management |
+| 100-199 | Corporate Data | Static or dynamic | Employee workstations, desktops |
+| 300-399 | Voice/VoIP | Static allocation | IP phones, call control |
+| 400-499 | IoT/Sensors | Static allocation | Printers, cameras, access control |
+| 500-599 | Guest/Visitor | Dynamic allocation | Temporary/guest WiFi access |
+| 600-699 | Wireless (5GHz) | Static allocation | 802.11ac/ax high-bandwidth |
+| 800-899 | Site-to-Site VPN | Static allocation | Branch-to-HQ VPN transport |
+
+### VLAN Naming Convention
 
 Standard VLAN numbering across all sites (no site-specific VLAN IDs). Use consistent
 numbers regardless of location for ease of troubleshooting.
 
-**Example — London office (LON1):**
+**Example — Dublin Datacenter (ELD7):**
 
 | VLAN | Name | Purpose |
 | --- | --- | --- |
-| 10 | Mgmt-LON | Management access (LON datacenter/office) |
-| 100 | Data-Primary | Primary business systems |
-| 300 | Voice-LON | VoIP phones, call control |
-| 400 | IoT-Sensors | Printers, cameras, access control |
-| 500 | Guest-LON | Visitor WiFi, no data access |
+| 10 | Mgmt | Out-of-band management |
+| 100 | Prod-Data | Production applications |
+| 200 | DR-Backup | Disaster recovery systems |
+| 300 | Voice | SIP gateways |
+| 400 | Storage | SAN/iSCSI |
+| 800 | AWS-DX | AWS Direct Connect |
+
+**Example — London Office (LON1):**
+
+| VLAN | Name | Purpose |
+| --- | --- | --- |
+| 10 | Mgmt | Management access |
+| 100 | Corp-Data | Employee workstations |
+| 300 | Voice | VoIP phones |
+| 400 | IoT | Printers, cameras |
+| 500 | Guest | Visitor WiFi |
+| 600 | Wireless | High-speed wireless |
 
 ---
 

@@ -18,9 +18,57 @@ Checkout's standard HA model: two devices in active-standby mode with automatic 
 
 ---
 
-## Cisco IOS-XE HSRP/VRRP Standards
+## Cisco IOS-XE HA Standards
 
-### HSRP (Hot Standby Router Protocol)
+### Virtual Switching System (VSS) — Catalyst 9500 Series
+
+**Standard:** Use VSS for datacenter core switches (C9500 series) for chassis-level redundancy.
+
+| Parameter | Value | Notes |
+| --- | --- | --- |
+| VSS Mode | Active-Standby | One switch active; one standby |
+| VSS Domain ID | Unique per site (1-255) | ELD7: 1, EDC4: 2, etc. |
+| VSS Link | 40 Gbps (preferred) or 10 Gbps | Dedicated inter-chassis link |
+| VSS Link Redundancy | Dual links (for critical sites) | 2x40G or 2x10G for fault tolerance |
+| Stateful Switchover (SSO) | Enabled | Hitless failover with NSF |
+| NSF (Non-Stop Forwarding) | Enabled | BGP, OSPF retain forwarding during failover |
+| Failover Detection | BFD on VSS link | Fast detection of VSS link failure |
+
+**VSS Configuration Example:**
+
+```ios
+switch 1
+  priority 110
+  switch virtual domain 1
+exit
+
+switch 2
+  priority 100
+  switch virtual domain 1
+exit
+
+interface Port-channel 10
+  description VSS-Link
+  switch virtual link 1
+  no shutdown
+!
+
+interface GigabitEthernet2/1/1
+  description VSS-Link-Switch1-to-Switch2
+  channel-group 10 mode on
+  no shutdown
+!
+```
+
+**Advantages over HSRP:**
+
+- Entire chassis fails over (all interfaces), not just one router interface
+- Simpler configuration than per-interface HSRP
+- Unified management (single logical switch)
+
+---
+
+### HSRP (Hot Standby Router Protocol) — Older/Branch Equipment
 
 **Standard:** Use HSRP version 2 (HSRPv2) for all deployments.
 
