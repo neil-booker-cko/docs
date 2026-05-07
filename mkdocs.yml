@@ -205,6 +205,14 @@ nav:
               - PTP: packets/ptp.md
               - DNS: packets/dns.md
               - DHCP: packets/dhcp.md
+  - Checkout Standards:
+      - Overview: checkout-standards/README.md
+      - Routing Design: checkout-standards/routing-design.md
+      - IP Addressing: checkout-standards/ip-addressing.md
+      - BGP Standards: checkout-standards/bgp-standards.md
+      - Naming Conventions: checkout-standards/naming-conventions.md
+      - Security Hardening: checkout-standards/security-hardening.md
+      - Equipment Configuration: checkout-standards/equipment-config.md
   - Cisco & FortiGate:
       - Cisco:
           - Fundamentals:
