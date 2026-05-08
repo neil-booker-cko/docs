@@ -19,31 +19,6 @@ extra_javascript = [
 
 nav = [
   {"Home" = "index.md"},
-  {"Quick Reference" = [
-    {"Cisco Templates" = [
-      {"BGP" = "cisco/bgp-minimal.md"},
-      {"OSPF" = "cisco/ospf-minimal.md"},
-      {"EIGRP" = "cisco/eigrp-minimal.md"},
-      {"BFD" = "cisco/bfd-minimal.md"},
-      {"IPsec VPN" = "cisco/ipsec-vpn-minimal.md"},
-      {"DMVPN" = "cisco/dmvpn-minimal.md"},
-      {"HSRP" = "cisco/hsrp-minimal.md"},
-      {"AAA" = "cisco/aaa-minimal.md"},
-      {"SSH" = "cisco/ssh-minimal.md"},
-      {"Security Hardening" = "cisco/security-hardening-minimal.md"}
-    ]},
-    {"FortiGate Templates" = [
-      {"BGP" = "fortigate/bgp-minimal.md"},
-      {"OSPF" = "fortigate/ospf-minimal.md"},
-      {"BFD" = "fortigate/bfd-minimal.md"},
-      {"IPsec VPN" = "fortigate/ipsec-vpn-minimal.md"},
-      {"VRRP" = "fortigate/vrrp-minimal.md"},
-      {"HA" = "fortigate/ha-minimal.md"},
-      {"AAA" = "fortigate/aaa-minimal.md"},
-      {"SSH" = "fortigate/ssh-minimal.md"},
-      {"Security Hardening" = "fortigate/security-hardening-minimal.md"}
-    ]}
-  ]},
   {"Theory" = [
     {"Protocol & Technology Comparisons" = [
       {"IGPs vs EGPs" = "theory/igp_vs_egp.md"},
@@ -294,6 +269,31 @@ nav = [
     ]}
   ]},
   {"Operations & Reference" = [
+    {"Quick Reference" = [
+      {"Cisco Templates" = [
+        {"BGP" = "cisco/bgp-minimal.md"},
+        {"OSPF" = "cisco/ospf-minimal.md"},
+        {"EIGRP" = "cisco/eigrp-minimal.md"},
+        {"BFD" = "cisco/bfd-minimal.md"},
+        {"IPsec VPN" = "cisco/ipsec-vpn-minimal.md"},
+        {"DMVPN" = "cisco/dmvpn-minimal.md"},
+        {"HSRP" = "cisco/hsrp-minimal.md"},
+        {"AAA" = "cisco/aaa-minimal.md"},
+        {"SSH" = "cisco/ssh-minimal.md"},
+        {"Security Hardening" = "cisco/security-hardening-minimal.md"}
+      ]},
+      {"FortiGate Templates" = [
+        {"BGP" = "fortigate/bgp-minimal.md"},
+        {"OSPF" = "fortigate/ospf-minimal.md"},
+        {"BFD" = "fortigate/bfd-minimal.md"},
+        {"IPsec VPN" = "fortigate/ipsec-vpn-minimal.md"},
+        {"VRRP" = "fortigate/vrrp-minimal.md"},
+        {"HA" = "fortigate/ha-minimal.md"},
+        {"AAA" = "fortigate/aaa-minimal.md"},
+        {"SSH" = "fortigate/ssh-minimal.md"},
+        {"Security Hardening" = "fortigate/security-hardening-minimal.md"}
+      ]}
+    ]},
     {"Operations" = [
       {"Cisco IOS-XE Upgrade" = "operations/cisco_upgrade.md"},
       {"FortiGate Firmware Upgrade" = "operations/fortigate_upgrade.md"},
@@ -321,6 +321,27 @@ nav = [
       {"Administrative Distance" = "reference/admin_distance.md"},
       {"DSCP & QoS" = "reference/dscp_qos.md"}
     ]}
+  ]},
+  {"Checkout Standards" = [
+    {"Overview" = "checkout-intro.md"},
+    {"Naming Conventions" = "checkout-standards/naming-conventions.md"},
+    {"IP Addressing" = "checkout-standards/ip-addressing.md"},
+    {"Routing Design" = "checkout-standards/routing-design.md"},
+    {"BGP Standards" = "checkout-standards/bgp-standards.md"},
+    {"VPN Standards" = "checkout-standards/vpn-standards.md"},
+    {"Connectivity Standards" = "checkout-standards/connectivity-standards.md"},
+    {"Equipment Standards" = "checkout-standards/equipment-standards.md"},
+    {"Equipment Configuration" = "checkout-standards/equipment-config.md"},
+    {"Software Standards" = "checkout-standards/software-standards.md"},
+    {"VLAN Configuration" = "checkout-standards/vlan-standards.md"},
+    {"Interface Configuration" = "checkout-standards/interface-standards.md"},
+    {"Meraki Standards" = "checkout-standards/meraki-standards.md"},
+    {"Security Hardening" = "checkout-standards/security-hardening.md"},
+    {"Firewall Standards" = "checkout-standards/firewall-standards.md"},
+    {"High Availability" = "checkout-standards/ha-standards.md"},
+    {"Syslog & Monitoring" = "checkout-standards/syslog-monitoring-standards.md"},
+    {"Disaster Recovery" = "checkout-standards/disaster-recovery-standards.md"},
+    {"Change Management" = "checkout-standards/change-management-standards.md"}
   ]}
 ]
 
