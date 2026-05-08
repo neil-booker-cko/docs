@@ -24,17 +24,23 @@ VLANs differ between datacenters and office locations.
 
 ### Office VLAN Ranges
 
-| VLAN Range | Purpose | Allocation | Notes |
+| VLAN | Purpose | Allocation | Notes |
 | --- | --- | --- | --- |
 | 1 | Default VLAN | Reserved | Do not use; VLAN 999 is native VLAN on trunks |
-| 10-19 | Management | Static allocation | Out-of-band network management |
+| 10 | Management | Static allocation | Out-of-band management access |
+| 12 | AP Management | Static allocation | Wireless access point management |
+| 20 | Servers | Static allocation | Office servers, local resources |
+| 22 | Security | Static allocation | Security appliances, monitoring systems |
+| 30 | Printers | Static allocation | Network printers and multifunction devices |
+| 32 | PET | Static allocation | Personal electronic devices (employee devices) |
+| 34 | AV | Static allocation | Audio/Video, digital signage |
+| 40 | VoIP | Static allocation | IP phones, voice communications |
+| 100 | General (Users) | Static allocation | Employee workstations, general access |
+| 200 | WiFi (Users) | Static allocation | Wireless network for employees |
+| 300 | WiFi (Guests) | Static allocation | Guest wireless network (isolated) |
+| 901 | ISP 1 | Static allocation | Primary Internet Service Provider uplink |
+| 902 | ISP 2 | Static allocation | Secondary Internet Service Provider uplink |
 | 999 | Dummy/Shutdown (Native) | Static allocation | Unused VLAN; all interfaces in this VLAN are shutdown; used as native VLAN on trunks |
-| 100-199 | Corporate Data | Static or dynamic | Employee workstations, desktops |
-| 300-399 | Voice/VoIP | Static allocation | IP phones, call control |
-| 400-499 | IoT/Sensors | Static allocation | Printers, cameras, access control |
-| 500-599 | Guest/Visitor | Dynamic allocation | Temporary/guest WiFi access |
-| 600-699 | Wireless (5GHz) | Static allocation | 802.11ac/ax high-bandwidth |
-| 800-899 | Site-to-Site VPN | Static allocation | Branch-to-HQ VPN transport |
 
 ### VLAN Naming Convention
 
@@ -61,11 +67,18 @@ numbers regardless of location for ease of troubleshooting.
 | VLAN | Name | Purpose |
 | --- | --- | --- |
 | 10 | Mgmt | Management access |
-| 100 | Corp-Data | Employee workstations |
-| 300 | Voice | VoIP phones |
-| 400 | IoT | Printers, cameras |
-| 500 | Guest | Visitor WiFi |
-| 600 | Wireless | High-speed wireless |
+| 12 | AP-Mgmt | Access point management |
+| 20 | Servers | Office servers |
+| 22 | Security | Security systems |
+| 30 | Printers | Network printers |
+| 32 | PET | Employee devices |
+| 34 | AV | Digital signage, displays |
+| 40 | VoIP | IP phones |
+| 100 | General | Employee workstations |
+| 200 | WiFi-Users | Employee wireless |
+| 300 | WiFi-Guests | Guest wireless |
+| 901 | ISP-1 | Primary ISP |
+| 902 | ISP-2 | Secondary ISP |
 
 ---
 
@@ -86,12 +99,23 @@ numbers regardless of location for ease of troubleshooting.
 | 1101 | DX-Primary | Datacenter | Cloud Direct Connect primary |
 | 2101 | DX-Secondary | Datacenter | Cloud Direct Connect secondary |
 
-Site-specific VLANs (wireless, branch-specific):
+### Standard VLAN Names (Offices)
 
-| VLAN ID | Name | Scope |
-| --- | --- | --- |
-| 10 | Mgmt | All sites (same VLAN ID) |
-| 100 | Data-Primary | All sites (same VLAN ID) |
+| VLAN ID | Name | Scope | Purpose |
+| --- | --- | --- | --- |
+| 10 | Mgmt | All offices | Management access |
+| 12 | AP-Mgmt | All offices | Access point management |
+| 20 | Servers | All offices | Office servers |
+| 22 | Security | All offices | Security systems |
+| 30 | Printers | All offices | Network printers |
+| 32 | PET | All offices | Personal electronic devices |
+| 34 | AV | All offices | Audio/Video systems |
+| 40 | VoIP | All offices | IP phones |
+| 100 | General | All offices | User workstations |
+| 200 | WiFi-Users | All offices | Employee wireless |
+| 300 | WiFi-Guests | All offices | Guest wireless |
+| 901 | ISP-1 | All offices | Primary ISP |
+| 902 | ISP-2 | All offices | Secondary ISP |
 
 ---
 
@@ -128,13 +152,24 @@ interface GigabitEthernet0/2
 !
 ```
 
-**Trunk Configuration (all switch-to-switch and uplinks):**
+**Trunk Configuration — Datacenter:**
 
 ```ios
 interface GigabitEthernet0/48
  switchport mode trunk
  switchport trunk native vlan 999
  switchport trunk allowed vlan 501-599,601-699,701,801-899,901-902,1101,2101
+ no shutdown
+!
+```
+
+**Trunk Configuration — Office:**
+
+```ios
+interface GigabitEthernet0/48
+ switchport mode trunk
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,12,20,22,30,32,34,40,100,200,300,901-902
  no shutdown
 !
 ```
