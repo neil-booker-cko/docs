@@ -105,27 +105,42 @@ Device names follow a hierarchical structure for on-premises equipment:
 
 ### Physical Interface Descriptions
 
-Use Cisco native interface naming: `GigabitEthernet0/0`, `GigabitEthernet0/1`, etc.
-
 Configure interface descriptions with this format: `[Attached-Device]_[Attached-Interface]`
+
+**Case convention:** Match the case of the attached device's interface naming:
+
+- Cisco: Uppercase `Gi0/0`, `Gi0/1` (abbreviated GigabitEthernet)
+- FortiGate: Lowercase `port1`, `port2` (per FortiGate standard)
+
+**Cisco to Cisco:**
 
 | Interface | Description | Connected Device | Purpose |
 | --- | --- | --- | --- |
-| `Gi0/1` | `AWSTGW_GI0/1` | AWS TGW | AWS Direct Connect handoff |
-| `Gi0/2` | `AZUREMSEE_GI0/1` | Azure MSEE | Azure ExpressRoute handoff |
-| `Gi0/3` | `GCPIC_GI0/1` | GCP Cloud Router | GCP Cloud Interconnect handoff |
-| `Gi1/0` | `LONFWPRI_GI0/0` | LON-PFW-01A | Local firewall link (primary) |
-| `Gi1/1` | `LONFWSEC_GI0/0` | LON-PFW-01B | Local firewall link (secondary) |
+| `Gi0/1` | `AWSTGW_Gi0/1` | AWS TGW | AWS Direct Connect handoff |
+| `Gi0/2` | `AZUREMSEE_Gi0/1` | Azure MSEE | Azure ExpressRoute handoff |
+| `Gi0/3` | `GCPIC_Gi0/1` | GCP Cloud Router | GCP Cloud Interconnect handoff |
+| `Gi1/0` | `LON1-PFW-01A_Gi0/0` | LON1-PFW-01A | Local firewall link (primary) |
+| `Gi1/1` | `LON1-PFW-01B_Gi0/0` | LON1-PFW-01B | Local firewall link (secondary) |
+
+**Cisco to FortiGate:**
+
+| Interface | Description | Connected Device | Purpose |
+| --- | --- | --- | --- |
+| `Gi0/4` | `ELD7-PFW-01A_port1` | ELD7-PFW-01A | Datacenter FW primary uplink |
+| `Gi0/5` | `ELD7-PFW-01B_port1` | ELD7-PFW-01B | Datacenter FW secondary uplink |
 
 ### VLAN Subinterfaces
 
 Format: `[physical].[vlan]` with description: `[Attached-Device]_[Attached-Interface]`
 
+Match the case of the attached device's interface naming: Cisco uses uppercase Gi, FortiGate uses
+lowercase port.
+
 | Subinterface | VLAN | Description | VRF | Purpose |
 | --- | --- | --- | --- | --- |
-| `Gi0/1.100` | 100 | `LONFWPRI_GI0/1` | AWS | FortiGate AWS transport |
-| `Gi0/1.200` | 200 | `LONFWPRI_GI0/2` | Azure | FortiGate Azure transport |
-| `Gi0/1.300` | 300 | `LONFWPRI_GI0/3` | GCP | FortiGate GCP transport |
+| `Gi0/1.100` | 100 | `LON1-PFW-01A_port1` | AWS | Firewall AWS transport |
+| `Gi0/1.200` | 200 | `LON1-PFW-01A_port2` | Azure | Firewall Azure transport |
+| `Gi0/1.300` | 300 | `LON1-PFW-01A_port3` | GCP | Firewall GCP transport |
 
 ### VRF Naming
 
