@@ -382,6 +382,38 @@ All Checkout standards documented above are marked with adoption status:
 
 ---
 
+## Disaster Recovery
+
+**Configuration Backup Strategy:**
+
+Checkout implements multi-layered configuration backup for resilience:
+
+1. **Centralized Backup (LogicMonitor)** — Primary backup mechanism for all network devices
+   - Automated daily backup to LogicMonitor monitoring platform
+   - Retained for extended retention period (90+ days)
+   - Enables quick comparison and change tracking across devices
+
+2. **Local Archive (Cisco IOS-XE)** — Redundant on-device backup
+   - Cisco devices configured with archive feature for local startup config retention
+   - Multiple versions stored locally; enables quick restore without external access
+   - Fallback if centralized backup access is unavailable
+
+**Data Center Failover:**
+
+- DCs are taken out of action via **application-level traffic shifting**, not device failover
+- Applications route to alternate DCs during maintenance or disaster
+- Network provides stable routing; application layer handles failover logic
+- Avoids complex failover automation; simplifies operational procedures
+
+**Out-of-Band (OOB) Access:**
+
+- **Perle/Vertiv Cyclades console servers** provide OOB access to all network devices
+- Enables management access during network outage (management network unavailable)
+- Independent network path; does not depend on primary management infrastructure
+- Used for emergency recovery, initial configuration, and troubleshooting
+
+---
+
 ## Related Standards and Implementation Guides
 
 **Checkout Standards:**
