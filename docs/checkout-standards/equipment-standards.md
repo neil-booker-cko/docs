@@ -40,7 +40,7 @@ official datasheets.
 | --- | --- | --- | --- | --- | --- | --- |
 | Catalyst C9300-48T | Active | 305,870 hrs | — | — | — | — |
 | Catalyst C9300-24T | Active | 314,790 hrs | — | — | — | — |
-| Catalyst C9300-24UX | Active | 214,760 hrs | — | — | — | — |
+| Catalyst C9300-24UX | Active | 223,480 hrs | — | — | — | — |
 | Catalyst C9300-48P | Active | 277,770 hrs | — | — | — | — |
 | Catalyst C9500-24Y4C | Active | 336,780 hrs | — | — | — | — |
 | Catalyst C9200CX-12T-2X2G | Active | 569,530 hrs | — | — | — | — |
