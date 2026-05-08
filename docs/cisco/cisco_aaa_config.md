@@ -404,6 +404,56 @@ aaa group server tacacs+ TACACS-MGMT
   ip tacacs source-interface GigabitEthernet0/0/0 vrf management
 ```
 
+#### Option C: Checkout Architecture — VLAN 701 Bridge (Mgmt-vrf → Global VRF)
+
+**Problem:** Devices with isolated Mgmt-vrf cannot route to global VRF. TACACS+ servers are in
+global VRF, but `source-interface vrf management` cannot reach them directly.
+
+**Solution:** Point TACACS+ servers to **VLAN 701 subinterface (global VRF)**, which bridges
+Mgmt-vrf and global VRF routing domains:
+
+```ios
+! Configure VLAN 701 subinterface in global VRF (not management VRF)
+interface GigabitEthernet0/0/0.701
+  encapsulation dot1q 701
+  ip address 10.0.5.10 255.255.255.0
+  ! Note: VRF is NOT specified, so it's in global VRF by default
+!
+
+! AAA configuration uses VLAN 701 as the destination
+aaa new-model
+aaa authentication login default group TACACS-SERVERS local
+aaa authorization exec default group TACACS-SERVERS local
+
+aaa group server tacacs+ TACACS-SERVERS
+  server 10.0.5.1
+  ! No vrf specified; uses global VRF route to VLAN 701
+  ip tacacs source-interface Loopback0
+  timeout 10
+
+tacacs server TAC-PRIMARY
+  address ipv4 10.0.5.1
+  ! Server address is in global VRF (VLAN 701 subnet)
+  key SHARED_SECRET_123
+  timeout 10
+
+username fallback privilege 15 secret FALLBACK_PASSWORD
+```
+
+**Routing:**
+
+- Management plane (Mgmt-vrf) sends AAA query destined to VLAN 701 gateway (10.0.5.1)
+- Switch forwards packet via routing table lookup (default/global VRF)
+- VLAN 701 interface receives packet in global VRF and forwards to tac_plus server
+- Server responds directly to source IP (Loopback0 in global VRF)
+
+**Why This Works:**
+
+- Mgmt-vrf devices can reach VLAN 701 because it's on a physical interface (dual-homed)
+- VLAN 701 is in global VRF, so it can route to servers in global VRF
+- No VRF leaking or complex redistribution needed
+- Clean separation: Mgmt-vrf for management, global VRF for server connectivity
+
 ### Testing Management VRF Connectivity
 
 Before applying AAA config, verify the server is reachable from the management VRF:
