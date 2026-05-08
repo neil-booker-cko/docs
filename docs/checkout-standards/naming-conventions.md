@@ -33,15 +33,15 @@ Device names follow a hierarchical structure for on-premises equipment:
 
 **Offices** (IATA airport codes):
 
-| Identifier | Location | Identifier | Location |
-| --- | --- | --- | --- |
-| LON | London | BER | Berlin |
-| MRU | Mauritius | NYC | New York |
-| OPO | Porto | SFO | San Francisco |
-| DXB | Dubai | TLL | Tallinn |
-| SNG | Singapore | HKG | Hong Kong |
-| SHG | Shanghai | PER | Perth |
-| MEL | Melbourne | | |
+| Identifier | Location | Status | Identifier | Location | Status |
+| --- | --- | --- | --- | --- | --- |
+| LON | London | Active | MRU | Mauritius | Active |
+| NYC | New York | Active | SFO | San Francisco | Active |
+| PAR | Paris | Active | DXB | Dubai | Active |
+| TLL | Tallinn | Active | SNG | Singapore | Active |
+| HKG | Hong Kong | Active | SHG | Shanghai | Active |
+| MEL | Melbourne | Active | BER | Berlin | Closed |
+| OPO | Porto | Closed | PER | Perth | Closed |
 
 ### Role Identifiers
 
