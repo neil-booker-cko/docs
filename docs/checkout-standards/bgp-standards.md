@@ -136,6 +136,162 @@ prefixes.
 
 ---
 
+## FortiGate BGP Configuration
+
+**Standard:** FortiGate BGP configuration uses similar concepts to Cisco but with different syntax.
+Configure neighbors at the global level with VRF-specific address families for route filtering
+and policy application.
+
+### BGP Process Configuration (FortiGate)
+
+```fortios
+config router bgp
+    set as 65000
+    set router-id 10.0.0.1
+    set graceful-restart enable
+    set graceful-restart-time 120
+!
+```
+
+### Address Families and Neighbors (FortiGate)
+
+```fortios
+config router bgp
+    config neighbor
+        edit "169.254.1.2"
+            set remote-as 64512
+            set description "AWS-TGW-DX-64512-us"
+            set keep-alive-timer 60
+            set holdtime-timer 180
+            set bfd enable
+        next
+        edit "172.16.0.2"
+            set remote-as 12076
+            set description "AZURE-MSEE-12076-primary"
+            set keep-alive-timer 60
+            set holdtime-timer 180
+            set bfd enable
+        next
+    end
+    config address-family
+        config ipv4
+            edit "AWS"
+                config neighbor
+                    edit "169.254.1.2"
+                        set activate enable
+                        set prefix-list-in "PL_AWS_INTERNAL"
+                        set route-map-in "RM_AWS_IN"
+                        set route-map-out "RM_AWS_OUT"
+                    next
+                end
+            next
+            edit "Azure"
+                config neighbor
+                    edit "172.16.0.2"
+                        set activate enable
+                        set prefix-list-in "PL_AZURE_INTERNAL"
+                        set route-map-in "RM_AZURE_IN"
+                        set route-map-out "RM_AZURE_OUT"
+                    next
+                end
+            next
+        end
+    end
+end
+```
+
+---
+
+## Interface Failure Detection and BGP Failover
+
+**Standard:** Link physical interface state to BGP convergence. When a monitored interface fails,
+trigger immediate BGP neighbor reset or attribute manipulation. This ensures sub-second failover
+without waiting for BFD timeout.
+
+### Cisco: Track Objects and BFD Fall-Over
+
+#### Option 1: BFD Fall-Over (Recommended)
+
+BFD provides sub-second detection when enabled on BGP neighbors:
+
+```ios
+router bgp 65000
+ neighbor 169.254.1.2 fall-over bfd
+!
+```
+
+#### Option 2: Track Objects for Interface State
+
+Use Track objects to monitor interface line-protocol and trigger manual failover:
+
+```ios
+track 1 interface GigabitEthernet0/1 line-protocol
+ delay down 5 up 5
+!
+route-map RM_AWS_FAILOVER permit 10
+ match track 1
+ set local-preference 200
+!
+router bgp 65000
+ address-family ipv4 vrf AWS
+  neighbor 169.254.1.2 route-map RM_AWS_FAILOVER in
+ exit-address-family
+!
+```
+
+When GigabitEthernet0/1 goes down, the track object triggers, and the route-map applies lower
+local-preference, forcing failover to secondary paths.
+
+### FortiGate: Link-Down Failover and Monitor Objects
+
+#### Option 1: Link-Down Failover (Recommended)
+
+Enable link-down failover on neighbors to trigger graceful BGP shutdown on interface failure:
+
+```fortios
+config router bgp
+    config neighbor
+        edit "169.254.1.2"
+            set link-down-failover enable
+        next
+    end
+end
+```
+
+When port1 (attached to this neighbor) goes down, BGP immediately removes routes from the peer.
+
+#### Option 2: Monitor Objects for Proactive Health Checks
+
+Create monitor objects to proactively detect link health before interface failure:
+
+```fortios
+config system link-monitor
+    edit "AWS_PRIMARY_HEALTH"
+        set server "169.254.1.2"
+        set protocol ping
+        set interval 3
+        set timeout 5
+        set failure-count 3
+        set recovery-count 5
+        set gateway-ip 169.254.1.1
+    next
+end
+
+config router bgp
+    config neighbor
+        edit "169.254.1.2"
+            set link-down-failover enable
+        next
+    end
+end
+```
+
+When the monitor object detects 3 consecutive failures (9 seconds), BGP routes are withdrawn
+immediately, triggering failover to secondary peers before the underlying interface may still be
+up.
+
+---
+
 ## BGP Communities
 
 TODO: Define standard community values
