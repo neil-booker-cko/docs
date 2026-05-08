@@ -76,7 +76,7 @@ Based on CIS Cisco IOS-XE 17.x Benchmark v2.2.1, the standards below cover three
 
 | Configuration | CIS Control | STIG ID | PCI-DSS | Adoption Status | Notes |
 | --- | --- | --- | --- | --- | --- |
-| Syslog to centralized server | 4.1 Configure logging | V-224318 | 10.5 | **Adopted** | TLS-encrypted transport; reliable delivery |
+| Syslog to centralized server | 4.1 Configure logging | V-224318 | 10.5 | **Adopted** | TCP/601 reliable transport (RFC 5426) |
 | Console logging level: critical | 4.1.1 Console logging | V-224319 | 10.2 | **Adopted** | Reduces console noise; critical only |
 | Syslog level: informational | 4.1.2 Syslog level | V-224320 | 10.2 | **Adopted** | Captures AAA events, config changes, errors |
 | Debug timestamps (localtime + ms) | 4.1.3 Logging timestamps | V-224321 | 10.7 | **Adopted** | Enables event correlation across devices |
@@ -247,9 +247,9 @@ security profiles:
 | Configuration | CIS Control | Adoption Status | Notes |
 | --- | --- | --- | --- |
 | Event logging enabled | 7.1 Enable event logging | **Adopted** | All system events logged (login, config, failures) |
-| Centralized syslog (encrypted, reliable) | 7.2 Syslog to server | **Adopted** | TLS transport; reliable delivery mode enabled |
+| Centralized syslog (reliable transport) | 7.2 Syslog to server | **Adopted** | TCP/601 reliable delivery (RFC 5426) |
 | Syslog source interface specified | 7.3 Syslog source | **Adopted** | Uses dedicated management IP; consistent in logs |
-| Syslog port TLS (minimum 601) | 7.4 Syslog TLS port | **Adopted** | Port 10514 for TLS; prevents plaintext logging |
+| Syslog port (TCP/601) | 7.4 Syslog port | **Adopted** | Port 601 TCP reliable syslog; guaranteed delivery |
 
 ---
 
@@ -349,7 +349,7 @@ All Checkout standards documented above are marked with adoption status:
 | SNMP Configuration (SNMPv3 only) | **Fully Adopted** | v1/v2c disabled; SHA+AES encryption |
 | High Availability (Active-Passive, Session pickup) | **Fully Adopted** | HA configured per Checkout standards |
 | Security Policies (IPS, Logging, Botnet detection) | **Fully Adopted** | All policies logged; WAN-facing has IPS |
-| Logging and Reporting (Centralized syslog) | **Fully Adopted** | TLS-encrypted, reliable delivery mode |
+| Logging and Reporting (Centralized syslog) | **Fully Adopted** | TCP/601 reliable delivery (RFC 5426) |
 
 ### Compliance Verification Checklist
 
