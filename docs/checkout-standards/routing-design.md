@@ -8,7 +8,6 @@ Checkout's routing architecture standards and design patterns.
 
 | ASN Range | Purpose | Network |
 | --- | --- | --- |
-| `65000` | Checkout core network | Internal |
 | `65100–65199` | Data Center | On-premises datacenters |
 | `65200–65299` | AWS CNE (Customer Network Edge) | AWS customer-managed routers |
 | `65300–65399` | AWS TGW (Transit Gateway) | AWS TGW BGP adjacency |
@@ -79,10 +78,13 @@ traffic flow across multiple cloud providers and datacenters.
 
 **Local Preference** — steer outbound traffic via preferred ISP:
 
+Use Local Preference values of **200 for primary links** and **150 for secondary links** to prefer
+primary paths while maintaining standby capability.
+
 ```ios
 route-map RM_AWS_IN permit 10
  match ip address prefix-list PL_AWS_INTERNAL
- set local-preference 300
+ set local-preference 200
 !
 router bgp 65000
  address-family ipv4
@@ -93,11 +95,14 @@ router bgp 65000
 
 **AS Path Prepending** — steer inbound traffic from preferred ISP:
 
+Prepend your own AS number an additional **2 times** on secondary paths to make them appear
+less desirable (longer AS Path) to external peers, influencing inbound traffic selection.
+
 ```ios
 route-map RM_AZURE_OUT permit 10
- set as-path prepend 65000 65000 65000
+ set as-path prepend 65100 65100
 !
-router bgp 65000
+router bgp 65100
  address-family ipv4
   neighbor 172.16.0.2 route-map RM_AZURE_OUT out
  exit-address-family

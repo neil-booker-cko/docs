@@ -49,15 +49,32 @@ Block write access and sensitive system information.
 
 ## Cisco IOS-XE SNMP Configuration
 
-### Step 1: Create SNMP View (Read-Only)
+### Checkout Standard Configuration
+
+Use the following Checkout-standard configuration for all devices:
 
 ```ios
-snmp-server view RO-View 1.3.6.1.2.1.1 included
-snmp-server view RO-View 1.3.6.1.2.1.2 included
-snmp-server view RO-View 1.3.6.1.2.1.4 included
-snmp-server view RO-View 1.3.6.1.2.1.6 included
-snmp-server view RO-View 1.3.6.1.2.1.7 included
-snmp-server view RO-View 1.3.6.1.2.1.11 included
+snmp-server view All_MIB_View .1 included
+snmp-server location "Equinix DC4"
+snmp-server contact "CKO Network Services"
+snmp ifindex persist
+!
+ip access-list standard ACL_SNMP_IN
+ permit 10.0.1.50
+ deny any
+!
+snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server source-interface all 10.0.1.10
+!
+```
+
+### Step 1: Create SNMP View (All MIBs — Checkout Standard)
+
+Use `All_MIB_View` to allow read-only access to all available MIBs:
+
+```ios
+snmp-server view All_MIB_View .1 included
 !
 ```
 
@@ -72,41 +89,52 @@ ip access-list standard ACL_SNMP_IN
 
 ### Step 3: Create SNMPv3 Group with Read-Only View
 
+Use group name `SNMP_RO_GRP` (Checkout standard):
+
 ```ios
-snmp-server group nms-ro v3 auth read RO-View access ACL_SNMP_IN
+snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
 !
 ```
 
 ### Step 4: Create SNMPv3 User
 
 ```ios
-snmp-server user nms_monitor nms-ro v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
 !
 ```
 
-### Step 5: Configure SNMP Source Interface
+### Step 5: Set Device Identification (Checkout Standard)
+
+Configure location, contact, and ifindex persistence:
+
+```ios
+snmp-server location "Equinix DC4"
+snmp-server contact "CKO Network Services"
+snmp ifindex persist
+!
+```
+
+### Step 6: Configure SNMP Source Interface
 
 ```ios
 snmp-server source-interface all 10.0.1.10
 !
 ```
 
-### Complete Configuration
+### Complete Checkout Standard Configuration
 
 ```ios
+snmp-server view All_MIB_View .1 included
+snmp-server location "Equinix DC4"
+snmp-server contact "CKO Network Services"
+snmp ifindex persist
+!
 ip access-list standard ACL_SNMP_IN
  permit 10.0.1.50
  deny any
 !
-snmp-server view RO-View 1.3.6.1.2.1.1 included
-snmp-server view RO-View 1.3.6.1.2.1.2 included
-snmp-server view RO-View 1.3.6.1.2.1.4 included
-snmp-server view RO-View 1.3.6.1.2.1.6 included
-snmp-server view RO-View 1.3.6.1.2.1.7 included
-snmp-server view RO-View 1.3.6.1.2.1.11 included
-!
-snmp-server group nms-ro v3 auth read RO-View access ACL_SNMP_IN
-snmp-server user nms_monitor nms-ro v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
 snmp-server source-interface all 10.0.1.10
 !
 ```
