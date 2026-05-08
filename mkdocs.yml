@@ -71,26 +71,6 @@ plugins:
 
 nav:
   - Home: index.md
-  - Checkout Standards:
-      - Overview: checkout-intro.md
-      - Naming Conventions: checkout-standards/naming-conventions.md
-      - IP Addressing: checkout-standards/ip-addressing.md
-      - Routing Design: checkout-standards/routing-design.md
-      - BGP Standards: checkout-standards/bgp-standards.md
-      - VPN Standards: checkout-standards/vpn-standards.md
-      - Connectivity Standards: checkout-standards/connectivity-standards.md
-      - Equipment Standards: checkout-standards/equipment-standards.md
-      - Equipment Configuration: checkout-standards/equipment-config.md
-      - Software Standards: checkout-standards/software-standards.md
-      - VLAN Configuration: checkout-standards/vlan-standards.md
-      - Interface Configuration: checkout-standards/interface-standards.md
-      - Meraki Standards: checkout-standards/meraki-standards.md
-      - Security Hardening: checkout-standards/security-hardening.md
-      - Firewall Standards: checkout-standards/firewall-standards.md
-      - High Availability: checkout-standards/ha-standards.md
-      - Syslog & Monitoring: checkout-standards/syslog-monitoring-standards.md
-      - Disaster Recovery: checkout-standards/disaster-recovery-standards.md
-      - Change Management: checkout-standards/change-management-standards.md
   - Quick Reference:
       - Cisco Templates:
           - BGP: cisco/bgp-minimal.md
@@ -347,6 +327,26 @@ nav:
           - BGP Communities: reference/bgp_communities.md
           - Administrative Distance: reference/admin_distance.md
           - DSCP & QoS: reference/dscp_qos.md
+  - Standards:
+      - Overview: checkout-intro.md
+      - Naming Conventions: checkout-standards/naming-conventions.md
+      - IP Addressing: checkout-standards/ip-addressing.md
+      - Routing Design: checkout-standards/routing-design.md
+      - BGP Standards: checkout-standards/bgp-standards.md
+      - VPN Standards: checkout-standards/vpn-standards.md
+      - Connectivity Standards: checkout-standards/connectivity-standards.md
+      - Equipment Standards: checkout-standards/equipment-standards.md
+      - Equipment Configuration: checkout-standards/equipment-config.md
+      - Software Standards: checkout-standards/software-standards.md
+      - VLAN Configuration: checkout-standards/vlan-standards.md
+      - Interface Configuration: checkout-standards/interface-standards.md
+      - Meraki Standards: checkout-standards/meraki-standards.md
+      - Security Hardening: checkout-standards/security-hardening.md
+      - Firewall Standards: checkout-standards/firewall-standards.md
+      - High Availability: checkout-standards/ha-standards.md
+      - Syslog & Monitoring: checkout-standards/syslog-monitoring-standards.md
+      - Disaster Recovery: checkout-standards/disaster-recovery-standards.md
+      - Change Management: checkout-standards/change-management-standards.md
 
 extra_css:
   - stylesheets/extra.css
