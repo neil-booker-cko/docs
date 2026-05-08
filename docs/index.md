@@ -3,6 +3,9 @@
 A technical reference library covering network protocols from Layer 2 to Layer 7,
 routing design, vendor implementation guides, and quick-reference cheat sheets.
 
+**[→ Checkout Network Engineering Standards](checkout-intro.md)** — Design standards,
+configuration guidelines, and operational procedures for Checkout's infrastructure.
+
 ---
 
 ## Packet Headers
