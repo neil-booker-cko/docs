@@ -3,6 +3,10 @@
 Approved network devices with lifecycle status and end-of-life dates for capacity planning and
 procurement.
 
+**Data Verification:** May 2026. Cisco and Meraki lifecycle dates verified against official vendor
+documentation. Fortinet dates require verification (see notes below). MTBF values sourced from
+official datasheets.
+
 ---
 
 ## Status Definitions
@@ -30,6 +34,8 @@ procurement.
 
 **[Cisco End-of-Life Policy](https://www.cisco.com/c/en/us/products/eos-eol-policy.html)**
 
+**MTBF Source:** [Catalyst 9300 Series Datasheet](https://www.cisco.com/c/en/us/products/collateral/switches/catalyst-9300-series-switches/nb-06-cat9300-ser-data-sheet-cte-en.html)
+
 | Model | Status | MTBF | EOS | EOSWM | EOVS | LDOS |
 | --- | --- | --- | --- | --- | --- | --- |
 | Catalyst C9300-48T | Active | 305,870 hrs | — | — | — | — |
@@ -37,15 +43,19 @@ procurement.
 | Catalyst C9300-24UX | Active | 214,760 hrs | — | — | — | — |
 | Catalyst C9300-48P | Active | 277,770 hrs | — | — | — | — |
 | Catalyst C9500-24Y4C | Active | 336,780 hrs | — | — | — | — |
-| Catalyst C9200CX-12T-2X2G | Active | — | — | — | — | — |
+| Catalyst C9200CX-12T-2X2G | Active | 569,530 hrs | — | — | — | — |
 | Catalyst C1000-8T-2G-L | Maintained | 2,171,669 hrs | 2025-04-30 | 2026-04-30 | 2028-04-30 | 2030-04-30 |
-| Catalyst C1000-24T-4X-L | Maintained | 2,026,793 hrs | TBA | TBA | TBA | TBA |
+| Catalyst C1000-24T-4X-L | Maintained | 2,026,793 hrs | 2025-04-30 | 2026-04-30 | 2028-04-30 | 2030-04-30 |
 
 ---
 
 ## Fortinet FortiGate Firewalls
 
 **[Fortinet Product Life Cycle](https://community.fortinet.com/t5/Customer-Service/Technical-Tip-Product-Life-Cycle-Information-on-Fortinet/ta-p/194438)**
+
+**Note:** Fortinet does not publish specific EOL dates for individual hardware models. Contact Fortinet
+support for exact End of Order (EOO), Last Service Extension Date (LSED), and End of Engineering
+Support dates. Standard FortiGate support lifecycle is typically 7-10 years from release.
 
 | Model | Status | EOO | LSED | EOS |
 | --- | --- | --- | --- | --- |
@@ -56,14 +66,17 @@ procurement.
 
 ### Checkout Firewall Deployment
 
+**⚠️ ACTION REQUIRED:** Support expiration dates for FortiGate 601F units (LD8, SG3, DB3) are TBD.
+Contact Fortinet support to verify exact End of Support dates for capacity planning.
+
 | Site | Model | Purchase | Support Expires |
 | --- | --- | --- | --- |
 | LD7 | 2× FortiGate 601E | 2020 | 2027-09-27 |
 | LD7 Test Kit | 2× FortiGate 601E | 2021 | 2027-09-27 |
 | DC4 | 2× FortiGate 601E | 2021 | 2027-09-27 |
-| LD8 | 2× FortiGate 601F | 2023 | TBD |
-| SG3 | 2× FortiGate 601F | 2022 | TBD |
-| DB3 | 2× FortiGate 601F | 2025 | TBD |
+| LD8 | 2× FortiGate 601F | 2023 | **VERIFY** |
+| SG3 | 2× FortiGate 601F | 2022 | **VERIFY** |
+| DB3 | 2× FortiGate 601F | 2025 | **VERIFY** |
 
 ---
 
@@ -71,9 +84,12 @@ procurement.
 
 **[Meraki EOL Policy](https://documentation.meraki.com/General_Administration/Other_Topics/Meraki_End-of-Life_(EOL)_Products_and_Dates)**
 
+**Data Last Updated:** May 2026. Dates for MS120-48LP and MS250 series verified against official
+Meraki EOL documentation. Wireless APs (MR series) currently have no announced EOL dates.
+
 | Model | Status | End of Sale | End of Support | Replacement |
 | --- | --- | --- | --- | --- |
-| MS120-48LP | Maintained | — | — | C9300-48P, C9300-24UX |
+| MS120-48LP | Maintained | 2025-03-28 | 2030-03-28 | C9300-48P, C9300-24UX |
 | MS250-48LP | Maintained | 2025-08-08 | 2030-03-08 | — |
 | MS250-24P | Maintained | 2025-08-08 | 2030-03-08 | — |
 | MR44 | Maintained | — | — | CW9164I |
