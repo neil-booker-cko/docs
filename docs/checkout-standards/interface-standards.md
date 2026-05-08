@@ -146,7 +146,7 @@ interface GigabitEthernet0/0
 | --- | --- | --- |
 | Port Type | Trunk | Multiple VLANs |
 | STP Mode | Rapid PVST+ | Fast convergence per VLAN |
-| PortFast | Disabled | Observe STP state for trunks |
+| PortFast | Trunk | Enable on all trunk links |
 | BPDU Guard | Disabled | Trunks must accept BPDUs |
 | BPDU Filter | Disabled | Standard STP operation |
 | Root Guard | Enabled | Prevent non-core becoming root |
@@ -165,9 +165,67 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  ! Trunk port (switch-to-switch)
  switchport mode trunk
- switchport trunk native vlan 1
+ switchport trunk native vlan 999
+ spanning-tree portfast trunk
  spanning-tree guard root
  spanning-tree bpduguard disable
+!
+```
+
+---
+
+## Neighbor Discovery (CDP & LLDP)
+
+### CDP vs LLDP Policy
+
+**Standard:** Use protocol based on connected device:
+
+- **CDP:** Enabled on Cisco-facing interfaces (internal Cisco-to-Cisco links only)
+- **LLDP:** Enabled on other device-facing interfaces (Cisco-to-FortiGate, Cisco-to-Meraki, etc.)
+
+| Link Type | Protocol | Enabled | Purpose |
+| --- | --- | --- | --- |
+| Cisco-to-Cisco (internal) | CDP | Yes | Device discovery, neighbor info |
+| Cisco-to-FortiGate | LLDP | Yes | Cross-vendor discovery |
+| Cisco-to-Meraki | LLDP | Yes | Cross-vendor discovery |
+| External uplinks | LLDP | Yes | Provider equipment discovery |
+| All other | Both | Yes | Redundancy for discovery |
+
+### Global Configuration
+
+**Enable LLDP globally (runs on all interfaces by default):**
+
+```ios
+lldp run
+!
+```
+
+**Enable CDP on specific Cisco-facing interfaces:**
+
+```ios
+interface GigabitEthernet0/1
+ description CORE-SWITCH_GI0/1
+ ! Cisco-facing interface: enable CDP
+ cdp enable
+ lldp transmit
+ lldp receive
+!
+
+interface GigabitEthernet0/2
+ description FIREWALL-FORTIGATE_GI0/1
+ ! FortiGate-facing interface: LLDP only
+ no cdp enable
+ lldp transmit
+ lldp receive
+!
+```
+
+### LLDP Timers
+
+```ios
+lldp timer 30
+lldp holdtime 120
+lldp reinit 2
 !
 ```
 
