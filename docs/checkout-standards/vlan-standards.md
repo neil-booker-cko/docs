@@ -9,19 +9,18 @@ VLANs differ between datacenters and office locations.
 
 ### Datacenter VLAN Ranges
 
-| VLAN Range | Purpose | Allocation | Notes |
+| VLAN | Purpose | Allocation | Notes |
 | --- | --- | --- | --- |
 | 1 | Default VLAN | Reserved | Do not use; VLAN 999 is native VLAN on trunks |
-| 10-19 | Management | Static allocation | Out-of-band, not routed to data VLANs |
+| 501-599 | Internal (Servers/HSMs) | Static allocation | Internal datacenter servers, hardware security modules |
+| 601-699 | Cloud Handoff | Static allocation | Switch-to-firewall handoff for cloud traffic |
+| 701 | Management | Static allocation | Out-of-band management access |
+| 801-899 | Credit Card Schemes | Static allocation | PCI-DSS isolated networks (Visa, Mastercard, Amex) |
+| 901 | Primary ISP | Static allocation | Primary Internet Service Provider uplink |
+| 902 | Secondary ISP | Static allocation | Secondary Internet Service Provider uplink |
 | 999 | Dummy/Shutdown (Native) | Static allocation | Unused VLAN; all interfaces in this VLAN are shutdown; used as native VLAN on trunks |
-| 20-29 | Reserved | N/A | Future use |
-| 100-199 | Production Data | Static allocation | Primary business applications |
-| 200-299 | DR/Backup | Static allocation | Disaster recovery, backup systems |
-| 300-399 | Voice/SIP | Static allocation | Voice gateways, SIP signaling |
-| 400-499 | Storage (SAN) | Static allocation | iSCSI, NAS traffic isolation |
-| 500-599 | Reserved | N/A | Future use |
-| 800-899 | AWS Direct Connect | Static allocation | AWS VPC transport |
-| 900-999 | Azure/GCP | Static allocation | Azure ER, GCP IC transport |
+| 1101 | Cloud Direct Connect (Primary) | Static allocation | Primary cloud Direct Connect transport (AWS/Azure/GCP) |
+| 2101 | Cloud Direct Connect (Secondary) | Static allocation | Secondary cloud Direct Connect transport (redundancy) |
 
 ### Office VLAN Ranges
 
@@ -46,12 +45,16 @@ numbers regardless of location for ease of troubleshooting.
 
 | VLAN | Name | Purpose |
 | --- | --- | --- |
-| 10 | Mgmt | Out-of-band management |
-| 100 | Prod-Data | Production applications |
-| 200 | DR-Backup | Disaster recovery systems |
-| 300 | Voice | SIP gateways |
-| 400 | Storage | SAN/iSCSI |
-| 800 | AWS-DX | AWS Direct Connect |
+| 501 | Internal-Servers | Internal servers, HSMs |
+| 601 | Cloud-Handoff | Firewall handoff for cloud |
+| 701 | Mgmt | Out-of-band management |
+| 823 | CC-Visa | PCI-DSS Visa network |
+| 824 | CC-Mastercard | PCI-DSS Mastercard network |
+| 825 | CC-Amex | PCI-DSS Amex network |
+| 901 | ISP-Primary | Primary ISP uplink |
+| 902 | ISP-Secondary | Secondary ISP uplink |
+| 1101 | DX-Primary | AWS Direct Connect primary |
+| 2101 | DX-Secondary | AWS Direct Connect secondary |
 
 **Example — London Office (LON1):**
 
@@ -70,19 +73,18 @@ numbers regardless of location for ease of troubleshooting.
 
 **Format:** `<PURPOSE>-<SITE>` or `<PURPOSE>` (if global)
 
-### Standard VLAN Names
+### Standard VLAN Names (Datacenters)
 
-| VLAN ID | Name | Scope |
-| --- | --- | --- |
-| 10 | Mgmt | Global (management) |
-| 100 | Data | Global (primary data) |
-| 200 | Data-Secondary | Global (secondary data) |
-| 300 | Voice | Global (VoIP) |
-| 400 | IoT | Global (sensors/constrained) |
-| 500 | Guest | Global (guest/temporary) |
-| 600 | DMZ | Global (inbound-only) |
-| 800-899 | AWS | Global (AWS transport) |
-| 900-999 | Azure / GCP | Global (Azure/GCP transport) |
+| VLAN ID | Name | Scope | Purpose |
+| --- | --- | --- | --- |
+| 501-599 | Internal | Datacenter | Servers, HSMs, internal systems |
+| 601-699 | Cloud-Handoff | Datacenter | Switch to firewall cloud traffic |
+| 701 | Mgmt | Datacenter | Out-of-band management |
+| 801-899 | CC-Scheme | Datacenter | Credit card network isolation (PCI-DSS) |
+| 901 | ISP-Primary | Datacenter | Primary ISP uplink |
+| 902 | ISP-Secondary | Datacenter | Secondary ISP uplink |
+| 1101 | DX-Primary | Datacenter | Cloud Direct Connect primary |
+| 2101 | DX-Secondary | Datacenter | Cloud Direct Connect secondary |
 
 Site-specific VLANs (wireless, branch-specific):
 
@@ -132,7 +134,7 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/48
  switchport mode trunk
  switchport trunk native vlan 999
- switchport trunk allowed vlan 2-998,1000-1005
+ switchport trunk allowed vlan 501-599,601-699,701,801-899,901-902,1101,2101
  no shutdown
 !
 ```
