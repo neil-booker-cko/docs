@@ -148,6 +148,41 @@ ntp access-group query-only ACL_DENY_ALL
 
 ---
 
+## AAA/TACACS+ Architecture
+
+**TACACS+ Server Implementation:**
+
+Checkout uses **tac_plus** running on utility servers (10.13.1.147, 10.13.2.116,
+10.13.2.147) for centralized authentication and authorization.
+
+**Supported Platforms:**
+
+- **Cisco IOS-XE** (switches, routers) — AAA login/accounting
+- **FortiGate** (firewalls) — admin access authentication
+- **Vertiv Cyclades** (console servers) — OOB management access
+
+**Management Interface Routing:**
+
+Most devices use default routing to TACACS+ servers. Switches with dedicated
+management interfaces require special configuration:
+
+- **Mgmt-vrf devices:** Use dedicated Management interface (in Mgmt-vrf) for TACACS+ traffic
+- **Routing challenge:** Mgmt-vrf does not route to global VRF by default
+- **Solution:** Configure TACACS+ servers to point to **VLAN 701 interface (global VRF)** instead
+  - VLAN 701 bridges Mgmt-vrf and global VRF routing domains
+  - Allows Mgmt-vrf devices to reach TACACS+ servers in default VRF
+  - Eliminates need for separate VRF routing and leaking routes
+
+**Authentication Flow:**
+
+1. Device initiates TACACS+ query to utility server IP
+2. Authentication request sent via VLAN 701 interface (for Mgmt-vrf devices)
+3. tac_plus server responds with permit/deny and authorization level
+4. Device grants access or denies session based on response
+5. Accounting sent to same server for audit trail
+
+---
+
 ## FortiOS Security Hardening
 
 Based on CIS FortiGate Benchmark v1.0.1, the standards below cover system administration and
