@@ -47,6 +47,46 @@ Block write access and sensitive system information.
 
 ---
 
+## SNMPv3 Authentication & Encryption by Platform
+
+Different platforms support different authentication and encryption algorithms. Use the most secure
+option available for each platform. **Preferred: SHA for authentication, AES-128 (minimum) or
+AES-256 (recommended) for encryption.**
+
+| Platform | Supported Authentication | Supported Encryption |
+| --- | --- | --- |
+| **Cisco IOS-XE (17.6, 17.9, 17.12)** | MD5, SHA | DES, 3DES, AES-128, AES-192, AES-256 |
+| **Cisco IOS (15.2(7)E)** | MD5, SHA | DES, 3DES, AES-128, AES-192, AES-256 |
+| **FortiOS** | MD5, SHA, SHA224, SHA256, SHA384, SHA512 | DES, AES-128, AES-256 |
+| **Meraki** | MD5, SHA | DES, AES-128 |
+| **APC UPS/PDU** | MD5, SHA | DES, AES-128 |
+| **Perle Serial/Console** | MD5, SHA | DES, AES-128 |
+| **Palo Alto** | SHA | AES-128 |
+| **UniFi** | SHA | AES-128 |
+| **Vertiv Avocent** | MD5, SHA | DES, AES-128 |
+| **SNMPd (Linux)** | MD5, SHA | DES, AES-128 |
+| **Datadog Agent** | MD5, SHA, SHA224, SHA256, SHA384, SHA512 | DES, AES, AES-192, AES-256 |
+| **LogicMonitor** | MD5, SHA, SHA224, SHA256, SHA384, SHA512 | DES, 3DES, AES-128, AES-192, AES-256 |
+
+### Selection Guidance
+
+**For Cisco IOS-XE (primary platform):**
+
+- Authentication: **SHA** (recommended over MD5)
+- Encryption: **AES-128** (minimum) or **AES-256** (recommended)
+
+**For FortiOS:**
+
+- Authentication: **SHA256** or **SHA512** (if supported by remote SNMP manager)
+- Encryption: **AES-256** (recommended over AES-128)
+
+**For other platforms (Meraki, APC, Perle, etc.):**
+
+- Authentication: **SHA** (only secure option; avoid MD5)
+- Encryption: **AES-128** (use AES over DES)
+
+---
+
 ## Cisco IOS-XE SNMP Configuration
 
 ### Checkout Standard Configuration
