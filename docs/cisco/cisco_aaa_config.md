@@ -327,26 +327,21 @@ via the correct routing table.
 
 ### TACACS+ with Management VRF
 
+**Required Syntax for Mgmt-vrf:**
+
 ```ios
 aaa new-model
 aaa authentication login default group TACACS-MGMT local
 aaa authorization exec default group TACACS-MGMT local
+aaa accounting exec default start-stop group TACACS-MGMT
 
 aaa group server tacacs+ TACACS-MGMT
-  server 10.0.0.100
-  server 10.0.0.101
-  ip tacacs source-interface Loopback0 vrf management
-  timeout 10
-
-tacacs server TAC-PRIMARY
-  address ipv4 10.0.0.100 vrf management
-  key SHARED_SECRET_123
-  timeout 10
-
-tacacs server TAC-SECONDARY
-  address ipv4 10.0.0.101 vrf management
-  key SHARED_SECRET_123
-  timeout 10
+  server-private 10.13.1.147 key 6 ENCRYPTED_KEY_TYPE6_1
+  server-private 10.13.2.116 key 6 ENCRYPTED_KEY_TYPE6_2
+  server-private 10.13.2.147 key 6 ENCRYPTED_KEY_TYPE6_3
+  ip vrf forwarding Mgmt-vrf
+  ip tacacs source-interface GigabitEthernet0/0
+!
 
 username fallback privilege 15 secret LOCAL_FALLBACK_PASSWORD
 
@@ -355,13 +350,24 @@ line vty 0 4
   transport input ssh
 ```
 
-**Key Settings:**
+**Critical Points for Mgmt-vrf Configuration:**
 
-- **ip tacacs source-interface Loopback0 vrf management** — Ensure the source IP for TACACS+
-  queries comes from management VRF, not default VRF
+- **`server-private` syntax** — Required for Mgmt-vrf (NOT separate `tacacs server` blocks)
+- **`key 6 ENCRYPTED_KEY`** — Type 6 encrypted key directly on each server line
+- **`ip vrf forwarding Mgmt-vrf`** — Apply VRF at the group level (not on individual servers)
+- **`ip tacacs source-interface GigabitEthernet0/0`** — Use physical management interface as source
+  (NOT Loopback0)
 
-- **address ipv4 10.0.0.100 vrf management** — Server lookup uses management VRF routing table
-- **timeout 10** — Increase timeout slightly; cross-VRF lookups may be slower
+**Why `server-private` is Required:**
+
+The modern IOS-XE syntax uses `server-private` within `aaa group server tacacs+` blocks to specify
+per-server keys and VRF routing. The older `tacacs server` global blocks cannot properly integrate
+with VRF-specific AAA groups.
+
+**Type 6 Encryption:**
+
+Generate Type 6 encrypted keys using the `key` command prompt, or configure them during initial
+setup. Type 6 is scrypt-based and more secure than Type 7 (legacy XOR encryption).
 
 ### RADIUS with Management VRF
 
@@ -370,15 +376,15 @@ aaa new-model
 aaa authentication login default group RADIUS-MGMT local
 
 aaa group server radius RADIUS-MGMT
-  server 10.0.0.50
-  ip radius source-interface Loopback0 vrf management
+  server-private 10.0.0.50 key 6 ENCRYPTED_KEY_TYPE6
+  ip vrf forwarding Mgmt-vrf
+  ip radius source-interface GigabitEthernet0/0
   timeout 5
-
-radius server RAD-PRIMARY
-  address ipv4 10.0.0.50 vrf management
-  key RADIUS_SHARED_SECRET
-  timeout 5
+!
 ```
+
+**Note:** Like TACACS+, use `server-private` syntax with `ip vrf forwarding Mgmt-vrf` for
+Management VRF integration.
 
 ### Source Interface Considerations
 
@@ -420,22 +426,18 @@ interface GigabitEthernet0/0/0.701
   ! Note: VRF is NOT specified, so it's in global VRF by default
 !
 
-! AAA configuration uses VLAN 701 as the destination
+! AAA configuration using VLAN 701 gateway (in global VRF)
 aaa new-model
 aaa authentication login default group TACACS-SERVERS local
 aaa authorization exec default group TACACS-SERVERS local
+aaa accounting exec default start-stop group TACACS-SERVERS
 
 aaa group server tacacs+ TACACS-SERVERS
-  server 10.0.5.1
-  ! No vrf specified; uses global VRF route to VLAN 701
-  ip tacacs source-interface Loopback0
+  server-private 10.0.5.1 key 6 ENCRYPTED_KEY_TYPE6
+  ! VLAN 701 is in global VRF (no ip vrf forwarding needed)
+  ip tacacs source-interface GigabitEthernet0/0/0
   timeout 10
-
-tacacs server TAC-PRIMARY
-  address ipv4 10.0.5.1
-  ! Server address is in global VRF (VLAN 701 subnet)
-  key SHARED_SECRET_123
-  timeout 10
+!
 
 username fallback privilege 15 secret FALLBACK_PASSWORD
 ```
