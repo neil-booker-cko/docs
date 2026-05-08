@@ -348,6 +348,9 @@ nav = [
 [project.theme]
 variant = "modern"
 language = "en"
+logo = "assets/logo-option-tree.svg"
+logo_alt = "Network Engineering Reference"
+icon.repo = "fontawesome/brands/github"
 features = [
   "content.code.annotate",
   "content.code.copy",

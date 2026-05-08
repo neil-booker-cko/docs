@@ -8,8 +8,9 @@ Checkout's IP address allocation and design standards.
 
 | Block | Purpose | CIDR | Notes |
 | --- | --- | --- | --- |
-| TODO | Corporate network | | |
+| `10.0.0.0/8` | Cloud & Datacenter | | AWS/Azure/GCP/on-premises DC |
 | `10.254.0.0/16` | Cloud provider links | | AWS/Azure/GCP interconnects |
+| `172.16.0.0/12` | Enterprise (offices) | | Office locations, branch sites |
 | `169.254.0.0/16` | Link-local (BGP) | | Dynamic routing adjacencies |
 
 ---
@@ -60,6 +61,6 @@ TODO: Add management VLAN addressing
 
 | Range | Purpose |
 | --- | --- |
-| `10.0.0.0/8` | RFC 1918 private (internal) |
-| `172.16.0.0/12` | RFC 1918 private (cloud) |
+| `10.0.0.0/8` | Cloud & Datacenter addressing |
+| `172.16.0.0/12` | Enterprise addressing (offices) |
 | `169.254.0.0/16` | Link-local / BGP adjacencies |

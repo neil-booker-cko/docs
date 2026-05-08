@@ -54,6 +54,7 @@ Based on CIS Cisco IOS-XE 17.x Benchmark v2.2.1, the standards below cover three
 | Minimum 3 NTP servers with redundancy | 2.4.1 Configure NTP | V-224309 | 8.4 | **Adopted** | Primary + 2 secondary; geographically diverse |
 | NTP authentication with MD5 keys | 2.4.2 Enable NTP authentication | V-224310 | 6.2 | **Adopted** | MD5 keys for all NTP peers; annual rotation |
 | NTP source from loopback/mgmt interface | 2.4.3 NTP source interface | V-224311 | 8.4.1 | **Adopted** | Uses mgmt loopback; prevents traffic from data plane |
+| NTP access-groups restrict NTP operations | 2.4.4 NTP access control | V-224311 | 8.4.1 | **Adopted** | peer/serve/serve-only/query-only restricted via ACLs |
 
 ### Management Plane: Banners
 
@@ -87,6 +88,25 @@ Based on CIS Cisco IOS-XE 17.x Benchmark v2.2.1, the standards below cover three
 - Restrict VTY access to approved management subnets using ACLs
 - Configure exec-timeout to maximum 10 minutes on console and VTY lines
 - Implement password encryption and enable secret (scrypt algorithm recommended)
+
+**NTP Access Control:**
+
+- Restrict NTP operations using access-groups to prevent unauthorized synchronization and queries
+- `peer` (sync sources): `ACL_NTP_SERVERS` (allow approved NTP servers only)
+- `serve`, `serve-only`, `query-only`: `ACL_DENY_ALL` (deny all clients)
+
+```ios
+ip access-list standard ACL_NTP_SERVERS
+ permit 10.0.1.200
+ permit 10.0.1.201
+ permit 10.0.1.202
+!
+ntp access-group peer ACL_NTP_SERVERS
+ntp access-group serve ACL_DENY_ALL
+ntp access-group serve-only ACL_DENY_ALL
+ntp access-group query-only ACL_DENY_ALL
+!
+```
 
 **SNMP Hardening:**
 

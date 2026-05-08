@@ -7,6 +7,10 @@ docs_dir: docs
 
 theme:
   name: material
+  logo: assets/logo-option-tree.svg
+  logo_alt: Network Engineering Reference
+  icon:
+    repo: fontawesome/brands/github
   palette:
     - scheme: default
       primary: indigo

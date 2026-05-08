@@ -11,8 +11,9 @@ VLANs differ between datacenters and office locations.
 
 | VLAN Range | Purpose | Allocation | Notes |
 | --- | --- | --- | --- |
-| 1 | Default VLAN | Reserved | Do not use for data; must untagged native VLAN on trunks |
+| 1 | Default VLAN | Reserved | Do not use; VLAN 999 is native VLAN on trunks |
 | 10-19 | Management | Static allocation | Out-of-band, not routed to data VLANs |
+| 999 | Dummy/Shutdown (Native) | Static allocation | Unused VLAN; all interfaces in this VLAN are shutdown; used as native VLAN on trunks |
 | 20-29 | Reserved | N/A | Future use |
 | 100-199 | Production Data | Static allocation | Primary business applications |
 | 200-299 | DR/Backup | Static allocation | Disaster recovery, backup systems |
@@ -26,8 +27,9 @@ VLANs differ between datacenters and office locations.
 
 | VLAN Range | Purpose | Allocation | Notes |
 | --- | --- | --- | --- |
-| 1 | Default VLAN | Reserved | Do not use for data; must untagged native VLAN on trunks |
+| 1 | Default VLAN | Reserved | Do not use; VLAN 999 is native VLAN on trunks |
 | 10-19 | Management | Static allocation | Out-of-band network management |
+| 999 | Dummy/Shutdown (Native) | Static allocation | Unused VLAN; all interfaces in this VLAN are shutdown; used as native VLAN on trunks |
 | 100-199 | Corporate Data | Static or dynamic | Employee workstations, desktops |
 | 300-399 | Voice/VoIP | Static allocation | IP phones, call control |
 | 400-499 | IoT/Sensors | Static allocation | Printers, cameras, access control |
@@ -95,22 +97,42 @@ Site-specific VLANs (wireless, branch-specific):
 
 ### 802.1Q Tagging
 
-**Standard:** All inter-switch and uplink links must use 802.1Q tagging (not ISL).
+**Standard:** All inter-switch and uplink links must use 802.1Q tagging (not ISL). Use VLAN 999
+(Dummy/Shutdown) as the native VLAN on all trunks and shutdown all interfaces assigned to VLAN 999
+to prevent accidental native VLAN leaks.
 
 | Link Type | Native VLAN | Tagged VLANs | Notes |
 | --- | --- | --- | --- |
-| Switch-to-Switch Trunk | 1 (default) | 2-1005 (all except 1) | VLAN 1 untagged for backward compatibility |
+| Switch-to-Switch Trunk | 999 (Dummy/Shutdown) | 2-998, 1000-1005 | All active VLANs tagged; native is unused |
 | Access-to-Switch | Assigned per port | None | Each access port in single VLAN |
 | Router Subinterface | N/A (per trunk) | All routed VLANs | One subinterface per VLAN |
-| Firewall Trunk | 1 (default) | All transit VLANs | Firewall enforces policies per VLAN |
+| Firewall Trunk | 999 (Dummy/Shutdown) | All transit VLANs | Native VLAN unused; all transit traffic tagged |
 
 ### Cisco IOS-XE Trunk Configuration
 
+**VLAN 999 Setup (one-time on each switch):**
+
 ```ios
+vlan 999
+ name Dummy-Shutdown
+!
 interface GigabitEthernet0/1
+ switchport access vlan 999
+ shutdown
+!
+interface GigabitEthernet0/2
+ switchport access vlan 999
+ shutdown
+!
+```
+
+**Trunk Configuration (all switch-to-switch and uplinks):**
+
+```ios
+interface GigabitEthernet0/48
  switchport mode trunk
- switchport trunk native vlan 1
- switchport trunk allowed vlan 1-1005
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 2-998,1000-1005
  no shutdown
 !
 ```

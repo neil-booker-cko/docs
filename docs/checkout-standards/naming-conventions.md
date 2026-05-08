@@ -133,7 +133,7 @@ Standard VRF names by purpose:
 
 | VRF | Purpose |
 | --- | --- |
-| `Mgmt` | Management plane (Cisco IOS-XE built-in) |
+| `Mgmt-vrf` | Management plane (Cisco IOS-XE built-in) |
 | `AWS` | Amazon Web Services |
 | `Azure` | Microsoft Azure |
 | `GCP` | Google Cloud Platform |

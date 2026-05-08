@@ -12,9 +12,10 @@ Centralized logging, SNMP monitoring, and observability standards for all networ
 
 | Component | Standard | Notes |
 | --- | --- | --- |
-| Primary Syslog | 10.0.1.100:514 | Local datacenter (Dublin/ELD7) |
-| Secondary Syslog | 10.0.1.101:514 | Backup datacenter (Ashburn/EDC4) |
-| Protocol | UDP (RFC 3164) | Fast; no TCP overhead |
+| Syslog Server 1 (Primary) | 10.13.1.147:601 | Network utility server |
+| Syslog Server 2 (Secondary) | 10.13.2.116:601 | Network utility server |
+| Syslog Server 3 (Tertiary) | 10.13.2.116:601 | Network utility server |
+| Protocol | TCP/601 (RFC 5426 Reliable Syslog) | Preferred; guarantees message delivery |
 | Facility | LOCAL0-LOCAL7 | Per-device facility for filtering |
 | Retention | 30 days (rolling) | Purge logs older than 30 days |
 | Storage | 500 GB per syslog server | ~100 devices × 5MB/day = 15GB/month |
@@ -53,24 +54,51 @@ Do **not** send DEBUG (7) to syslog in production.
 
 ## Device Syslog Configuration
 
-### Cisco IOS-XE Syslog
+### Cisco IOS-XE Syslog (Multiple Servers)
+
+**Note:** Do NOT modify facility codes; use device defaults.
 
 ```ios
-logging facility local0
-logging host 10.0.1.100 transport udp port 514
-logging host 10.0.1.101 transport udp port 514
+logging host 10.13.1.147 transport tcp port 601
+logging host 10.13.2.116 transport tcp port 601
+logging host 10.13.2.116 transport tcp port 601
 logging trap informational
 logging source-interface GigabitEthernet0/0
 !
 ```
 
-### FortiGate Syslog
+### FortiGate Syslog (Multiple Servers)
+
+Configure all three syslog servers using syslogd, syslogd2, and syslogd3:
 
 ```fortios
 config log syslogd setting
     set status enable
-    set server "10.0.1.100"
-    set port 514
+    set server "10.13.1.147"
+    set port 601
+    set reliable enable
+    set certificate "Fortinet_Factory"
+    set facility local0
+    set source-ip 10.0.2.1
+next
+end
+
+config log syslogd2 setting
+    set status enable
+    set server "10.13.2.116"
+    set port 601
+    set reliable enable
+    set certificate "Fortinet_Factory"
+    set facility local0
+    set source-ip 10.0.2.1
+next
+end
+
+config log syslogd3 setting
+    set status enable
+    set server "10.13.2.116"
+    set port 601
+    set reliable enable
     set certificate "Fortinet_Factory"
     set facility local0
     set source-ip 10.0.2.1
@@ -135,38 +163,189 @@ end
 
 ---
 
-## Syslog Filtering & Routing
+## Syslog Server Configuration (rsyslog)
 
-### Device-Specific Logging
+### Facility Code Standard
 
-Configure facility codes per device type for filtering:
+**Standard:** Do NOT modify or assign device-specific facility codes. All devices use default
+facility (LOCAL0 or device default). Filtering and organization is based on source IP address,
+not facility codes.
 
-| Facility | Device Type | Devices |
-| --- | --- | --- |
-| LOCAL0 | Core routers | ELD7-CSW-01, ELD7-CSW-02 |
-| LOCAL1 | Access switches | LON1-ASW04-01A, LON1-ASW04-01B |
-| LOCAL2 | Firewalls | LON1-PFW-01A, LON1-PFW-01B |
-| LOCAL3 | VPN appliances | ELD7-CON-01, AWS TGW |
-| LOCAL4 | Wireless | Meraki MRs (if capable) |
-| LOCAL5 | Servers | NMS, syslog servers |
+### rsyslog File Logging (Device Name Organization)
 
-### Syslog Server Filtering Rules
+Logs are written to local files on syslog servers using device hostname as the identifier.
+This allows easy tracking of which specific device sent each log message.
 
 **Example rsyslog configuration:**
 
 ```text
-# Route facility LOCAL0 (routers) to file
-:facility local0 /var/log/routers.log
+# Log all incoming messages to files organized by device hostname
+# Format: /var/log/network-devices/<device-hostname>.log
+$template DeviceHostname,"/var/log/network-devices/%HOSTNAME%.log"
+:msg,contains,"" ?DeviceHostname
 
-# Route facility LOCAL2 (firewalls) to file
-:facility local2 /var/log/firewalls.log
-
-# Route errors and above (severity 0-3) to alerts
-:severity err /var/log/alerts.log
-
-# Route HA state changes (NOTICE) to ha.log
-:msg contains "state change" /var/log/ha.log
+# Ensure proper permissions and rotation
+$FileOwner syslog
+$FileGroup syslog
+$FileCreateMode 0640
+$DirCreateMode 0755
+$Umask 0022
+$ActionFileDefaultTemplate DeviceHostname
 ```
+
+### Log File Organization
+
+Log files are organized by device hostname for easy device identification and matching with
+DNS records (e.g., `eld7-csw-01.eld7.checkout.corp`):
+
+```text
+/var/log/network-devices/
+  ├── eld7-csw-01.log       (Dublin datacenter - core switch)
+  ├── eld7-csw-02.log       (Dublin datacenter - core switch)
+  ├── lon1-pfw-01a.log      (London office - firewall primary)
+  ├── lon1-pfw-01b.log      (London office - firewall secondary)
+  └── edc4-con-01.log       (Ashburn datacenter - console server)
+```
+
+### Log Rotation
+
+Configure logrotate to manage log files:
+
+```text
+/var/log/network-devices/*.log {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 syslog syslog
+    sharedscripts
+    postrotate
+        /lib/systemd/systemd-logind-systemctl restart rsyslog > /dev/null 2>&1 || true
+    endscript
+}
+```
+
+---
+
+## Datadog Log Monitoring & Upload
+
+### Datadog Agent Configuration
+
+Datadog agent monitors rsyslog log files and uploads to Datadog cloud for centralized analysis,
+alerting, and long-term retention beyond local syslog retention (30 days).
+
+**Install Datadog Agent:**
+
+```bash
+DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=<your-api-key> DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent-releases/scripts/install_script.sh)"
+```
+
+**Configure Datadog for syslog log files:**
+
+```yaml
+# /etc/datadog-agent/conf.d/syslog.d/conf.yaml
+logs:
+  - type: file
+    path: /var/log/network-devices/*.log
+    service: network-devices
+    source: syslog
+    sourcecategory: network
+    tags:
+      - env:production
+      - team:network
+    log_processing_rules:
+      - type: exclude_at_match
+        pattern: "DEBUG"
+
+  # Cisco IOS-XE devices (datacenter)
+  - type: file
+    path: /var/log/network-devices/eld*.log
+    service: network-devices
+    source: cisco-iosxe
+    sourcecategory: network
+    tags:
+      - env:datacenter
+      - site:eld7
+      - vendor:cisco
+  - type: file
+    path: /var/log/network-devices/edc*.log
+    service: network-devices
+    source: cisco-iosxe
+    sourcecategory: network
+    tags:
+      - env:datacenter
+      - site:edc4
+      - vendor:cisco
+
+  # Cisco IOS-XE devices (enterprise/office)
+  - type: file
+    path: /var/log/network-devices/lon*.log
+    service: network-devices
+    source: cisco-iosxe
+    sourcecategory: network
+    tags:
+      - env:enterprise
+      - site:lon1
+      - vendor:cisco
+  - type: file
+    path: /var/log/network-devices/sfo*.log
+    service: network-devices
+    source: cisco-iosxe
+    sourcecategory: network
+    tags:
+      - env:enterprise
+      - site:sfo1
+      - vendor:cisco
+
+  # FortiGate firewalls (datacenter)
+  - type: file
+    path: /var/log/network-devices/*pfw*.log
+    service: network-devices
+    source: fortios
+    sourcecategory: network
+    tags:
+      - env:datacenter
+      - vendor:fortinet
+```
+
+### Datadog Tags
+
+All logs are tagged with metadata for filtering and alerting:
+
+| Tag | Values | Purpose |
+| --- | --- | --- |
+| `env` | `datacenter`, `enterprise` | Environment classification |
+| `site` | `eld7`, `edc4`, `lon1`, `sfo1`, etc. | Site/location identifier |
+| `vendor` | `cisco`, `fortinet`, `meraki` | Device vendor |
+| `source` | `cisco-iosxe`, `fortios`, `meraki` | Device OS/platform |
+
+**Example Datadog Query:**
+
+```text
+source:cisco-iosxe env:datacenter site:eld7 status:error
+```
+
+This finds all ERROR-level events from Cisco IOS-XE devices in the ELD7 datacenter.
+
+### Datadog Features
+
+- **Log Storage:** Unlimited retention in Datadog cloud (vs. 30 days local)
+- **Search & Analysis:** Full-text search, faceted analysis, custom dashboards
+- **Alerting:** Create alerts on log patterns, anomalies, error rates
+- **Metrics:** Extract metrics from logs (e.g., interface down events per device)
+- **Integration:** Connect to PagerDuty, Slack, email for incident response
+
+### Datadog Dashboard Example
+
+**Monitor network events:**
+
+- Interface down/up events (count per device)
+- Configuration changes (logins, auth failures)
+- High CPU/memory alerts
+- BGP neighbor state changes
+- OSPF adjacency changes
 
 ---
 
