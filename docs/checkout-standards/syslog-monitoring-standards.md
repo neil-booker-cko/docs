@@ -8,13 +8,16 @@ Centralized logging, SNMP monitoring, and observability standards for all networ
 
 ### Syslog Server Configuration
 
-**Requirement:** Centralized syslog collection (minimum 2 servers for redundancy).
+**Requirement:** Centralized syslog collection on utility servers (3 servers for redundancy).
+
+**Note:** These utility servers also function as management servers for SNMP monitoring and NMS
+queries.
 
 | Component | Standard | Notes |
 | --- | --- | --- |
-| Syslog Server 1 (Primary) | 10.13.1.147:601 | Network utility server |
-| Syslog Server 2 (Secondary) | 10.13.2.116:601 | Network utility server |
-| Syslog Server 3 (Tertiary) | 10.13.2.116:601 | Network utility server |
+| Utility Server 1 (Primary) | 10.13.1.147:601 | Syslog + SNMP management |
+| Utility Server 2 (Secondary) | 10.13.2.116:601 | Syslog + SNMP management |
+| Utility Server 3 (Tertiary) | 10.13.2.116:601 | Syslog + SNMP management |
 | Protocol | TCP/601 (RFC 5426 Reliable Syslog) | Preferred; guarantees message delivery |
 | Facility | LOCAL0-LOCAL7 | Per-device facility for filtering |
 | Retention | 30 days (rolling) | Purge logs older than 30 days |
@@ -117,6 +120,18 @@ Meraki does **not** support external syslog. Instead:
 
 ## SNMP Monitoring Standards
 
+### SNMP Management Servers
+
+**Requirement:** SNMP NMS queries to utility servers (same 3 servers as syslog).
+
+| Parameter | Standard | Notes |
+| --- | --- | --- |
+| Primary NMS Server | 10.13.1.147 | Utility server (also primary syslog) |
+| Secondary NMS Server | 10.13.2.116 | Utility server (also secondary syslog) |
+| Tertiary NMS Server | 10.13.2.116 | Utility server (also tertiary syslog) |
+| SNMP Port | 161 (UDP) | Standard SNMP query port |
+| Trap Destination | 10.13.1.147:162 | Traps disabled (pull-based monitoring only) |
+
 ### SNMP Version & Security
 
 **Requirement:** SNMP v3 (no SNMPv1/v2c in production).
@@ -127,7 +142,7 @@ Meraki does **not** support external syslog. Instead:
 | Authentication | HMAC-SHA | Strong hash algorithm |
 | Encryption | AES-128 | Minimum 128-bit encryption |
 | Read Community | Disabled (v1/v2c) | v3 only; no plain-text community strings |
-| Trap Destination | 10.0.1.50:162 | NMS (Network Management System) |
+| Trap Destination | Disabled | Pull-based monitoring via NMS servers |
 
 ### SNMP v3 User Configuration
 
