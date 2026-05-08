@@ -45,13 +45,19 @@ convergence and is strongly recommended for critical cloud connectivity links.
 
 **Configuration (BFD preferred):**
 
+Define a BFD template at the global level, then apply to interfaces:
+
 ```ios
-neighbor 169.254.1.2 timers 60 180
-neighbor 169.254.1.2 fall-over bfd
+bfd-template single-hop BFD_STANDARD
+ interval 300 min_rx 300 multiplier 3
 !
 interface GigabitEthernet0/1
  ip address 169.254.1.1 255.255.255.252
- bfd interval 300 min_rx 300 multiplier 3
+ bfd template BFD_STANDARD
+!
+router bgp 65000
+ neighbor 169.254.1.2 timers 60 180
+ neighbor 169.254.1.2 fall-over bfd
 !
 ```
 
