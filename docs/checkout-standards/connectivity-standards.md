@@ -11,7 +11,7 @@ All datacenter-to-cloud and datacenter-to-internet connectivity follows these pr
 - **Fast Failover:** Deploy dual redundant paths with BFD for sub-second detection
 - **BGP-Driven:** Use BGP for dynamic routing and traffic engineering
 - **Prefix Filtering:** Apply strict ingress/egress filtering to prevent route hijacking
-- **Route Manipulation:** Use Local Preference (inbound) and AS Path Prepending (outbound) for steering
+- **Route Manipulation:** Use Local Preference (outbound) and AS Path Prepending (inbound) for steering
 - **Logging:** Enable logging on all policies and BGP state changes for troubleshooting
 
 ---
@@ -23,8 +23,8 @@ All datacenter-to-cloud and datacenter-to-internet connectivity follows these pr
 **Dual ISP connections with BGP and BFD:**
 
 - Primary and secondary ISP links with independent BGP peerings
-- Local Preference used to steer inbound traffic to preferred ISP
-- AS Path Prepending used to steer outbound traffic to preferred ISP
+- Local Preference used to steer outbound traffic via preferred ISP
+- AS Path Prepending used to steer inbound traffic from preferred ISP
 - BFD enabled for fast failure detection (200ms interval, 3 retry count)
 - Bogon filtering on ingress interfaces
 

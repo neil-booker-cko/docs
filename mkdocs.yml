@@ -344,6 +344,7 @@ nav:
       - Software Standards: checkout-standards/software-standards.md
       - VLAN Configuration: checkout-standards/vlan-standards.md
       - Interface Configuration: checkout-standards/interface-standards.md
+      - BFD Standards: checkout-standards/bfd-standards.md
       - Meraki Standards: checkout-standards/meraki-standards.md
       - Security Hardening: checkout-standards/security-hardening.md
       - Firewall Standards: checkout-standards/firewall-standards.md
