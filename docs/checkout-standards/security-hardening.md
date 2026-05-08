@@ -289,9 +289,37 @@ end
 
 ## Network Access Control (NAC)
 
-TODO: Add Checkout NAC requirements
+**Status:** Not implemented. NAC is not currently in use at Checkout. Future evaluation may be
+considered for guest network access control or compliance with enhanced security frameworks.
 
 ---
+
+## Implementation Guides
+
+The standards above are implemented through detailed configuration guides for each platform:
+
+### Cisco IOS-XE Configuration
+
+- [AAA Configuration & TACACS+](../cisco/cisco_aaa_config.md) — Implements Management Plane AAA
+- [SNMP Configuration](../cisco/cisco_snmp_config.md) — Implements SNMP hardening standards
+- [Syslog Configuration](../cisco/cisco_syslog_config.md) — Implements centralized logging
+- [SSH Hardening](../application/ssh.md) — Implements SSH algorithm hardening
+- [AAA Minimal](../cisco/aaa-minimal.md) — Quick reference for AAA setup
+
+### FortiOS Configuration
+
+- [FortiGate Admin Access](../fortigate/aaa-minimal.md) — Implements administrator access controls
+- [FortiGate Firewall Policies](../fortigate/fortigate_firewall_policies.md) — Implements security policies
+- [FortiGate HA Configuration](../fortigate/fortigate_ha.md) — Implements high availability standards
+- [FortiGate Security Hardening](../fortigate/security-hardening-minimal.md) — Quick reference for hardening
+- [FortiGate SSH Hardening](../fortigate/ssh-minimal.md) — Implements SSH standards
+
+### Standards and Protocols
+
+- [SNMP Monitoring Standards](../checkout-standards/snmp-standards.md) — SNMPv3 implementation details
+- [Syslog & Monitoring Standards](../checkout-standards/syslog-monitoring-standards.md) — Logging
+- [Naming Conventions](../checkout-standards/naming-conventions.md) — ACL naming standards
+- [BGP Standards](../checkout-standards/bgp-standards.md) — BGP authentication and route filtering
 
 ---
 
@@ -308,9 +336,9 @@ All Checkout standards documented above are marked with adoption status:
 
 | Area | Status | Notes |
 | --- | --- | --- |
-| Management Plane (AAA, SSH, SNMP, NTP, Banners) | **Fully Adopted** | All controls implemented per CIS v2.2.1 |
-| Control Plane (SSH hardening, Logging, Services) | **Fully Adopted** | SSH v2, debug logging, legacy services disabled |
-| Data Plane (BGP auth, route filtering) | **Fully Adopted** | BGP MD5 + prefix-lists on all iBGP/eBGP peers |
+| Management Plane (AAA, SSH, SNMP, NTP, Banners) | **Fully Adopted** | All controls per CIS v2.2.1 |
+| Control Plane (SSH hardening, Logging, Services) | **Fully Adopted** | SSH v2, debug logging, legacy disabled |
+| Data Plane (BGP auth, route filtering) | **Fully Adopted** | BGP MD5 + prefix-lists on all peers |
 
 ### FortiOS Adoption
 
@@ -354,8 +382,32 @@ All Checkout standards documented above are marked with adoption status:
 
 ---
 
-## Related Standards
+## Related Standards and Implementation Guides
 
-- [Equipment Configuration](equipment-config.md)
-- [Naming Conventions](naming-conventions.md)
-- [BGP Standards](bgp-standards.md)
+**Checkout Standards:**
+
+- [Equipment Configuration](equipment-config.md) — Hardware standards and lifecycle
+- [Naming Conventions](naming-conventions.md) — ACL and object naming for security
+- [BGP Standards](bgp-standards.md) — BGP authentication and secure routing
+- [SNMP Standards](snmp-standards.md) — SNMPv3 configuration and monitoring access
+- [Syslog Standards](syslog-monitoring-standards.md) — Centralized logging
+
+**Cisco IOS-XE Implementation:**
+
+- [AAA/TACACS+ Configuration](../cisco/cisco_aaa_config.md)
+- [SNMP Configuration](../cisco/cisco_snmp_config.md)
+- [Syslog Configuration](../cisco/cisco_syslog_config.md)
+- [SSH Hardening](../application/ssh.md)
+
+**FortiOS Implementation:**
+
+- [FortiGate Admin Access & Hardening](../fortigate/aaa-minimal.md)
+- [FortiGate Firewall Policies & IPS](../fortigate/fortigate_firewall_policies.md)
+- [FortiGate High Availability](../fortigate/fortigate_ha.md)
+- [FortiGate SSH Standards](../fortigate/ssh-minimal.md)
+
+**Application Protocols:**
+
+- [SSH](../application/ssh.md)
+- [SNMP](../application/snmp.md)
+- [Syslog](../application/syslog.md)
