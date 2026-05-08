@@ -8,11 +8,11 @@ network devices.
 
 ## Applicable Frameworks
 
-| Framework | Scope | Version | Status |
-| --- | --- | --- | --- |
-| **CIS Benchmarks** | Cisco IOS-XE, FortiGate | v2.2.1 (Cisco), v1.0.1 (FortiGate) | Adopted |
-| **DISA STIG** | Network device hardening | Current | Reference |
-| **PCI DSS** | Payment card data security | 3.2.1 / 4.0 | Reference |
+| Framework | Scope | Version | Status | Requirement |
+| --- | --- | --- | --- | --- |
+| **CIS Benchmarks** | Cisco IOS-XE, FortiGate | v2.2.1 (Cisco), v1.0.1 (FortiGate) | Adopted | Best practice baseline |
+| **DISA STIG** | Network device hardening | Current | Reference | Additional hardening guidance |
+| **PCI DSS** | Payment card data security | 3.2.1 / 4.0 | **Mandatory** | **Required for compliance** |
 
 ---
 
