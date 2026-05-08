@@ -77,7 +77,7 @@ See [Naming Standards](naming-conventions.md) for prefix-list naming conventions
 Route-Maps allow conditional modification of BGP attributes to influence path selection and
 traffic flow across multiple cloud providers and datacenters.
 
-**Local Preference** — prefer routes from specific providers:
+**Local Preference** — steer outbound traffic via preferred ISP:
 
 ```ios
 route-map RM_AWS_IN permit 10
@@ -91,7 +91,7 @@ router bgp 65000
 !
 ```
 
-**AS Path Prepending** — deprioritize backup paths by making them appear longer:
+**AS Path Prepending** — steer inbound traffic from preferred ISP:
 
 ```ios
 route-map RM_AZURE_OUT permit 10
