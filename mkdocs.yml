@@ -71,7 +71,6 @@ plugins:
 
 nav:
   - Home: index.md
-  - Checkout Standards: checkout-standards-index.md
   - Quick Reference:
       - Cisco Templates:
           - BGP: cisco/bgp-minimal.md
@@ -303,6 +302,7 @@ nav:
           - Cloud-to-Cloud Interconnect: equinix/equinix_cloud_to_cloud_interconnect.md
           - IP WAN Best Practices: equinix/equinix_ip_wan_best_practices.md
   - Operations & Reference:
+      - Standards: checkout-intro.md
       - Operations:
           - Cisco IOS-XE Upgrade: operations/cisco_upgrade.md
           - FortiGate Firmware Upgrade: operations/fortigate_upgrade.md
