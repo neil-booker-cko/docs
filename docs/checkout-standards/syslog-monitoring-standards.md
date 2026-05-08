@@ -17,7 +17,7 @@ queries.
 | --- | --- | --- |
 | Utility Server 1 (Primary) | 10.13.1.147:601 | Syslog + SNMP management |
 | Utility Server 2 (Secondary) | 10.13.2.116:601 | Syslog + SNMP management |
-| Utility Server 3 (Tertiary) | 10.13.2.116:601 | Syslog + SNMP management |
+| Utility Server 3 (Tertiary) | 10.13.2.147:601 | Syslog + SNMP management |
 | Protocol | TCP/601 (RFC 5426 Reliable Syslog) | Preferred; guarantees message delivery |
 | Facility | LOCAL0-LOCAL7 | Per-device facility for filtering |
 | Retention | 30 days (rolling) | Purge logs older than 30 days |
@@ -64,7 +64,7 @@ Do **not** send DEBUG (7) to syslog in production.
 ```ios
 logging host 10.13.1.147 transport tcp port 601
 logging host 10.13.2.116 transport tcp port 601
-logging host 10.13.2.116 transport tcp port 601
+logging host 10.13.2.147 transport tcp port 601
 logging trap informational
 logging source-interface GigabitEthernet0/0
 !
@@ -128,7 +128,7 @@ Meraki does **not** support external syslog. Instead:
 | --- | --- | --- |
 | Primary NMS Server | 10.13.1.147 | Utility server (also primary syslog) |
 | Secondary NMS Server | 10.13.2.116 | Utility server (also secondary syslog) |
-| Tertiary NMS Server | 10.13.2.116 | Utility server (also tertiary syslog) |
+| Tertiary NMS Server | 10.13.2.147 | Utility server (also tertiary syslog) |
 | SNMP Port | 161 (UDP) | Standard SNMP query port |
 | Trap Destination | 10.13.1.147:162 | Traps disabled (pull-based monitoring only) |
 

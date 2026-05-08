@@ -18,7 +18,7 @@ address restrictions via ACLs.
 | Access Mode | Read-Only | Query-only; no write access |
 | Traps | Disabled | No SNMP traps configured |
 | Source Restriction | ACL_SNMP_IN (Cisco) | Limit queries to utility servers |
-| NMS Servers (Utility) | 10.13.1.147, 10.13.2.116 | Primary, secondary, tertiary (3-server redundancy) |
+| NMS Servers (Utility) | 10.13.1.147, 10.13.2.116, 10.13.2.147 | Primary, secondary, tertiary (3-server redundancy) |
 
 ---
 
@@ -126,6 +126,7 @@ Restrict SNMP queries to the utility servers (primary, secondary, tertiary):
 ip access-list standard ACL_SNMP_IN
  permit 10.13.1.147
  permit 10.13.2.116
+ permit 10.13.2.147
  deny any
 !
 ```
@@ -175,6 +176,7 @@ snmp ifindex persist
 ip access-list standard ACL_SNMP_IN
  permit 10.13.1.147
  permit 10.13.2.116
+ permit 10.13.2.147
  deny any
 !
 snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
@@ -228,6 +230,7 @@ Only utility servers can query SNMP (primary, secondary, tertiary):
 ip access-list standard ACL_SNMP_IN
  permit 10.13.1.147
  permit 10.13.2.116
+ permit 10.13.2.147
  deny any
 !
 ```
