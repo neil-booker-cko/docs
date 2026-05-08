@@ -29,14 +29,17 @@ pre-commit run --all-files
 uv sync --all-groups
 ```
 
-Site configuration is in `mkdocs.yml` (read natively by Zensical). See
-[ZENSICAL_MIGRATION.md](ZENSICAL_MIGRATION.md) for background on the migration.
+Site configuration is in **`zensical.toml`** (Zensical's native format, takes precedence).
+**Important:** Update `zensical.toml` for all config changes (nav, theme, extensions). Keep
+`mkdocs.yml` in sync as a reference/fallback—ensures compatibility if the project needs to
+revert to standard MkDocs. See [ZENSICAL_MIGRATION.md](ZENSICAL_MIGRATION.md) for background.
 
 ## Key Configuration Files
 
 | File | Purpose |
 | --- | --- |
-| `mkdocs.yml` | Site structure, theme config, markdown extensions |
+| **`zensical.toml`** | **PRIMARY:** Site structure (nav), theme, extensions, Zensical settings. Zensical reads this first; ignores mkdocs.yml if present. |
+| `mkdocs.yml` | **BACKUP:** Mirror of zensical.toml structure for reference/fallback. Keep in sync (nav, theme). |
 | `.markdownlint-cli2.yaml` | Markdown linting rules (100 char line length, code blocks/tables unlimited, H1 requirement, duplicate headings allowed in different sections) |
 | `.pre-commit-config.yaml` | Automated checks: file hygiene, Python formatting (Ruff), markdown linting |
 | `pyproject.toml` | Dependencies (zensical) and Python config |
