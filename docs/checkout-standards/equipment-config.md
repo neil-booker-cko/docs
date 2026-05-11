@@ -136,9 +136,12 @@ no service dhcp
 no ip bootp server
 service tcp-keepalives-in
 service tcp-keepalives-out
+service call-home
 no cdp run
 no ip source-route
 ```
+
+**Note:** `service call-home` is required for Cisco license validation and support registration.
 
 **Command and Configuration Archive:**
 
