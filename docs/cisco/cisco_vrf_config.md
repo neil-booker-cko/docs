@@ -309,7 +309,147 @@ route-map RM-FG-GCP-OUT permit 10
 
 ---
 
-## 7. FortiGate Interface Requirements
+## 7. OSPF Configuration with VRF
+
+OSPF can run in multiple VRFs with separate process instances or as address families within a
+single process.
+
+### Single OSPF Process with Multiple VRFs
+
+```ios
+router ospf 1 vrf AWS
+ router-id 10.0.0.1
+ network 10.254.1.0 0.0.0.3 area 0
+ network 169.254.x.0 0.0.0.3 area 0
+ default-information originate
+!
+router ospf 2 vrf AZURE
+ router-id 10.0.0.1
+ network 10.254.2.0 0.0.0.3 area 0
+ network 172.16.0.0 0.0.0.3 area 0
+ default-information originate
+!
+router ospf 3 vrf GCP
+ router-id 10.0.0.1
+ network 10.254.3.0 0.0.0.3 area 0
+ network 169.254.0.0 0.0.0.7 area 0
+ default-information originate
+!
+```
+
+**Key Points:**
+
+- Each VRF requires a **unique OSPF process number** (1, 2, 3)
+- Router ID can be the same across VRFs (IOS-XE handles disambiguation)
+- Routes learned via OSPF in one VRF do **not** leak to other VRFs
+- Use `network` commands with VRF-specific subnets (cloud link + transport link)
+
+### OSPF with BFD in VRF
+
+```ios
+interface GigabitEthernet0/2
+ vrf forwarding AWS
+ ip ospf dead-interval 9
+ ip ospf hello-interval 3
+ ip ospf bfd
+!
+```
+
+---
+
+## 8. EIGRP Configuration with VRF
+
+EIGRP runs as a named instance with separate address families per VRF.
+
+### EIGRP Named Mode with Multiple VRFs
+
+```ios
+router eigrp CLOUD-EIGRP
+ !
+ address-family ipv4 unicast vrf AWS
+  network 10.254.1.0 0.0.0.3
+  network 169.254.x.0 0.0.0.3
+  eigrp router-id 10.0.0.1
+  bfd all-interfaces
+  af-interface GigabitEthernet0/2
+   bfd
+   hello-interval 5
+   hold-time 15
+  exit-af-interface
+ exit-address-family
+ !
+ address-family ipv4 unicast vrf AZURE
+  network 10.254.2.0 0.0.0.3
+  network 172.16.0.0 0.0.0.3
+  eigrp router-id 10.0.0.1
+  bfd all-interfaces
+  af-interface GigabitEthernet0/3
+   bfd
+   hello-interval 5
+   hold-time 15
+  exit-af-interface
+ exit-address-family
+ !
+ address-family ipv4 unicast vrf GCP
+  network 10.254.3.0 0.0.0.3
+  network 169.254.0.0 0.0.0.7
+  eigrp router-id 10.0.0.1
+  bfd all-interfaces
+  af-interface GigabitEthernet0/4
+   bfd
+   hello-interval 5
+   hold-time 15
+  exit-af-interface
+ exit-address-family
+!
+```
+
+**Key Points:**
+
+- EIGRP uses **named mode** (instance `CLOUD-EIGRP`) with address-family separation
+- Each VRF has its own address-family block within the instance
+- Router ID can be the same across VRFs
+- BFD is configured per address-family and per interface within the AF
+- Routes learned in one VRF **do not** leak to other VRFs
+
+### EIGRP Classic Mode (Older IOS)
+
+For devices using classic EIGRP syntax:
+
+```ios
+router eigrp 65000
+ !
+ address-family ipv4 vrf AWS
+  network 10.254.1.0 0.0.0.3
+  network 169.254.x.0 0.0.0.3
+  exit-address-family
+ !
+ address-family ipv4 vrf AZURE
+  network 10.254.2.0 0.0.0.3
+  network 172.16.0.0 0.0.0.3
+  exit-address-family
+ !
+ address-family ipv4 vrf GCP
+  network 10.254.3.0 0.0.0.3
+  network 169.254.0.0 0.0.0.7
+  exit-address-family
+!
+```
+
+---
+
+## 9. Routing Protocol Comparison in VRF
+
+| Protocol | Process/Instance | VRF Isolation | BFD Support | Use Case |
+| --- | --- | --- | --- | --- |
+| **BGP** | Single process, multiple address-families | Yes (AF scoped) | Yes (native) | Cloud provider peering |
+| **OSPF** | Unique process per VRF | Yes (per-process) | Yes (per-interface) | Internal routing within VRF |
+| **EIGRP** | Named instance, multiple address-families | Yes (AF scoped) | Yes (per-AF or per-interface) | Internal routing within VRF |
+| **RIP** | Not recommended | Yes | No | Legacy only |
+
+---
+
+## 10. FortiGate Interface Requirements
 
 With VRF separation on the Cisco side, the FortiGate must present a **separate
 logical interface per cloud provider**. VLAN subinterfaces on a trunk to the
@@ -326,7 +466,9 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 
 ---
 
-## 8. Verification Commands
+## 11. Verification Commands
+
+### VRF Status
 
 | Command | Purpose |
 | :--- | :--- |
@@ -334,9 +476,39 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 | `show ip route vrf AWS` | Routing table for VRF AWS |
 | `show ip route vrf AZURE` | Routing table for VRF AZURE |
 | `show ip route vrf GCP` | Routing table for VRF GCP |
+
+### BGP Verification
+
+| Command | Purpose |
+| :--- | :--- |
 | `show bgp vpnv4 unicast vrf AWS summary` | BGP neighbour state in VRF AWS |
 | `show bgp vpnv4 unicast vrf AZURE summary` | BGP neighbour state in VRF AZURE |
 | `show bgp vpnv4 unicast vrf GCP summary` | BGP neighbour state in VRF GCP |
 | `show ip bgp vpnv4 vrf AWS neighbors` | Full BGP detail for VRF AWS peers |
+
+### OSPF Verification
+
+| Command | Purpose |
+| :--- | :--- |
+| `show ip ospf 1` | OSPF process 1 (VRF AWS) summary |
+| `show ip ospf 2` | OSPF process 2 (VRF AZURE) summary |
+| `show ip ospf 3` | OSPF process 3 (VRF GCP) summary |
+| `show ip ospf neighbors vrf AWS` | OSPF neighbors in VRF AWS |
+| `show ip ospf database vrf AWS` | OSPF link-state database in VRF AWS |
+
+### EIGRP Verification
+
+| Command | Purpose |
+| :--- | :--- |
+| `show eigrp address-family ipv4 vrf AWS` | EIGRP AF status for VRF AWS |
+| `show eigrp neighbors vrf AWS` | EIGRP neighbors in VRF AWS |
+| `show eigrp topology vrf AWS` | EIGRP topology table for VRF AWS |
+| `show ip route eigrp vrf AWS` | EIGRP-learned routes in VRF AWS |
+
+### General Connectivity
+
+| Command | Purpose |
+| :--- | :--- |
 | `show bfd neighbors` | BFD sessions — applies across all VRFs |
 | `ping vrf AWS 169.254.x.2` | Reachability test within a specific VRF |
+| `traceroute vrf AWS 169.254.x.2` | Trace path within a specific VRF |
