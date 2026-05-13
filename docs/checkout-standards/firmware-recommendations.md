@@ -112,17 +112,19 @@ should plan hardware replacement by Q3 2027.
 
 ### Vertiv Console Servers
 
-| Model | Firmware | OS | Status | Notes |
+| Model | Recommended | Current | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Vertiv Avocent ACS | — | Linux-based | TBD | **RESEARCH REQUIRED** |
+| Avocent ACS 8000 | 2.32.3 | 2.30.2 | Active | Serial console server |
 
-**Status:** No Vertiv console server models currently documented in equipment inventory. If units are
-deployed, research and update this section with:
+**Notes:**
 
-- Model numbers
-- Current firmware version
-- Vendor support/EOL dates
-- Recommended upgrade path
+- **Current Deployed:** 2.30.2
+- **Target Version:** 2.32.3 (minor version update; recommended)
+- **Upgrade Impact:** Low risk; minor version bump
+- **Support Status:** TBD; check Vertiv support/EOL dates for current and target versions
+
+**Upgrade Path:** Plan upgrade campaign from 2.30.2 to 2.32.3; schedule during maintenance
+window with rollback plan documented.
 
 ---
 
