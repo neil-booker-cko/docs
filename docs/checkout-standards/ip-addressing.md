@@ -31,7 +31,7 @@ Checkout's IP address allocation and design standards.
 
 | VRF | Cisco IP | MSEE IP | CIDR |
 | --- | --- | --- | --- |
-| AZURE | `172.16.0.1` | `172.16.0.2` | `172.16.0.0/30` |
+| Azure | `172.16.0.1` | `172.16.0.2` | `172.16.0.0/30` |
 
 ---
 

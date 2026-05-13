@@ -160,7 +160,7 @@ router bgp LOCAL_AS
  bgp router-id 10.0.0.1
  bgp log-neighbor-changes
  !
- address-family ipv4 vrf AZURE
+ address-family ipv4 vrf Azure
   ! Primary MSEE peer (Microsoft AS 12076) — preferred
   neighbor MSEE_PRIMARY_IP remote-as 12076
   neighbor MSEE_PRIMARY_IP description ER-PRIMARY-MSEE
@@ -414,11 +414,11 @@ the secondary carries full load until the primary recovers.
 | Command | Purpose |
 | --- | --- |
 | `show bfd neighbors` | Verify BFD on both primary and secondary MSEE peers |
-| `show bgp vpnv4 unicast vrf AZURE summary` | BGP neighbor state (both MSEE peers should be up) |
-| `show bgp vpnv4 unicast vrf AZURE neighbors MSEE_PRIMARY_IP` | Confirm primary ER BGP state, keepalive/hold timers |
-| `show bgp vpnv4 unicast vrf AZURE neighbors MSEE_SECONDARY_IP` | Confirm secondary ER BGP state (standby until failover) |
-| `show ip route vrf AZURE 10.100.0.0` | Verify Azure VNet reachable and which MSEE peer carries it |
-| `show ip bgp vpnv4 unicast vrf AZURE 10.100.0.0/16` | Verify route source and next-hop MSEE |
+| `show bgp vpnv4 unicast vrf Azure summary` | BGP neighbor state (both MSEE peers should be up) |
+| `show bgp vpnv4 unicast vrf Azure neighbors MSEE_PRIMARY_IP` | Confirm primary ER BGP state, keepalive/hold timers |
+| `show bgp vpnv4 unicast vrf Azure neighbors MSEE_SECONDARY_IP` | Confirm secondary ER BGP state (standby until failover) |
+| `show ip route vrf Azure 10.100.0.0` | Verify Azure VNet reachable and which MSEE peer carries it |
+| `show ip bgp vpnv4 unicast vrf Azure 10.100.0.0/16` | Verify route source and next-hop MSEE |
 
 ### FortiGate — Overlay (VPN) Verification
 
@@ -437,7 +437,7 @@ the secondary carries full load until the primary recovers.
 **If primary ER is down, secondary should activate:**
 
 - Cisco: `show bfd neighbors` should show secondary peer up
-- Cisco: `show bgp vpnv4 unicast vrf AZURE neighbors MSEE_SECONDARY_IP` —
+- Cisco: `show bgp vpnv4 unicast vrf Azure neighbors MSEE_SECONDARY_IP` —
   should show **Established**
 
 - FortiGate: Both VPN tunnels should route traffic via secondary ER circuit
@@ -454,6 +454,6 @@ the secondary carries full load until the primary recovers.
 
 **If both ER circuits are down:**
 
-- Cisco: `show bgp vpnv4 unicast vrf AZURE summary` — both MSEE peers **Down**
+- Cisco: `show bgp vpnv4 unicast vrf Azure summary` — both MSEE peers **Down**
 - FortiGate: VPN tunnels continue via static ER routes (if configured) or fail
   if no underlay path exists

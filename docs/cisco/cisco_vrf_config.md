@@ -8,7 +8,7 @@ each other:
 | VRF | Purpose | Cloud-side peer |
 | --- | --- | --- |
 | `AWS` | AWS Direct Connect + FortiGate IPsec transport | TGW (AS 64512) |
-| `AZURE` | Azure ExpressRoute + FortiGate IPsec transport | MSEE (AS 12076) |
+| `Azure` | Azure ExpressRoute + FortiGate IPsec transport | MSEE (AS 12076) |
 | `GCP` | GCP Cloud Interconnect + FortiGate IPsec transport | Cloud Router (customer ASN) |
 
 Each VRF holds:
@@ -35,12 +35,12 @@ title: "VRF-Lite Cloud Separation"
 graph LR
     subgraph Cisco["Cisco IOS-XE"]
         VRF_AWS["VRF AWS"]
-        VRF_AZURE["VRF AZURE"]
+        VRF_AZURE["VRF Azure"]
         VRF_GCP["VRF GCP"]
     end
     subgraph FG["FortiGate"]
         P_AWS["port2.100<br/>VRF AWS transport"]
-        P_AZ["port2.200<br/>VRF AZURE transport"]
+        P_AZ["port2.200<br/>VRF Azure transport"]
         P_GCP["port2.300<br/>VRF GCP transport"]
     end
     VRF_AWS -- "Gi0/1.100" --- P_AWS
@@ -56,7 +56,7 @@ graph LR
 | VRF | Cisco–FortiGate link | Cisco–Cloud link |
 | --- | --- | --- |
 | AWS | `10.254.1.0/30` (VLAN 100) | `169.254.x.x/30` (DX BGP) |
-| AZURE | `10.254.2.0/30` (VLAN 200) | `172.16.0.0/30` (ER private peering) |
+| Azure | `10.254.2.0/30` (VLAN 200) | `172.16.0.0/30` (ER private peering) |
 | GCP | `10.254.3.0/30` (VLAN 300) | `169.254.0.0/29` (Interconnect) |
 
 ---
@@ -73,7 +73,7 @@ vrf definition AWS
  address-family ipv4
  exit-address-family
 !
-vrf definition AZURE
+vrf definition Azure
  rd 65000:200
  route-target export 65000:200
  route-target import 65000:200
@@ -98,7 +98,7 @@ The RD and RT use a consistent `<local-AS>:<VRF-ID>` pattern tied to the VRF's p
 | VRF | RD | RT Export | RT Import | Meaning |
 | --- | --- | --- | --- | --- |
 | AWS | `65000:100` | `65000:100` | `65000:100` | AWS-only routes (fully isolated) |
-| AZURE | `65000:200` | `65000:200` | `65000:200` | Azure-only routes (fully isolated) |
+| Azure | `65000:200` | `65000:200` | `65000:200` | Azure-only routes (fully isolated) |
 | GCP | `65000:300` | `65000:300` | `65000:300` | GCP-only routes (fully isolated) |
 
 **Why this design:**
@@ -132,7 +132,7 @@ interface GigabitEthernet0/2
 !
 ! Azure ExpressRoute
 interface GigabitEthernet0/3
- vrf forwarding AZURE
+ vrf forwarding Azure
  ip address 172.16.0.1 255.255.255.252
  no shutdown
 !
@@ -162,7 +162,7 @@ interface GigabitEthernet0/1.100
 !
 interface GigabitEthernet0/1.200
  encapsulation dot1Q 200
- vrf forwarding AZURE
+ vrf forwarding Azure
  ip address 10.254.2.1 255.255.255.252
 !
 interface GigabitEthernet0/1.300
@@ -236,9 +236,9 @@ router bgp 65000
  exit-address-family
  !
  ! =====================
- ! VRF AZURE
+ ! VRF Azure
  ! =====================
- address-family ipv4 vrf AZURE
+ address-family ipv4 vrf Azure
   !
   ! MSEE — ExpressRoute private peering
   neighbor 172.16.0.2 remote-as 12076
@@ -317,19 +317,19 @@ single process.
 ### Single OSPF Process with Multiple VRFs
 
 ```ios
-router ospf 1 vrf AWS
+router ospf 100 vrf AWS
  router-id 10.0.0.1
  network 10.254.1.0 0.0.0.3 area 0
  network 169.254.x.0 0.0.0.3 area 0
  default-information originate
 !
-router ospf 2 vrf AZURE
+router ospf 200 vrf Azure
  router-id 10.0.0.1
  network 10.254.2.0 0.0.0.3 area 0
  network 172.16.0.0 0.0.0.3 area 0
  default-information originate
 !
-router ospf 3 vrf GCP
+router ospf 300 vrf GCP
  router-id 10.0.0.1
  network 10.254.3.0 0.0.0.3 area 0
  network 169.254.0.0 0.0.0.7 area 0
@@ -339,7 +339,7 @@ router ospf 3 vrf GCP
 
 **Key Points:**
 
-- Each VRF requires a **unique OSPF process number** (1, 2, 3)
+- Each VRF requires a **unique OSPF process number** (100, 200, 300) matching the Route Target suffix
 - Router ID can be the same across VRFs (IOS-XE handles disambiguation)
 - Routes learned via OSPF in one VRF do **not** leak to other VRFs
 - Use `network` commands with VRF-specific subnets (cloud link + transport link)
@@ -378,7 +378,7 @@ router eigrp CLOUD-EIGRP
   exit-af-interface
  exit-address-family
  !
- address-family ipv4 unicast vrf AZURE
+ address-family ipv4 unicast vrf Azure
   network 10.254.2.0 0.0.0.3
   network 172.16.0.0 0.0.0.3
   eigrp router-id 10.0.0.1
@@ -424,7 +424,7 @@ router eigrp 65000
   network 169.254.x.0 0.0.0.3
   exit-address-family
  !
- address-family ipv4 vrf AZURE
+ address-family ipv4 vrf Azure
   network 10.254.2.0 0.0.0.3
   network 172.16.0.0 0.0.0.3
   exit-address-family
@@ -458,7 +458,7 @@ Cisco are the typical approach:
 | FortiGate Interface | VLAN | IP Address | Connects to |
 | --- | --- | --- | --- |
 | `port2.100` | 100 | `10.254.1.2/30` | Cisco VRF AWS |
-| `port2.200` | 200 | `10.254.2.2/30` | Cisco VRF AZURE |
+| `port2.200` | 200 | `10.254.2.2/30` | Cisco VRF Azure |
 | `port2.300` | 300 | `10.254.3.2/30` | Cisco VRF GCP |
 
 Each FortiGate IPsec tunnel (AWS VPN, Azure VPN, GCP HA VPN) sources from the
@@ -474,7 +474,7 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 | :--- | :--- |
 | `show vrf` | List VRFs and their assigned interfaces |
 | `show ip route vrf AWS` | Routing table for VRF AWS |
-| `show ip route vrf AZURE` | Routing table for VRF AZURE |
+| `show ip route vrf Azure` | Routing table for VRF Azure |
 | `show ip route vrf GCP` | Routing table for VRF GCP |
 
 ### BGP Verification
@@ -482,7 +482,7 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 | Command | Purpose |
 | :--- | :--- |
 | `show bgp vpnv4 unicast vrf AWS summary` | BGP neighbour state in VRF AWS |
-| `show bgp vpnv4 unicast vrf AZURE summary` | BGP neighbour state in VRF AZURE |
+| `show bgp vpnv4 unicast vrf Azure summary` | BGP neighbour state in VRF Azure |
 | `show bgp vpnv4 unicast vrf GCP summary` | BGP neighbour state in VRF GCP |
 | `show ip bgp vpnv4 vrf AWS neighbors` | Full BGP detail for VRF AWS peers |
 
@@ -490,9 +490,9 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 
 | Command | Purpose |
 | :--- | :--- |
-| `show ip ospf 1` | OSPF process 1 (VRF AWS) summary |
-| `show ip ospf 2` | OSPF process 2 (VRF AZURE) summary |
-| `show ip ospf 3` | OSPF process 3 (VRF GCP) summary |
+| `show ip ospf 100` | OSPF process 100 (VRF AWS) summary |
+| `show ip ospf 200` | OSPF process 200 (VRF Azure) summary |
+| `show ip ospf 300` | OSPF process 300 (VRF GCP) summary |
 | `show ip ospf neighbors vrf AWS` | OSPF neighbors in VRF AWS |
 | `show ip ospf database vrf AWS` | OSPF link-state database in VRF AWS |
 
@@ -501,9 +501,9 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 | Command | Purpose |
 | :--- | :--- |
 | `show eigrp address-family ipv4 vrf AWS` | EIGRP AF status for VRF AWS |
-| `show eigrp neighbors vrf AWS` | EIGRP neighbors in VRF AWS |
-| `show eigrp topology vrf AWS` | EIGRP topology table for VRF AWS |
-| `show ip route eigrp vrf AWS` | EIGRP-learned routes in VRF AWS |
+| `show eigrp neighbors vrf Azure` | EIGRP neighbors in VRF Azure |
+| `show eigrp topology vrf Azure` | EIGRP topology table for VRF Azure |
+| `show ip route eigrp vrf Azure` | EIGRP-learned routes in VRF Azure |
 
 ### General Connectivity
 

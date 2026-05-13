@@ -112,7 +112,7 @@ router bgp 65000
   neighbor 169.254.1.2 route-map RM_AWS_OUT out
  exit-address-family
 
- address-family ipv4 vrf AZURE
+ address-family ipv4 vrf Azure
   neighbor 172.16.0.2 activate
   neighbor 172.16.0.2 prefix-list PL_AZURE_INTERNAL in
   neighbor 172.16.0.2 route-map RM_AZURE_IN in

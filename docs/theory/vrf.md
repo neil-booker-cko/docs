@@ -35,11 +35,11 @@ graph TD
     subgraph VRF_AWS["VRF AWS Routing Table"]
         R2["Route 10.0.0.0/8 via 10.254.1.2"]
     end
-    subgraph VRF_AZURE["VRF AZURE Routing Table"]
+    subgraph VRF_AZURE["VRF Azure Routing Table"]
         R3["Route 10.0.0.0/8 via 10.254.2.2"]
     end
     I1["Interface Gi0/1 - VRF AWS"] --> VRF_AWS
-    I2["Interface Gi0/2 - VRF AZURE"] --> VRF_AZURE
+    I2["Interface Gi0/2 - VRF Azure"] --> VRF_AZURE
     I3["Interface Gi0/3 - Global"] --> Global
 ```
 
