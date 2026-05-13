@@ -72,6 +72,24 @@ should plan hardware replacement by Q3 2027.
 
 ---
 
+### FortiManager (Cloud)
+
+| Model | Recommended | Current | Status | Notes |
+| --- | --- | --- | --- | --- |
+| FortiManager Cloud | 7.6.6 | 7.6.6 | Active | Cloud-based management platform |
+
+**Notes:**
+
+- **Current Deployed:** 7.6.6 (up-to-date)
+- **Target Version:** 7.6.6 (no upgrade required)
+- **Status:** In sync with FortiGate firewall version
+- **Upgrade Strategy:** Update FortiManager Cloud when FortiOS version advances
+
+**Upgrade Path:** Monitor Fortinet cloud release notes; coordinate FortiManager and FortiGate
+version upgrades together for consistency.
+
+---
+
 ### Cisco Meraki
 
 #### Wireless Access Points (MR Series)
