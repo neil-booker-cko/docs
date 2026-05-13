@@ -134,7 +134,7 @@ version upgrades together for consistency.
 
 | Model | Recommended | Current | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Avocent ACS 8016DAC | 2.32.3 | 2.30.2 | Active | Serial console server |
+| Avocent ACS 8016DAC | 2.32.3 | 2.32.3 | Active | Serial console server |
 
 **Notes:**
 
@@ -182,6 +182,12 @@ Every second Tuesday of the month (14:00 UTC):
 ---
 
 ## Change History
+
+### 2026-05-13 (Version Update)
+
+| Category | Change | Reason |
+| --- | --- | --- |
+| **Vertiv Avocent ACS 8016DAC** | Updated to 2.32.3 (from 2.30.2) | Firmware update |
 
 ### 2026-05-13 (Version Update)
 
