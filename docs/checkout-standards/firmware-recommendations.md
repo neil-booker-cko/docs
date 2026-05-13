@@ -15,6 +15,7 @@ criteria: vendor-recommended, LTS, free of critical CVEs, and supported for the 
 | Model | Series | OS | Current Recommended | LTS Train | Notes |
 | --- | --- | --- | --- | --- | --- |
 | C9200CX-12T-2X2G | 9200 | IOS-XE | 17.15.5 | 17.15 | Active; modern hardware |
+| C9200L-48P-4G | 9200 | IOS-XE | 17.15.5 | 17.15 | Active; 48-port; PoE capable |
 | C9300-24T | 9300 | IOS-XE | 17.15.5 | 17.15 | Active; datacenter; highest MTBF |
 | C9300-24UX | 9300 | IOS-XE | 17.15.5 | 17.15 | Active; UPoE capable |
 | C9300-48T | 9300 | IOS-XE | 17.15.5 | 17.15 | Active; 48-port option |
@@ -54,6 +55,7 @@ advisories. Devices on 17.3.x–17.12.x should prioritize this upgrade.
 
 | Model | Recommended | Previous | Status | Support Expires | Notes |
 | --- | --- | --- | --- | --- | --- |
+| FortiGate 70G | 7.6.6 | 7.4.x | Active | TBD | Mid-range; datacenter capable |
 | FortiGate 101F | 7.6.6 | 7.4.x | Active | TBD | Entry-level; updated quarterly |
 | FortiGate 201F | 7.6.6 | 7.4.x | Active | TBD | Branch firewall; stable release |
 | FortiGate 601F | 7.6.6 | 7.4.x | Active | TBD | High throughput; HA capable |
@@ -132,7 +134,7 @@ version upgrades together for consistency.
 
 | Model | Recommended | Current | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Avocent ACS 8000 | 2.32.3 | 2.30.2 | Active | Serial console server |
+| Avocent ACS 8016DAC | 2.32.3 | 2.30.2 | Active | Serial console server |
 
 **Notes:**
 

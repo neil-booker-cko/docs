@@ -44,6 +44,7 @@ official datasheets.
 | Catalyst C9300-48P | Active | 277,770 hrs | — | — | — | — |
 | Catalyst C9500-24Y4C | Active | 336,780 hrs | — | — | — | — |
 | Catalyst C9200CX-12T-2X2G | Active | 569,530 hrs | — | — | — | — |
+| Catalyst C9200L-48P-4G | Active | TBD | — | — | — | — |
 | Catalyst C1000-8T-2G-L | Maintained | 2,171,669 hrs | 2025-04-30 | 2026-04-30 | 2028-04-30 | 2030-04-30 |
 | Catalyst C1000-24T-4X-L | Maintained | 2,026,793 hrs | 2025-04-30 | 2026-04-30 | 2028-04-30 | 2030-04-30 |
 
@@ -59,6 +60,7 @@ Support dates. Standard FortiGate support lifecycle is typically 7-10 years from
 
 | Model | Status | EOO | LSED | EOS |
 | --- | --- | --- | --- | --- |
+| FortiGate 70G | Active | — | — | — |
 | FortiGate 101F | Active | — | — | — |
 | FortiGate 201F | Active | — | — | — |
 | FortiGate 601F | Active | — | — | — |
@@ -77,6 +79,16 @@ Contact Fortinet support to verify exact End of Support dates for capacity plann
 | LD8 | 2× FortiGate 601F | 2023 | **VERIFY** |
 | SG3 | 2× FortiGate 601F | 2022 | **VERIFY** |
 | DB3 | 2× FortiGate 601F | 2025 | **VERIFY** |
+
+---
+
+## Vertiv Console Servers
+
+**[Vertiv Product Information](https://www.vertiv.com/en-us/)**
+
+| Model | Status | Support Expires | Notes |
+| --- | --- | --- | --- |
+| Avocent ACS 8016DAC | Active | TBD | Serial console server; requires verification of support dates |
 
 ---
 
