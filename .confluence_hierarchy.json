@@ -1,0 +1,20 @@
+{
+  "documentation": {
+    "title": "Documentation",
+    "description": "Complete network engineering reference covering Cisco IOS-XE, FortiGate, Meraki, and cloud connectivity with sub-second failover design patterns.",
+    "children": {
+      "theory": "Theory",
+      "routing": "Routing",
+      "cisco": "Cisco IOS-XE",
+      "fortigate": "FortiGate",
+      "aws": "AWS",
+      "azure": "Azure",
+      "gcp": "GCP",
+      "equinix": "Equinix",
+      "operations": "Operations",
+      "application": "Application",
+      "packets": "Packets",
+      "reference": "Reference"
+    }
+  }
+}
