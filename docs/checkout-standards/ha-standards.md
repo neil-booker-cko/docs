@@ -223,13 +223,23 @@ If monitored interface goes down → failover to standby.
 
 ### Cisco IOS-XE BFD Configuration
 
+**Recommended: Use global BFD template (see [BFD Standards](bfd-standards.md)):**
+
 ```ios
+bfd-template single-hop BFD_STANDARD
+ interval min-tx 300 min-rx 300 multiplier 3
+ no echo
+!
+
 interface GigabitEthernet0/0
  ip address 10.0.1.10 255.255.255.0
- ip bfd interval 300 min_rx 300 multiplier 3
+ bfd template BFD_STANDARD
  standby bfd interface
 !
 ```
+
+**Note:** BFD timers are centralized in the template, simplifying management across
+multiple HA interfaces.
 
 ### BFD State Tracking
 

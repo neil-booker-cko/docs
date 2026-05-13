@@ -161,7 +161,7 @@ reload
 ! Device reboots with startup-config (previously backed up daily)
 ```
 
-3. If startup config lost, restore from backup
+1. If startup config lost, restore from backup
 
 ```ios
 configure terminal
@@ -170,7 +170,7 @@ copy ftp://admin@10.0.1.200/ELD7-CSW-01-20260515.txt running-config
 write memory
 ```
 
-4. Verify config loaded correctly
+1. Verify config loaded correctly
 
 ```ios
 show running-config | include router bgp
@@ -191,14 +191,14 @@ Recovery steps:
 execute backup list
 ```
 
-3. Restore from backup
+1. Restore from backup
 
 ```fortios
 execute restore config ftp fortigate-backup-20260515 10.0.1.200 admin password
 ! Device reboots with restored config
 ```
 
-4. Verify config and HA state
+1. Verify config and HA state
 
 ```fortios
 get system status
@@ -268,6 +268,7 @@ Recovery:
 2. **Order replacement hardware** (lead time: 3-7 days)
 
 3. **Once replaced, restore config**
+
    ```ios
    copy ftp://admin@10.0.1.50/ELD7-CSW-01-LATEST.txt startup-config
    reload

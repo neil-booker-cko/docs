@@ -204,9 +204,14 @@ gcloud compute routers update gcp-vpn-router \
 
 ### C. Graceful Restart on Cloud Router
 
-Cloud Router supports BGP Graceful Restart. The FortiGate `capability-graceful-restart`
-setting must be enabled to take advantage of this — without it, a Cloud Router
-reconvergence event flushes on-premises routes immediately.
+Cloud Router supports BGP Graceful Restart with a **120-second timeout**. The FortiGate
+`capability-graceful-restart` setting must be enabled to take advantage of this — without
+it, a Cloud Router reconvergence event flushes on-premises routes immediately.
+
+**Important:** Graceful restart applies to *planned* process restarts, not tunnel
+failures. With `link-down-failover enable`, tunnel failures trigger immediate route
+withdrawal (~15s) and bypass graceful restart. The 120-second timer only applies if
+your FortiGate BGP process restarts or if Cloud Router undergoes maintenance.
 
 ### D. Zone Grouping on FortiGate
 

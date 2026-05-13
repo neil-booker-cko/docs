@@ -147,7 +147,7 @@ CONFLUENCE_SPACE_KEY=~5fe0839e642089014165d146
 
 **How to get your API token:**
 
-1. Go to https://id.atlassian.com/manage-profile/security/api-tokens
+1. Go to <https://id.atlassian.com/manage-profile/security/api-tokens>
 1. Click **Create API token**
 1. Give it a name like "Confluence Publisher"
 1. Copy the token and paste it into `.env`
@@ -162,7 +162,7 @@ cat .gitignore | grep "\.env"
 
 Should show:
 
-```
+```text
 .env
 ```
 
@@ -205,7 +205,7 @@ This will convert Mermaid diagrams to PNG in `test_output/diagram_*.png`.
 
 **Expected output:**
 
-```
+```text
 ✓ Converted diagram 0 → diagram_0.png
 ✓ Converted diagram 1 → diagram_1.png
 ✓ Markdown converted to HTML
@@ -218,7 +218,7 @@ This will convert Mermaid diagrams to PNG in `test_output/diagram_*.png`.
 uv run python confluence_poc.py docs/reference/admin_distance.md --publish
 ```
 
-Check your Confluence space: https://checkout.atlassian.net/wiki/spaces/~5fe0839e642089014165d146/
+Check your Confluence space: <https://checkout.atlassian.net/wiki/spaces/~5fe0839e642089014165d146/>
 
 The page should appear with:
 
@@ -329,7 +329,8 @@ CONFLUENCE_SPACE_KEY=~5fe0839e642089014165d146
 
 **Problem:** Page already published, script is trying to create instead of update
 
-**Solution:** The script should auto-detect and update. If this happens, just run the command again—it now updates existing pages.
+**Solution:** The script auto-detects existing pages and updates them. If it happens,
+re-run the command—it will update instead of creating.
 
 ### Diagrams show as code blocks instead of PNG
 
@@ -397,6 +398,7 @@ echo "✅ All docs published!"
 ```
 
 Save as `publish_all.sh` and run:
+
 ```bash
 chmod +x publish_all.sh
 ./publish_all.sh
@@ -445,6 +447,7 @@ jobs:
 ```
 
 **To set up secrets:**
+
 1. Go to your GitHub repo → Settings → Secrets and variables → Actions
 2. Add these secrets:
    - `CONFLUENCE_URL`
@@ -457,33 +460,42 @@ jobs:
 ## Tips & Best Practices
 
 ### 1. Test before committing
+
 Always test locally before pushing:
+
 ```bash
 uv run python confluence_poc.py docs/routing/bgp.md --publish --no-convert
 ```
 
 ### 2. Use meaningful commit messages
+
 ```bash
 git commit -m "docs: update BGP guide with BFD section"
 ```
 
 ### 3. Keep `.env` local only
+
 Never commit credentials:
+
 ```bash
 # Verify .env is ignored:
 git check-ignore .env  # Should print: .env
 ```
 
 ### 4. Monitor Confluence
+
 After publishing, check the page in Confluence to ensure:
+
 - Code blocks have proper formatting
 - Tables render correctly
 - Diagrams display as images (not code blocks)
 - Links work
 
 ### 5. Regenerate API token periodically
+
 For security, rotate your Confluence API token every 90 days:
-1. Generate new token at https://id.atlassian.com/manage-profile/security/api-tokens
+
+1. Generate new token at <https://id.atlassian.com/manage-profile/security/api-tokens>
 2. Update `.env` with the new token
 3. Delete the old token
 
@@ -492,7 +504,7 @@ For security, rotate your Confluence API token every 90 days:
 ## Quick Reference
 
 | Task | Command |
-|------|---------|
+| --- | --- |
 | **Install mmdc** | `npm install -g @mermaid-js/mermaid-cli` |
 | **Set up .env** | `cp .env.example .env && nano .env` |
 | **Install deps** | `uv sync --all-groups` |
@@ -506,10 +518,12 @@ For security, rotate your Confluence API token every 90 days:
 ## Support
 
 For issues with the publishing script, check:
+
 - [confluence_poc.py](confluence_poc.py) — Main script
 - [README_CONFLUENCE.md](README_CONFLUENCE.md) — Quick start guide
 - [CONFLUENCE_INTEGRATION.md](CONFLUENCE_INTEGRATION.md) — Technical details
 
 For Confluence API issues, see:
+
 - [Atlassian Confluence REST API](https://developer.atlassian.com/cloud/confluence/rest/v2/intro/)
 - [atlassian-python-api](https://github.com/atlassian-api/atlassian-python-api)

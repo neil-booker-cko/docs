@@ -160,6 +160,10 @@ config router bgp
     set graceful-restart enable
     set graceful-restart-time 120
     set graceful-stalepath-time 120
+    !
+    ! Graceful restart (120s) applies only to planned BGP restarts.
+    ! Tunnel failures use link-down-failover for immediate withdrawal (~15s).
+    ! 120s matches Azure and GCP cloud provider defaults.
 
     config neighbor
         edit "169.254.21.1"

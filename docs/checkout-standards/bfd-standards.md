@@ -50,18 +50,32 @@ failover in <1 second.
 
 ## Cisco IOS-XE BFD Configuration
 
-### Interface-Level BFD (All Links)
+### Step 1: Define Global BFD Template
 
-**Mandatory on all routing interfaces:**
+**Define a single BFD template for all links:**
+
+```ios
+bfd-template single-hop BFD_STANDARD
+ interval min-tx 300 min-rx 300 multiplier 3
+ no echo
+!
+```
+
+### Step 2: Apply Template to Interfaces
+
+**Apply the template to all routing interfaces:**
 
 ```ios
 interface GigabitEthernet0/0
  description BGP-Link-to-AWS-TGW
  ip address 169.254.1.1 255.255.255.252
- bfd interval 300 min_rx 300 multiplier 3
+ bfd template BFD_STANDARD
  no shutdown
 !
 ```
+
+**Advantage:** Centralized BFD timers. Change once in the template, and all interfaces
+update automatically. No need to edit each interface individually.
 
 ### BGP BFD Configuration (Mandatory)
 
@@ -83,16 +97,19 @@ router bgp 65000
 
 ### OSPF BFD Configuration (Mandatory)
 
-**Per-interface BFD enablement:**
+**Use the global BFD template (defined above) and enable OSPF fallover:**
 
 ```ios
 interface GigabitEthernet0/0
  ip address 10.0.0.1 255.255.255.252
+ bfd template BFD_STANDARD
  ip ospf 1 area 0
- bfd interval 300 min_rx 300 multiplier 3
  ip ospf fall-over bfd
 !
 ```
+
+**Note:** The BFD timers come from the global `BFD_STANDARD` template, not from
+individual interface commands. This ensures consistency across all OSPF links.
 
 **OSPF timers with BFD:**
 
@@ -102,13 +119,22 @@ interface GigabitEthernet0/0
 
 ### HA Heartbeat BFD (VSS/vPC)
 
-**VSS heartbeat link BFD:**
+**Define a separate aggressive BFD template for HA heartbeat:**
+
+```ios
+bfd-template single-hop BFD_HA
+ interval min-tx 100 min-rx 100 multiplier 3
+ no echo
+!
+```
+
+**Apply to VSS heartbeat link:**
 
 ```ios
 interface GigabitEthernet0/1
  description VSS-Heartbeat
  no ip address
- bfd interval 100 min_rx 100 multiplier 3
+ bfd template BFD_HA
  no shutdown
 !
 
@@ -124,7 +150,7 @@ switch virtual domain 1
 !
 ```
 
-**HA BFD timers (more aggressive):**
+**HA BFD timers (more aggressive than standard):**
 
 - Transmit: 100ms
 - Receive: 100ms

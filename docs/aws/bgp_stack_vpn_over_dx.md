@@ -32,10 +32,8 @@ Since AWS **does not support BFD over VPN**, we must rely on a hierarchy of time
 ## 2. Architecture
 
 ```mermaid
-
 ---
 title: "AWS Architecture: DX Underlay + VPN Overlay"
-
 ---
 graph LR
     subgraph OnPrem["On-Premises"]
@@ -101,6 +99,48 @@ timeline
         T=15s : DPD Retries Exhausted (5s x 3) : VTI Interface Down
         T=16s : Link-Down Failover triggers : BGP Session Killed : Routes Dropped
 ```
+
+---
+
+## 3b. Graceful Restart Timing
+
+**Important:** Graceful restart applies to *planned* BGP process restarts, not unplanned
+tunnel failures. With `link-down-failover enable`, graceful restart is bypassed for
+tunnel failures.
+
+### When Graceful Restart Applies
+
+**Tunnel Fails (with link-down-failover):**
+
+- Detection: DPD 15s
+- GR Used: ✗ No
+- Recovery: Routes withdrawn immediately at T=15s
+
+**BGP Process Restarts:**
+
+- Detection: Hold timer 30s
+- GR Used: ✓ Yes
+- Recovery: Peer waits up to YOUR graceful-restart-time
+
+**AWS Side Restarts:**
+
+- Detection: Peer's GR timer
+- GR Used: N/A
+- Recovery: You wait for AWS's graceful-restart-time
+
+### Cloud Provider Graceful Restart Values
+
+Set your graceful-restart-time to **120 seconds** to match AWS and GCP defaults:
+
+- **GCP Cloud Router:** 120 seconds (documented)
+- **AWS Transit Gateway:** Not publicly documented (assume 120s per RFC defaults)
+- **Azure VPN Gateway:** Not publicly documented (assume 120s per RFC defaults)
+
+**Why 120s?** Maintenance events typically complete within this window. If a cloud
+provider restarts, your router waits up to 120 seconds for them to rejoin, preserving
+routes during the transition.
+
+---
 
 ## 4. Configuration
 

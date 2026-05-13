@@ -12,12 +12,14 @@ diagrams, folder hierarchy, and auto-generated navigation.
 ## What Works
 
 ### ✅ Markdown → HTML Conversion
+
 - Automatically parses Markdown to XHTML
 - Preserves tables, code blocks, headers, links, emphasis
 - Confluence-compatible output (demotes H1 to H2)
 - No system dependencies (pure Python)
 
 ### ✅ Mermaid Diagram Extraction
+
 - Identifies all `mermaid` code blocks in source
 - Generates PNG files or embeds image refs in markdown
 - Two conversion modes:
@@ -25,6 +27,7 @@ diagrams, folder hierarchy, and auto-generated navigation.
   2. **Online Kroki API** (fallback): Free, no registration
 
 ### ✅ Confluence Publishing Framework
+
 - Ready for Confluence REST API integration
 - Template for `ConfluencePublisher` class
 - Supports page hierarchy, attachments, custom spaces
@@ -34,14 +37,19 @@ diagrams, folder hierarchy, and auto-generated navigation.
 ## What Needs to Be Done
 
 ### 1. **Mermaid Conversion (Local)**
+
 Install `@mermaid-js/mermaid-cli` for reliable diagram conversion:
+
 ```bash
 npm install -g @mermaid-js/mermaid-cli
 ```
+
 Then the script will automatically use local `mmdc` instead of online API.
 
 ### 2. **Confluence Authentication**
+
 Set up Confluence API credentials in `confluence_poc.py`:
+
 ```python
 publisher = ConfluencePublisher(
     base_url='https://your-workspace.atlassian.net',
@@ -50,15 +58,18 @@ publisher = ConfluencePublisher(
 )
 ```
 
-Generate API token: https://id.atlassian.com/manage-profile/security/api-tokens
+Generate API token: <https://id.atlassian.com/manage-profile/security/api-tokens>
 
 ### 3. **Install Python Dependencies**
+
 ```bash
 pip install markdown atlassian-python-api
 ```
 
 ### 4. **Implement Full Publishing**
+
 Uncomment the actual API calls in `ConfluencePublisher.publish_page()`:
+
 ```python
 # Currently: just logs what would be published
 # TODO: Replace with actual Confluence REST API calls
@@ -69,16 +80,20 @@ Uncomment the actual API calls in `ConfluencePublisher.publish_page()`:
 ## Usage
 
 ### Test Conversion (No Confluence Credentials Required)
+
 ```bash
 python confluence_poc.py docs/routing/bgp.md --output-dir ./output
 ```
 
 Output:
+
 - `output/output.html` — Confluence-ready HTML
 - `output/diagram_*.png` — Extracted Mermaid diagrams (if mmdc installed)
 
 ### Full Publishing (Requires Setup)
+
 Once credentials are configured:
+
 ```bash
 python confluence_poc.py docs/routing/bgp.md \
   --output-dir ./confluence_out \
@@ -91,7 +106,7 @@ python confluence_poc.py docs/routing/bgp.md \
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────┐
 │  Markdown Files     │
 │  (with Mermaid)     │
@@ -117,16 +132,20 @@ python confluence_poc.py docs/routing/bgp.md \
 ## Content Mapping Strategy
 
 ### Option A: Flatten Hierarchy (Simple)
-```
+
+```text
 docs/routing/bgp.md          → Space: DOC, Title: BGP
 docs/cisco/ios_config.md     → Space: DOC, Title: IOS Configuration
 docs/equinix/fcr_setup.md    → Space: DOC, Title: FCR Setup
 ```
+
 **Pros:** Simple, no parent mapping needed
+
 **Cons:** All pages at same level (harder to navigate)
 
 ### Option B: Mirror Directory Tree (Recommended)
-```
+
+```text
 docs/
 ├── routing/
 │   └── bgp.md              → Parent: "Routing", Title: BGP
@@ -139,6 +158,7 @@ docs/
 Create parent pages for each category (`routing/`, `cisco/`, etc.) and link children.
 
 **Script enhancement needed:**
+
 ```python
 def infer_parent_from_path(markdown_path: str) -> Optional[int]:
     """Map docs/category/ to Confluence parent page ID"""
@@ -170,17 +190,20 @@ def infer_parent_from_path(markdown_path: str) -> Optional[int]:
 ## Next Steps
 
 ### Phase 1: Local Setup (This Week)
+
 - [ ] Install `@mermaid-js/mermaid-cli` locally
 - [ ] Test full diagram conversion pipeline
 - [ ] Verify HTML output in Confluence test space
 
 ### Phase 2: Confluence Integration (Next Week)
+
 - [ ] Set up Confluence API token
 - [ ] Implement `ConfluencePublisher.publish_page()` with atlassian-python-api
 - [ ] Test publishing 3–5 sample pages
 - [ ] Verify link handling and image attachments
 
 ### Phase 3: Automation (Production)
+
 - [ ] CI/CD hook: Auto-publish on `main` branch push
 - [ ] Sync strategy: Update existing pages vs. create new
 - [ ] Monitoring: Log publish success/failures
@@ -208,6 +231,8 @@ python confluence_poc.py docs/theory/bgp_vs_ospf.md \
 # 4. (Optional) Sync entire docs folder
 python confluence_sync.py --source ./docs --space-key DOC --mode replace
 ```
+
+---
 
 ---
 

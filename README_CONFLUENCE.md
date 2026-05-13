@@ -8,6 +8,7 @@ hierarchy and auto-generated navigation.
 ## Quick Start
 
 ### Single Document
+
 ```bash
 uv run python confluence_poc.py docs/routing/bgp.md \
   --publish \
@@ -18,16 +19,18 @@ uv run python confluence_poc.py docs/routing/bgp.md \
 ```
 
 ### Just Convert (No Publish)
+
 ```bash
 uv run python confluence_poc.py docs/theory/bgp_bfd_comparison.md \
   --output-dir ./output \
   --no-convert
 ```
+
 Output: `./output/output.html` (ready for Confluence)
 
 ## Pipeline
 
-```
+```text
 Markdown (.md)
     ↓
 Extract Mermaid diagrams (if present)
@@ -46,6 +49,7 @@ Attach diagrams as images
 ## Credentials
 
 ### Option 1: Command-line Arguments
+
 ```bash
 --confluence-url "https://checkout.atlassian.net"
 --confluence-email "neil.booker@checkout.com"
@@ -53,6 +57,7 @@ Attach diagrams as images
 ```
 
 ### Option 2: Environment Variables (Safer)
+
 ```bash
 export CONFLUENCE_URL="https://checkout.atlassian.net"
 export CONFLUENCE_EMAIL="neil.booker@checkout.com"
@@ -63,7 +68,7 @@ uv run python confluence_poc.py docs/routing/bgp.md --publish
 
 ## Your Space
 
-- **URL:** https://checkout.atlassian.net/wiki/spaces/~5fe0839e642089014165d146
+- **URL:** <https://checkout.atlassian.net/wiki/spaces/~5fe0839e642089014165d146>
 - **Space Key:** `~5fe0839e642089014165d146`
 - **Name:** Neil Charles Booker (personal space)
 
@@ -90,6 +95,7 @@ uv run python confluence_poc.py docs/routing/bgp.md \
 ```
 
 This:
+
 - Publishes `index.md` intro as the parent page
 - Publishes `bgp.md` as a child under it
 - Adds auto-generated "Child pages" list using Confluence's children macro
@@ -122,7 +128,9 @@ npm install -g @mermaid-js/mermaid-cli
 Diagrams auto-convert to PNG (1200px, 2x scale) and attach to pages.
 
 ### To Publish Multiple Docs
+
 Create a batch script:
+
 ```bash
 for file in docs/theory/*.md; do
   uv run python confluence_poc.py "$file" \
@@ -135,7 +143,9 @@ done
 ```
 
 ### To Set Up CI/CD
+
 Add to GitHub Actions or GitLab CI:
+
 ```yaml
 - name: Publish to Confluence
   env:
@@ -167,15 +177,18 @@ Options:
 ## Troubleshooting
 
 ### "Permission denied" error
-- Ensure the API token is valid (check https://id.atlassian.com/manage-profile/security/api-tokens)
+
+- Ensure the API token is valid (check <https://id.atlassian.com/manage-profile/security/api-tokens>)
 - Ensure you have write access to the space
 - Try publishing to your personal space first (low barrier to test)
 
 ### Diagrams show as empty code blocks
+
 - Install mermaid-cli: `npm install -g @mermaid-js/mermaid-cli`
 - Re-run with diagram conversion enabled (don't use `--no-convert`)
 
 ### Markdown not rendering correctly
+
 - Check `.markdownlint-cli2.yaml` for supported syntax
 - Ensure no blank lines inside lists (breaks Markdown parsing)
 - Use `<!-- -->` comments, not `//` for hidden notes

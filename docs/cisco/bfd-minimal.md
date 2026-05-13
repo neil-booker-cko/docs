@@ -5,18 +5,31 @@ time, integrated with BGP for fast failover.
 
 ## Configuration Breakdown
 
+### Step 1: Define a Global BFD Template
+
 ```ios
-interface GigabitEthernet0/0/0
-  bfd interval 300 min_rx 300 multiplier 3
+bfd-template single-hop BFD_STANDARD
+ interval min-tx 300 min-rx 300 multiplier 3
+ no echo
 ```
 
-Configures BFD on the interface:
+Configures BFD parameters for all interfaces:
 
-- **interval 300**: Send BFD packets every 300ms (3.3 per second)
-- **min_rx 300**: Expect to receive packets every 300ms
+- **interval min-tx 300**: Send BFD packets every 300ms (3.3 per second)
+- **min-rx 300**: Expect to receive packets every 300ms
 - **multiplier 3**: Declare link down after 3 missed packets (900ms total)
 
 **Failure detection time:** ~900ms
+
+### Step 2: Apply Template to Interfaces
+
+```ios
+interface GigabitEthernet0/0/0
+  bfd template BFD_STANDARD
+```
+
+**Advantage:** Change BFD timers once in the template, and all interfaces update
+automatically. No need to edit each interface individually.
 
 ```ios
 router bgp 65000
@@ -33,23 +46,30 @@ timers.
 
 ### Change Interface
 
-Replace `GigabitEthernet0/0/0` with your interface.
+Replace `GigabitEthernet0/0/0` with your interface. All interfaces using
+`bfd template BFD_STANDARD` will inherit the same timers.
 
 ### Change BFD Timers
 
-For faster detection (aggressive):
+Modify the template definition to change all interfaces at once:
+
+**For faster detection (aggressive):**
 
 ```ios
-bfd interval 100 min_rx 100 multiplier 3
+bfd-template single-hop BFD_STANDARD
+ interval min-tx 100 min-rx 100 multiplier 3
 ! Detects failure in ~300ms
 ```
 
-For slower detection (conservative, less CPU):
+**For slower detection (conservative, less CPU):**
 
 ```ios
-bfd interval 1000 min_rx 1000 multiplier 3
+bfd-template single-hop BFD_STANDARD
+ interval min-tx 1000 min-rx 1000 multiplier 3
 ! Detects failure in ~3 seconds
 ```
+
+All interfaces using this template automatically get the new timers.
 
 ### Use with OSPF
 

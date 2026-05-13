@@ -260,7 +260,7 @@ execute ping 10.10.1.1
 
 **Time:** < 2 minutes
 
-**Example: Revert routing change**
+#### Example: Revert routing change
 
 ```ios
 ! Method 1: Copy previous running config from startup
@@ -281,7 +281,7 @@ show ip bgp summary
 
 **Time:** 5-10 minutes (device reboot required)
 
-**Example: Revert IOS-XE upgrade**
+#### Example: Revert IOS-XE upgrade
 
 ```ios
 ! Boot from previous IOS image
@@ -313,13 +313,14 @@ execute restore config ftp myconfig-before-change 10.0.1.5 admin password
 ### During Change Window
 
 **Notifications to:**
+
 - On-call engineer (PagerDuty)
 - Infrastructure team (email/Slack)
 - Application owners if affecting services (email)
 
 **Message template:**
 
-```
+```text
 MAINTENANCE WINDOW - NETWORK CHANGE
 
 Device: ELD7-CSW-01
@@ -336,7 +337,7 @@ Status: [ONGOING] / [COMPLETED] / [ROLLED BACK]
 
 **Message template:**
 
-```
+```text
 MAINTENANCE WINDOW - COMPLETED
 
 Device: ELD7-CSW-01

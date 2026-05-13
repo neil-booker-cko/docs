@@ -87,13 +87,24 @@ BFD enables sub-second convergence and is strongly recommended for critical link
 
 **Configuration (BFD preferred):**
 
+First, define a global BFD template (see [BFD Standards](bfd-standards.md)):
+
+```ios
+bfd-template single-hop BFD_STANDARD
+ interval min-tx 300 min-rx 300 multiplier 3
+ no echo
+!
+```
+
+Then apply to interfaces:
+
 ```ios
 interface GigabitEthernet0/0
  ip ospf hello-interval 30
  ip ospf dead-interval 120
  ip ospf retransmit-interval 5
  ip ospf fall-over bfd
- bfd interval 300 min_rx 300 multiplier 3
+ bfd template BFD_STANDARD
 !
 ```
 
