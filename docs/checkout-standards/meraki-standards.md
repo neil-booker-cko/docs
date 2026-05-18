@@ -104,7 +104,7 @@ Group Policies allow per-SSID or per-client firewall rules. Standard policy stru
 ### Access Control Lists (ACL)
 
 | Rule | Direction | Source | Destination | Action |
-| --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | Block Local Network | All clients | Any | 10.0.0.0/8 | Deny |
 | Allow DNS | All clients | Any | 8.8.8.8, 8.8.4.4 | Allow |
 | Allow Internet | All clients | Any | 0.0.0.0/0 except 10.0.0.0/8 | Allow |
@@ -182,7 +182,7 @@ Group Policies allow per-SSID or per-client firewall rules. Standard policy stru
 ### Access Control Lists
 
 | Rule | Type | Source | Destination | Action |
-| --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | Allow VLAN routing | L3 | VLAN 10 (Data) | VLAN 20 (Management) | Deny |
 | Allow Management VLAN | L3 | VLAN 20 (Mgmt) | All VLANs | Allow |
 | Block P2P | L4 | Any | Any | Deny (BitTorrent, etc.) |

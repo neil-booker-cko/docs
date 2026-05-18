@@ -49,41 +49,42 @@ Block write access and sensitive system information.
 
 ## SNMPv3 Authentication & Encryption by Platform
 
-Different platforms support different authentication and encryption algorithms. Use the most secure
-option available for each platform. **Preferred: SHA for authentication, AES-128 (minimum) or
-AES-256 (recommended) for encryption.**
+SNMPv3 uses two separate keys: an **auth key** (HMAC for message integrity) and a **priv key**
+(payload encryption). Both algorithm and key must match exactly between device and NMS — a mismatch
+causes silent authentication failure. LogicMonitor (the NMS) must be configured with the same
+algorithm and credentials as each polled device.
 
-| Platform | Supported Authentication | Supported Encryption |
-| --- | --- | --- |
-| **Cisco IOS-XE (17.6, 17.9, 17.12)** | MD5, SHA | DES, 3DES, AES-128, AES-192, AES-256 |
-| **Cisco IOS (15.2(7)E)** | MD5, SHA | DES, 3DES, AES-128, AES-192, AES-256 |
-| **FortiOS** | MD5, SHA, SHA224, SHA256, SHA384, SHA512 | DES, AES-128, AES-256 |
-| **Meraki** | MD5, SHA | DES, AES-128 |
-| **APC UPS/PDU** | MD5, SHA | DES, AES-128 |
-| **Perle Serial/Console** | MD5, SHA | DES, AES-128 |
-| **Palo Alto** | SHA | AES-128 |
-| **UniFi** | SHA | AES-128 |
-| **Vertiv Avocent** | MD5, SHA | DES, AES-128 |
-| **SNMPd (Linux)** | MD5, SHA | DES, AES-128 |
-| **Datadog Agent** | MD5, SHA, SHA224, SHA256, SHA384, SHA512 | DES, AES, AES-192, AES-256 |
-| **LogicMonitor** | MD5, SHA, SHA224, SHA256, SHA384, SHA512 | DES, 3DES, AES-128, AES-192, AES-256 |
+**SHA naming note:** In IOS-XE CLI, `auth sha` = SHA-1 (HMAC-SHA-96, RFC 3414). Stronger variants
+require explicit keywords: `auth sha256`, `auth sha384`, `auth sha512` (IOS-XE 16.6+). In FortiOS,
+`set auth-proto sha` = SHA-1; `sha256`/`sha384`/`sha512` are separate values.
 
-### Selection Guidance
+| Platform | Auth Options | Priv Options | **Checkout Standard** | Notes |
+| --- | --- | --- | --- | --- |
+| **Cisco IOS-XE (17.x)** | MD5, SHA-1, SHA-256, SHA-384, SHA-512 | DES, 3DES, AES-128, AES-192, AES-256 | **SHA-256 + AES-256** | `auth sha256 priv aes 256` |
+| **Cisco IOS (15.2(7)E)** | MD5, SHA-1 | DES, 3DES, AES-128, AES-192, AES-256 | **SHA-1 + AES-128** | SHA-256 not available in classic IOS |
+| **FortiOS** | MD5, SHA-1, SHA-224, SHA-256, SHA-384, SHA-512 | DES, AES-128, AES-256 | **SHA-256 + AES-256** | `auth-proto sha256`, `priv-proto aes256` |
+| **LogicMonitor (NMS)** | MD5, SHA-1, SHA-256, SHA-512 | DES, 3DES, AES-128, AES-256 | **Match device profile** | Two profiles required — see below |
+| **Vertiv ACS8000 (2.28.3+)** | MD5, SHA-1, SHA-256, SHA-512 | DES, AES-128, AES-192, AES-256 | **SHA-256 + AES-256** | SHA-256/AES-256 added in firmware 2.28.3 |
+| **Perle Console Server** | MD5, SHA-1 | DES, AES-128 | **SHA-1 + AES-128** | Platform ceiling; no SHA-256 available |
+| **Meraki** | MD5, SHA-1 | DES, AES-128 | **SHA-1 + AES-128** | Platform ceiling; no SHA-256 available |
+| **Palo Alto (PAN-OS)** | SHA-1 | AES-128, AES-192, AES-256 | **SHA-1 + AES-256** | SHA-256 auth not confirmed in PAN-OS docs |
+| **UniFi** | SHA-1 | AES-128 | **SHA-1 + AES-128** | Single password used for both auth and priv |
+| **APC NMC3 (UPS + PDU)** | MD5, SHA-1, SHA-256 | DES, AES-128, AES-256 | **SHA-256 + AES-256** | UPS and PDU use same NMC3 platform. SHA-256/AES-256 confirmed in Sep 2025 firmware docs |
 
-**For Cisco IOS-XE (primary platform):**
+**Do not use:** MD5 (auth), DES or 3DES (priv) on any platform — all are cryptographically broken.
 
-- Authentication: **SHA** (recommended over MD5)
-- Encryption: **AES-128** (minimum) or **AES-256** (recommended)
+### LogicMonitor Credential Profiles
 
-**For FortiOS:**
+Because Meraki and Vertiv are capped at SHA-1 + AES-128, LogicMonitor must maintain two SNMP
+credential profiles. Assign devices to the appropriate profile:
 
-- Authentication: **SHA256** or **SHA512** (if supported by remote SNMP manager)
-- Encryption: **AES-256** (recommended over AES-128)
+| LM Profile | Platforms | Auth | Priv |
+| --- | --- | --- | --- |
+| `SNMP_STRONG` | Cisco IOS-XE, FortiOS, Vertiv ACS8000 (fw 2.28.3+), APC NMC3 | SHA-256 | AES-256 |
+| `SNMP_COMPAT` | Cisco IOS (classic), Meraki, Perle | SHA-1 | AES-128 |
 
-**For other platforms (Meraki, APC, Perle, etc.):**
-
-- Authentication: **SHA** (only secure option; avoid MD5)
-- Encryption: **AES-128** (use AES over DES)
+Configure profiles under **Settings > Credentials > SNMPv3** in LogicMonitor. Apply via device
+properties or device group inheritance.
 
 ---
 
@@ -104,7 +105,7 @@ ip access-list standard ACL_SNMP_IN
  deny any
 !
 snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
-snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha256 MyAuthPass123 priv aes 256 MyPrivPass456
 snmp-server source-interface all 10.0.1.10
 !
 ```
@@ -143,7 +144,7 @@ snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
 ### Step 4: Create SNMPv3 User
 
 ```ios
-snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha256 MyAuthPass123 priv aes 256 MyPrivPass456
 !
 ```
 
@@ -180,7 +181,7 @@ ip access-list standard ACL_SNMP_IN
  deny any
 !
 snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
-snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha256 MyAuthPass123 priv aes 256 MyPrivPass456
 snmp-server source-interface all 10.0.1.10
 !
 ```
@@ -195,14 +196,18 @@ snmp-server source-interface all 10.0.1.10
 config system snmp user
     edit "nms_monitor"
         set security-level auth-priv
-        set auth-proto sha
+        set auth-proto sha256
         set auth-pwd MyAuthPass123
-        set priv-proto aes
+        set priv-proto aes256
         set priv-pwd MyPrivPass456
-        set permission read-only
+        set trap-status disable
+        set ha-direct enable
     next
 end
 ```
+
+**Note:** `set auth-proto sha` configures SHA-1 (not SHA-256) — use `sha256` explicitly. `set
+priv-proto aes` configures AES-128 — use `aes256` for AES-256.
 
 ### SNMP Community (Legacy, if needed)
 
@@ -217,6 +222,217 @@ config system snmp community
     next
 end
 ```
+
+---
+
+## Cisco IOS (Classic) SNMP Configuration
+
+Cisco IOS 15.2(7)E (used on Catalyst 2960X and similar fixed-configuration switches) does not
+support SHA-256 authentication — SHA-1 and AES-128 are the strongest available options.
+
+```ios
+ip access-list standard ACL_SNMP_IN
+ permit 10.13.1.147
+ permit 10.13.2.116
+ permit 10.13.2.147
+ deny any
+!
+snmp-server view All_MIB_View .1 included
+snmp-server group SNMP_RO_GRP v3 auth read All_MIB_View access ACL_SNMP_IN
+snmp-server user snmp_monitor SNMP_RO_GRP v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server location "<DC>-<RACK>-<POSITION>"
+snmp-server contact "CKO Network Services"
+snmp ifindex persist
+!
+```
+
+Assign this device to the `SNMP_COMPAT` profile in LogicMonitor (SHA-1 + AES-128).
+
+---
+
+## LogicMonitor SNMP Configuration
+
+LogicMonitor polls devices using SNMPv3 credentials set as device properties — either directly on
+a device or inherited from a device group. Maintain two credential profiles to match the two
+platform capability tiers.
+
+### Device Properties
+
+| LM Property | Purpose | Example Value |
+| --- | --- | --- |
+| `snmp.security` | SNMPv3 username | `snmp_monitor` |
+| `snmp.auth` | Authentication protocol | `SHA256` or `SHA` |
+| `snmp.authToken` | Authentication password | `<AUTH_PASSWORD>` |
+| `snmp.priv` | Encryption protocol | `AES256` or `AES` |
+| `snmp.privToken` | Encryption password | `<PRIV_PASSWORD>` |
+| `snmp.version` | SNMP version (auto-detected) | `v3` |
+| `snmp.port` | UDP port if non-standard | `161` (default) |
+
+**Version auto-detection:** `snmp.version` is set automatically on first discovery to whichever
+version responds. It can be overridden manually; if new credentials fail, LM falls back to the
+previous working setting.
+
+**Context properties** (`snmp.contextName`, `snmp.contextEngineID`) are available for SNMPv3
+context-aware queries but are not in use — leave unset.
+
+### Credential Profiles
+
+Navigate to **Settings > Credentials > SNMPv3** and create two profiles:
+
+**Profile: SNMP_STRONG** (for Cisco IOS-XE and FortiOS):
+
+| Field | Value |
+| --- | --- |
+| `snmp.security` | `snmp_monitor` |
+| `snmp.auth` | `SHA256` |
+| `snmp.authToken` | `<AUTH_PASSWORD>` |
+| `snmp.priv` | `AES256` |
+| `snmp.privToken` | `<PRIV_PASSWORD>` |
+
+**Profile: SNMP_COMPAT** (for Cisco IOS classic, Meraki, Perle — SHA-256 not available):
+
+| Field | Value |
+| --- | --- |
+| `snmp.security` | `snmp_monitor` |
+| `snmp.auth` | `SHA` |
+| `snmp.authToken` | `<AUTH_PASSWORD>` |
+| `snmp.priv` | `AES` |
+| `snmp.privToken` | `<PRIV_PASSWORD>` |
+
+Assign profiles at the device group level so devices inherit automatically. Override at device
+level only where a device uses non-standard credentials.
+
+---
+
+## Vertiv ACS8000 SNMP Configuration
+
+Vertiv ACS8000 running firmware 2.28.3 or later supports SHA-256 and AES-256. Configure via
+the web GUI — CLI syntax for SNMPv3 on this firmware has not been verified and should be
+confirmed against the device before use.
+
+**Web GUI:** Network > SNMP > SNMPv3 Users > Add
+
+| Field | Value |
+| --- | --- |
+| Username | `snmp_monitor` |
+| Authentication Protocol | SHA-256 |
+| Authentication Password | `<AUTH_PASSWORD>` |
+| Privacy Protocol | AES-256 |
+| Privacy Password | `<PRIV_PASSWORD>` |
+| Access | Read Only |
+
+**Restrict SNMP source:** Network > SNMP > Access Control — permit utility server IPs only
+(10.13.1.147, 10.13.2.116, 10.13.2.147).
+
+Assign to the `SNMP_STRONG` profile in LogicMonitor.
+
+---
+
+## Perle Console Server SNMP Configuration
+
+Perle console servers are limited to SHA-1 and AES-128 — no SHA-256 available.
+
+```text
+set snmp location <LOCATION>
+set snmp contact <CONTACT>
+
+set snmp readonly user <USERNAME>
+set snmp v3-security type readonly security-level auth/priv
+set snmp v3-security type readonly auth-algorithm sha1
+set snmp v3-security type readonly privacy-algorithm aes
+set snmp v3-security type readonly auth-password
+set snmp v3-security type readonly privacy-password
+```
+
+Passwords are prompted interactively — not set inline.
+
+Assign to the `SNMP_COMPAT` profile in LogicMonitor.
+
+---
+
+## Meraki SNMP Configuration
+
+Meraki SNMPv3 is configured organisation-wide in the Meraki Dashboard and is limited to SHA-1
+and AES-128.
+
+**Dashboard:** Organization > Settings > SNMP
+
+| Field | Value |
+| --- | --- |
+| SNMP Version | SNMPv3 |
+| Username | `snmp_monitor` |
+| Auth Mode | SHA |
+| Auth Password | `<AUTH_PASSWORD>` |
+| Privacy Mode | AES128 |
+| Privacy Password | `<PRIV_PASSWORD>` |
+
+**Access restriction:** Meraki does not support SNMP source ACLs at the device level. Restrict
+access at the network perimeter — permit UDP/161 only from utility server IPs.
+
+Assign Meraki devices to the `SNMP_COMPAT` profile in LogicMonitor.
+
+---
+
+## Datadog SNMP Agent Configuration
+
+Datadog polls devices via the Datadog Agent running on a utility server. Configuration is in
+`/etc/datadog-agent/conf.d/snmp.d/conf.yaml` (permissions: `644`, owner: `dd-agent`).
+
+```bash
+instances:
+  - ip_address: "<IP_ADDRESS>"
+    user: "snmp_monitor"
+    authProtocol: SHA256
+    authKey: "<AUTH_PASSWORD>"
+    privProtocol: AES256
+    privKey: "<PRIV_PASSWORD>"
+```
+
+**Profile additions:** The `_base.yaml` profile (`/etc/datadog-agent/conf.d/snmp.d/profiles/`) should
+include `sysContact` and `sysLocation` metric tags:
+
+```bash
+metric_tags:
+  - OID: 1.3.6.1.2.1.1.4.0
+    symbol: sysContact
+    tag: snmp_contact
+  - OID: 1.3.6.1.2.1.1.5.0
+    symbol: sysName
+    tag: snmp_host
+  - OID: 1.3.6.1.2.1.1.6.0
+    symbol: sysLocation
+    tag: snmp_location
+```
+
+Restart the Datadog Agent after any config change: `systemctl restart datadog-agent`.
+
+---
+
+## SNMPd (Linux) Configuration
+
+Linux hosts running `snmpd` (net-snmp) are limited to SHA-1 and AES-128 on most distributions.
+SHA-256/AES-256 requires net-snmp 5.8+.
+
+**Create SNMPv3 user (run before starting snmpd):**
+
+```bash
+net-snmp-config --create-snmpv3-user -ro \
+  -A <AUTH_PASSWORD> -a SHA \
+  -X <PRIV_PASSWORD> -x AES \
+  snmp_monitor
+```
+
+**`/etc/snmp/snmpd.conf` — add or update:**
+
+```bash
+sysLocation    <LOCATION>
+sysContact     <CONTACT>
+agentaddress   udp:161,udp6:[::1]:161
+```
+
+Restart snmpd after changes: `systemctl restart snmpd`.
+
+Assign Linux hosts to the `SNMP_COMPAT` profile in LogicMonitor.
 
 ---
 
@@ -265,7 +481,7 @@ end
 
 ```bash
 # Test SNMPv3 connectivity
-snmpwalk -v3 -u nms_monitor -l authPriv -a SHA -A MyAuthPass123 -x AES -X MyPrivPass456 10.0.1.10 .1.3.6.1.2.1.1
+snmpwalk -v3 -u nms_monitor -l authPriv -a SHA-256 -A MyAuthPass123 -x AES-256 -X MyPrivPass456 10.0.1.10 .1.3.6.1.2.1.1
 
 # Expected output (sysDescr):
 SNMPv3-User: nms_monitor
@@ -277,10 +493,10 @@ System Description: Cisco IOS XE 17.x...
 
 ```bash
 # Should succeed (read)
-snmpget -v3 -u nms_monitor -l authPriv -a SHA -A MyAuthPass123 -x AES -X MyPrivPass456 10.0.1.10 1.3.6.1.2.1.1.1.0
+snmpget -v3 -u nms_monitor -l authPriv -a SHA-256 -A MyAuthPass123 -x AES-256 -X MyPrivPass456 10.0.1.10 1.3.6.1.2.1.1.1.0
 
 # Should fail (write)
-snmpset -v3 -u nms_monitor -l authPriv -a SHA -A MyAuthPass123 -x AES -X MyPrivPass456 10.0.1.10 1.3.6.1.2.1.1.5.0 s "New-Name"
+snmpset -v3 -u nms_monitor -l authPriv -a SHA-256 -A MyAuthPass123 -x AES-256 -X MyPrivPass456 10.0.1.10 1.3.6.1.2.1.1.5.0 s "New-Name"
 ```
 
 ---

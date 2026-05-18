@@ -152,6 +152,27 @@ next
 end
 ```
 
+### Perle Console Server (SNTP)
+
+Perle uses SNTP (a subset of NTP). It supports only two servers, which must be pre-registered
+in the host table. NTP authentication is supported but requires uploading a key file separately.
+
+```text
+set timezone name <TIMEZONE> offset <OFFSET>
+set summertime name <SUMMERTIME_ZONE> recurring <SUMMERTIME_DETAILS>
+
+add host <NTP_SERVER_1_NAME> <NTP_SERVER_1_IP>
+add host <NTP_SERVER_2_NAME> <NTP_SERVER_2_IP>
+add sntp server-1 <NTP_SERVER_1_NAME>
+add sntp server-2 <NTP_SERVER_2_NAME>
+set sntp mode unicast version 4
+```
+
+Verify with: `show time` and `show sntp-info`
+
+**Note:** The `internet address` field in `show sntp-info` output may display incorrectly — use
+`show time` to confirm actual synchronisation status.
+
 ### Servers and Workstations (Optional)
 
 Servers may synchronize to local FortiGate or directly to external pools:

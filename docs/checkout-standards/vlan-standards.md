@@ -157,8 +157,10 @@ interface GigabitEthernet0/2
 ```ios
 interface GigabitEthernet0/48
  switchport mode trunk
+ switchport nonegotiate
  switchport trunk native vlan 999
  switchport trunk allowed vlan 501-599,601-699,701,801-899,901-902,1101,2101
+ spanning-tree portfast trunk
  no shutdown
 !
 ```
@@ -168,8 +170,10 @@ interface GigabitEthernet0/48
 ```ios
 interface GigabitEthernet0/48
  switchport mode trunk
+ switchport nonegotiate
  switchport trunk native vlan 999
  switchport trunk allowed vlan 10,12,20,22,30,32,34,40,100,200,300,901-902
+ spanning-tree portfast trunk
  no shutdown
 !
 ```

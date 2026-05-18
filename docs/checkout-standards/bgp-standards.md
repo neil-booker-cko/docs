@@ -294,7 +294,70 @@ up.
 
 ## BGP Communities
 
-TODO: Define standard community values
+BGP communities allow traffic engineering decisions to be signalled to cloud providers and can
+influence how providers propagate and preference your routes. Cloud providers also tag inbound
+routes with communities indicating route origin scope.
+
+**Standard:** Use Local Preference (inbound) and AS Path Prepending (outbound) for all traffic
+engineering. Cloud provider communities are available but are provider-specific, may change without
+notice, and add operational complexity — use only when Local Preference / AS Path Prepending cannot
+achieve the required outcome.
+
+### Cloud Provider Communities
+
+#### AWS Direct Connect
+
+AWS tags routes advertised **to you** with communities indicating origin scope:
+
+| Community | Meaning |
+| --- | --- |
+| `7224:8100` | Route originates from the same AWS Region as the Direct Connect connection |
+| `7224:8200` | Route originates from the same continent as the Direct Connect location |
+| *(no tag)* | Global route (all other regions) |
+
+You can tag routes advertised **to AWS** to control propagation scope:
+
+| Community | Effect |
+| --- | --- |
+| `7224:9100` | Advertise only to the local AWS Region |
+| `7224:9200` | Advertise to all AWS Regions within the same continent |
+| `7224:9300` | Advertise to all public AWS Regions globally |
+
+You can influence AWS-side local preference by tagging routes advertised to AWS:
+
+| Community | AWS Local Preference |
+| --- | --- |
+| `7224:7100` | 100 (low) |
+| `7224:7200` | 200 (medium / default) |
+| `7224:7300` | 300 (high) |
+
+#### Azure ExpressRoute
+
+Azure (ASN `12076`) tags inbound routes with communities indicating originating region and service
+type. Region-specific and service-specific community values are extensive — refer to the Azure
+ExpressRoute BGP communities documentation for current values.
+
+#### GCP Cloud Interconnect
+
+GCP supports BGP community tagging on Dedicated and Partner Interconnect for traffic engineering.
+Refer to GCP documentation for current community values.
+
+### Why Local Preference and AS Path Prepending Are Preferred
+
+| Method | Direction | Notes |
+| --- | --- | --- |
+| Local Preference | Inbound (cloud → on-prem) | Under your control; consistent across all providers |
+| AS Path Prepending | Outbound (on-prem → cloud) | Standard BGP; provider-agnostic; predictable |
+| Cloud Communities | Both | Provider-specific; subject to change; adds complexity |
+
+- **Consistency:** Local Pref and AS Path Prepending work identically across AWS, Azure, GCP, and
+    Equinix — one model for all providers
+- **Control:** Community behaviour depends on the provider honouring them correctly; Local Pref and
+    AS Path Prepending are always within your control
+- **Simplicity:** Community tagging requires outbound route-maps on your side and correct
+    provider-side handling — more moving parts during incidents
+- **Auditability:** Local Pref changes are visible in your route-maps; community-based manipulation
+    is harder to trace under pressure
 
 ---
 

@@ -24,10 +24,10 @@ ip ssh version 2
 ip ssh time-out 60
 ip ssh authentication-retries 3
 ip ssh server algorithm authentication keyboard
-ip ssh server algorithm kex ecdh-sha2-nistp521 ecdh-sha2-nistp384
+ip ssh server algorithm kex ecdh-sha2-nistp521 ecdh-sha2-nistp384 ecdh-sha2-nistp256
 ip ssh server algorithm hostkey rsa-sha2-512 rsa-sha2-256
 ip ssh server algorithm encryption aes256-gcm aes256-ctr
-ip ssh server algorithm mac hmac-sha2-512 hmac-sha2-256
+ip ssh server algorithm mac hmac-sha2-512-etm@openssh.com hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-256
 ip ssh server algorithm publickey ecdsa-sha2-nistp521 ecdsa-sha2-nistp384
 ```
 
@@ -105,7 +105,7 @@ ip access-list standard ACL_SNMP_IN
 !
 snmp-server group <SNMP_GROUP> v3 priv read All_MIB_View access ACL_SNMP_IN
 snmp-server view All_MIB_View iso included
-snmp-server user <SNMP_USER> <SNMP_GROUP> v3 auth sha <AUTH_PASS> priv aes 128 <PRIV_PASS>
+snmp-server user <SNMP_USER> <SNMP_GROUP> v3 auth sha256 <AUTH_PASS> priv aes 256 <PRIV_PASS>
 snmp-server location <DC>-<RACK>-<POSITION>
 snmp-server contact "CKO Network Services"
 ```
@@ -222,9 +222,9 @@ end
 
 ```fortios
 config system global
-    set ssh-enc-algo chacha20-poly1305@openssh.com aes256-ctr aes256-gcm@openssh.com
-    set ssh-kex-algo diffie-hellman-group-exchange-sha256 curve25519-sha256@libssh.org ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521
-    set ssh-mac-algo hmac-sha2-256 hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-512-etm@openssh.com
+    set ssh-enc-algo chacha20-poly1305@openssh.com aes256-gcm@openssh.com aes256-ctr
+    set ssh-kex-algo curve25519-sha256 curve25519-sha256@libssh.org ecdh-sha2-nistp521 ecdh-sha2-nistp384 ecdh-sha2-nistp256 diffie-hellman-group-exchange-sha256
+    set ssh-mac-algo hmac-sha2-512-etm@openssh.com hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-256
 end
 ```
 
@@ -315,9 +315,9 @@ config system snmp user
     edit <SNMP_USER>
         set trap-status disable
         set security-level auth-priv
-        set auth-proto sha
+        set auth-proto sha256
         set auth-pwd ENC <AUTH_PASSWORD>
-        set priv-proto aes
+        set priv-proto aes256
         set priv-pwd ENC <PRIV_PASSWORD>
         set ha-direct enable
     next
@@ -381,8 +381,8 @@ See [Security Hardening Standards](security-hardening.md)
 
 | Device Type | Management IP | VLAN | VRF/VDOM |
 | --- | --- | --- | --- |
-| Core Router | `10.x.x.1` | 999 | Mgmt |
-| Firewall | `10.x.x.2` | 999 | Mgmt (or root VDOM) |
+| Core Router | `10.x.x.1` | 701 | Mgmt |
+| Firewall | `10.x.x.2` | 701 | Mgmt (or root VDOM) |
 
 ### Backup and Recovery
 

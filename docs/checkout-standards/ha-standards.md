@@ -137,15 +137,17 @@ interface GigabitEthernet0/0
 
 | Parameter | Standard | Notes |
 | --- | --- | --- |
-| HA Mode | Active-Standby | Primary device is active; secondary is standby |
-| HA Priority | Primary: 100, Secondary: 50 | Higher = more preferred |
-| Monitor Interval | 1 second | Heartbeat check; sub-second failover |
-| Failover Hold Time | 0 seconds | Immediate failover on detection |
-| Heartbeat Interfaces | Dedicated mgmt port | Out-of-band (not data path) |
-| Session Sync | Enabled | Replicate active sessions to standby |
-| Configuration Sync | Enabled | Keep standby config in sync with active |
-| Override | Disabled | Standby cannot override priority |
-| Password | Sync'd via HTTPS | 16+ chars, credential manager |
+| HA Mode | `a-p` (Active-Passive) | Primary device is active; secondary is standby |
+| Group ID | Unique per cluster | Distinguishes clusters on the same network segment |
+| Group Name | `<SITE>-FW-Cluster` | Matches device naming convention |
+| HA Priority | Primary: 200–250, Secondary: 50 | Higher = more preferred |
+| Heartbeat Interfaces | Two dedicated interfaces with priorities | Primary path higher priority; secondary path backup |
+| Session Pickup | Enabled | Replicate active sessions to standby |
+| Configuration Sync | Automatic | Standby mirrors active config; no explicit config required |
+| Route TTL / Wait / Hold | 60 seconds each | Allow routing to stabilise after failover |
+| Override | Disabled | Standby does not preempt active after recovery |
+| Password | 16+ chars, credential manager | Never documented in source control |
+| Monitored Interfaces | All uplinks | Failure on any monitored interface triggers failover |
 
 ### FortiGate HA Configuration Example
 
@@ -153,58 +155,132 @@ interface GigabitEthernet0/0
 
 ```fortios
 config system ha
-    set mode active-passive
-    set group-name "FW-HA-Primary"
-    set priority 100
-    set password "YourSecureHAPassword123!"
-    set monitor-interfaces enable
-    set ha-eth-type dedicated
-    set ha-eth-port port1
-    set hb-interval 1
-    set failover-hold-time 0
-    set session-sync enable
-    set config-sync enable
+    set group-id <CLUSTER_ID>
+    set group-name "<SITE>-FW-Cluster"
+    set mode a-p
+    set hbdev "ha" 150 "port8" 100
+    set route-ttl 60
+    set route-wait 60
+    set route-hold 60
+    set session-pickup enable
+    set ha-mgmt-status enable
+    config ha-mgmt-interfaces
+        edit 1
+            set interface "mgmt"
+            set gateway <MGMT_GATEWAY>
+        next
+    end
     set override disable
-next
+    set priority 250
+    set monitor "<UPLINK_1>" "<UPLINK_2>"
+    set password "<HA_PASSWORD>"
 end
 ```
 
-**Secondary (Standby):**
-
-```fortios
-config system ha
-    set mode active-passive
-    set group-name "FW-HA-Primary"
-    set priority 50
-    set password "YourSecureHAPassword123!"
-    set monitor-interfaces enable
-    set ha-eth-type dedicated
-    set ha-eth-port port1
-    set hb-interval 1
-    set failover-hold-time 0
-    set session-sync enable
-    set config-sync enable
-    set override disable
-next
-end
-```
+**Secondary (Standby):** identical config except `set priority 50`.
 
 ### Monitored Interfaces
 
-**What to monitor:** Each uplink interface (WAN1, WAN2, DX, ER, etc.)
+Include all uplinks — WAN, Direct Connect, ExpressRoute, and any transit interfaces. Failure on
+any monitored interface triggers failover to the standby device.
 
 ```fortios
 config system ha
-    edit "port1"
-        set monitor-interface enable
-    next
-    edit "port3"
-        set monitor-interface enable
+    set monitor "bond0" "port1" "x1" "x2"
+end
+```
+
+If a monitored interface goes down → failover to standby.
+
+### FortiGate HA: Management, SNMP, and NetFlow
+
+#### Per-Device Management Interfaces
+
+The cluster IP is served by the active device only — the standby is unreachable via the cluster
+IP until failover. For independent management and monitoring of each node, configure a dedicated
+management interface with a unique IP per device:
+
+```fortios
+config system ha
+    set ha-mgmt-status enable
+    config ha-mgmt-interfaces
+        edit 1
+            set interface "mgmt"
+            set gateway 10.x.x.1
+        next
+    end
+end
+```
+
+The IP on the management interface itself is configured per-unit (not synced between members),
+so each device retains its own address regardless of cluster state. Set these IPs individually
+on each physical device before joining the cluster.
+
+#### SNMP
+
+**Standard:** Monitor each HA member by its individual management IP, not only the cluster IP.
+Querying only the cluster IP gives visibility into the active node only — the standby is
+invisible until failover.
+
+- Enable `ha-direct enable` on the SNMP user — without this, queries to a standby node's
+  management IP are proxied through the active device rather than answered directly
+- Enable `append-index enable` in `system snmp sysinfo` — appends the HA member index to
+  `sysName`, allowing the collector to distinguish which node it is talking to
+- Add both node management IPs to LogicMonitor as separate device entries using the
+  SNMP_STRONG profile
+- The cluster IP may also be monitored, but does not substitute for per-node monitoring
+
+```fortios
+config system snmp sysinfo
+    set status enable
+    set description "<DEVICE_MODEL>"
+    set contact-info "CKO Network Services"
+    set location "<DC>-<RACK>"
+    set append-index enable
+end
+
+config system snmp user
+    edit "<SNMP_USER>"
+        set trap-status disable
+        set ha-direct enable
+        unset events
+        set security-level auth-priv
+        set auth-proto sha256
+        set auth-pwd ENC <AUTH_PASSWORD>
+        set priv-proto aes256
+        set priv-pwd ENC <PRIV_PASSWORD>
     next
 end
 ```
 
-If monitored interface goes down → failover to standby.
+The SNMP user config in [Equipment Configuration](equipment-config.md) and
+[SNMP Standards](snmp-standards.md) also includes `set ha-direct enable`.
+
+#### NetFlow
+
+**Standard:** NetFlow is generated by the active device only. After failover, the newly active
+device begins sending flows — source IP changes to the new active device's management IP.
+
+- Set `source-ip` to the device's own management interface IP so flows are identifiable per node
+- Configure the NetFlow collector to accept flows from both node management IPs
+- There is no cluster-level NetFlow source; do not rely on a single source IP being stable
+
+```fortios
+config system netflow
+    set active-flow-timeout 60
+    set inactive-flow-timeout 10
+    set template-tx-timeout 300
+    config collectors
+        edit 1
+            set collector-ip "<NETFLOW_COLLECTOR_IP>"
+            set source-ip "<THIS_NODE_MGMT_IP>"
+        next
+    end
+end
+```
+
+`source-ip` must be set individually on each node (it is not synced by HA config sync) to the
+node's own management interface IP.
 
 ---
 
@@ -337,14 +413,25 @@ diagnose high-availability reclaim
 
 ## HA Pair Examples
 
+### Device Naming Convention
+
+HA pairs use the same base name with an `A` or `B` suffix to identify each member:
+
+- **A** — primary/active member
+- **B** — secondary/standby member
+
+Example: `ELD7-CSW-01A` and `ELD7-CSW-01B` form one HA pair.
+
+See [Naming Conventions](naming-conventions.md) for the full device naming standard.
+
 ### Example 1: Router HA (Cisco IOS-XE)
 
 **Topology:** Two Cisco Catalyst 9200 routers, HSRP v2
 
 | Device | Role | IP | Priority | Notes |
 | --- | --- | --- | --- | --- |
-| ELD7-CSW-01 | Active | 10.0.1.10 | 110 | Primary (Dublin datacenter) |
-| ELD7-CSW-02 | Standby | 10.0.1.11 | 100 | Secondary (same datacenter) |
+| ELD7-CSW-01A | Active | 10.0.1.10 | 110 | Primary (Dublin datacenter) |
+| ELD7-CSW-01B | Standby | 10.0.1.11 | 100 | Secondary (same datacenter) |
 | Virtual IP | N/A | 10.0.1.1 | N/A | HSRP VIP (default gateway) |
 
 ### Example 2: Firewall HA (FortiGate)

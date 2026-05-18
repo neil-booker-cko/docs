@@ -98,10 +98,10 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Notes |
 | --- | --- | --- | --- | --- |
-| MR44 | Current/N-1| (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR46 | Current/N-1| (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR76 | Current| (auto-update) | Active | Latest model; no announced EOL |
-| CW9164I | Current/N-1| (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
+| MR44 | Current/N-1 | (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR46 | Current/N-1 | (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR76 | Current | (auto-update) | Active | Latest model; no announced EOL |
+| CW9164I | Current/N-1 | (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
 
 **Notes:**
 
@@ -116,9 +116,9 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Support Expires | Notes |
 | --- | --- | --- | --- | --- | --- |
-| MS120-48LP | Current/N-1| (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
-| MS250-48LP | Current/N-1| (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
-| MS250-24P | Current| (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
+| MS120-48LP | Current/N-1 | (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
+| MS250-48LP | Current/N-1 | (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
+| MS250-24P | Current | (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
 
 **Notes:**
 
@@ -187,12 +187,9 @@ Every second Tuesday of the month (14:00 UTC):
 
 | Category | Change | Reason |
 | --- | --- | --- |
-| **Vertiv Avocent ACS 8016DAC** | Updated to 2.32.3 (from 2.30.2) | Firmware update |
-
-### 2026-05-13 (Version Update)
-
-| Category | Change | Reason |
-| --- | --- | --- |
+| **Cisco IOS-XE** | Updated to 17.15.5 (from 17.12.x) | Security advisories in 17.12.x range |
+| **Cisco IOS** | Updated C1000 to 12.2(7)E14 | Security advisories in earlier 12.2.x versions |
+| **FortiOS** | Updated to 7.6.6 (from 7.4.2) | Multiple critical CVEs in 7.4.x range |
 | **Meraki MR44** | Updated to Current/N-1 (from Current/N-1 ) | Cloud firmware status |
 | **Meraki MR46** | Updated to Current/N-1 (from Current/N-1 ) | Cloud firmware status |
 | **Meraki MR76** | Updated to Current (from Current ) | Cloud firmware status |
@@ -200,16 +197,7 @@ Every second Tuesday of the month (14:00 UTC):
 | **Meraki MS120-48LP** | Updated to Current/N-1 (from Current/N-1 ) | Cloud firmware status |
 | **Meraki MS250-48LP** | Updated to Current/N-1 (from Current/N-1 ) | Cloud firmware status |
 | **Meraki MS250-24P** | Updated to Current (from Current/N-1 ) | Cloud firmware status |
-
-### 2026-05-13 (Version Update)
-
-| Category | Change | Reason |
-| --- | --- | --- |
-| **Cisco IOS-XE** | Updated to 17.15.5 (from 17.12.x) | Security advisories in 17.12.x range |
-| **Cisco IOS** | Updated C1000 to 12.2(7)E14 | Security advisories in earlier 12.2.x versions |
-| **FortiOS** | Updated to 7.6.6 (from 7.4.2) | Multiple critical CVEs in 7.4.x range |
-| **Meraki** | Documented cloud-managed update strategy | No specific versions; rely on dashboard |
-| **Vertiv** | Noted research required | No console servers in current inventory |
+| **Vertiv Avocent ACS 8016DAC** | Updated to 2.32.3 (from 2.30.2) | Firmware update |
 
 ---
 

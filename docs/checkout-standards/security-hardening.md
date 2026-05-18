@@ -292,8 +292,47 @@ security profiles:
 
 ## SSH Hardening
 
-Both Cisco and FortiGate require strong SSH configuration. These are derived from CIS
-recommendations and NIST SP 800-53 cryptographic standards.
+Both Cisco and FortiGate require strong SSH configuration, derived from CIS recommendations and
+NIST SP 800-53 cryptographic standards. Algorithm lists are verified for compatibility across
+the three SSH clients in operational use: OpenSSH (Linux), PuTTY (Windows), and SecureCRT.
+
+### Algorithm Compatibility Matrix
+
+Algorithms are listed strongest/most preferred first within each category. ETM (Encrypt-then-MAC)
+variants are preferred over non-ETM for CTR-mode sessions. AEAD ciphers (GCM,
+ChaCha20-Poly1305) include implicit authentication and bypass the MAC algorithm entirely.
+
+| Algorithm | Cisco IOS-XE | FortiGate | OpenSSH (Linux) | PuTTY | SecureCRT |
+| --- | --- | --- | --- | --- | --- |
+| **Key Exchange** | | | | | |
+| `curve25519-sha256` | No¹ | Yes | Yes (7.3+) | Yes (0.73+) | Yes (8.7+) |
+| `curve25519-sha256@libssh.org` | No¹ | Yes | Yes | Yes (0.73+) | Yes |
+| `ecdh-sha2-nistp521` | Yes | Yes | Yes | Yes (0.63+) | Yes |
+| `ecdh-sha2-nistp384` | Yes | Yes | Yes | Yes (0.63+) | Yes |
+| `ecdh-sha2-nistp256` | Yes | Yes | Yes | Yes (0.63+) | Yes |
+| `diffie-hellman-group-exchange-sha256` | Yes | Yes | Yes | Yes | Yes |
+| **Encryption** | | | | | |
+| `chacha20-poly1305@openssh.com` | No¹ | Yes | Yes (6.5+) | Yes (0.74+) | Yes (8.5+) |
+| `aes256-gcm@openssh.com` | Yes (`aes256-gcm`) | Yes | Yes (6.2+) | Yes (0.75+) | Yes (8.5+) |
+| `aes256-ctr` | Yes | Yes | Yes | Yes | Yes |
+| **MAC** (CTR-mode sessions only — AEAD ciphers do not use MAC negotiation) | | | | | |
+| `hmac-sha2-512-etm@openssh.com` | Yes (17.3+) | Yes | Yes (6.2+) | Yes (0.75+) | Yes (8.5+) |
+| `hmac-sha2-256-etm@openssh.com` | Yes (17.3+) | Yes | Yes (6.2+) | Yes (0.75+) | Yes (8.5+) |
+| `hmac-sha2-512` | Yes | Yes | Yes | Yes | Yes |
+| `hmac-sha2-256` | Yes | Yes | Yes | Yes | Yes |
+| **Host Key** | | | | | |
+| `ecdsa-sha2-nistp521` | Yes | Yes | Yes | Yes (0.73+) | Yes |
+| `ecdsa-sha2-nistp384` | Yes | Yes | Yes | Yes (0.73+) | Yes |
+| `rsa-sha2-512` | Yes | — | Yes (7.2+) | Yes (0.73+) | Yes (8.5+) |
+| `rsa-sha2-256` | Yes | — | Yes (7.2+) | Yes (0.73+) | Yes (8.5+) |
+
+¹ Cisco IOS-XE does not support `curve25519-sha256` or `chacha20-poly1305` — platform limitation.
+
+**Minimum client versions for full algorithm support:**
+
+- **OpenSSH:** 7.3+ — standard on any current Linux distribution
+- **PuTTY:** 0.75+ for GCM and ETM MACs; 0.74+ for ChaCha20; 0.73+ for ECDSA and rsa-sha2 host keys
+- **SecureCRT:** 8.5+ for GCM, ChaCha20, ETM MACs, and rsa-sha2 host keys
 
 ### Cisco IOS-XE SSH Standards
 
@@ -301,24 +340,35 @@ recommendations and NIST SP 800-53 cryptographic standards.
 crypto key generate rsa modulus 4096
 ip ssh version 2
 ip ssh server algorithm authentication keyboard
-ip ssh server algorithm kex ecdh-sha2-nistp521 ecdh-sha2-nistp384
+ip ssh server algorithm kex ecdh-sha2-nistp521 ecdh-sha2-nistp384 ecdh-sha2-nistp256
 ip ssh server algorithm hostkey rsa-sha2-512 rsa-sha2-256
 ip ssh server algorithm encryption aes256-gcm aes256-ctr
-ip ssh server algorithm mac hmac-sha2-512 hmac-sha2-256
+ip ssh server algorithm mac hmac-sha2-512-etm@openssh.com hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-256
 ip ssh server algorithm publickey ecdsa-sha2-nistp521 ecdsa-sha2-nistp384
 ip ssh timeout 60
 ip ssh authentication-retries 3
 ```
 
+- KEX: `ecdh-sha2-nistp256` added — consistent with FortiGate; all target clients support it
+- MAC: ETM variants added (`hmac-sha2-512-etm`, `hmac-sha2-256-etm`) and listed first — preferred
+  by OpenSSH, PuTTY 0.75+, and SecureCRT 8.5+ for CTR-mode sessions; requires IOS-XE 17.3+
+- `aes256-gcm` sessions use implicit AEAD integrity and ignore the MAC algorithm entirely
+
 ### FortiOS SSH Standards
 
 ```fortios
 config system global
-    set ssh-enc-algo chacha20-poly1305@openssh.com aes256-ctr aes256-gcm@openssh.com
-    set ssh-kex-algo diffie-hellman-group-exchange-sha256 curve25519-sha256@libssh.org ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521
-    set ssh-mac-algo hmac-sha2-256 hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-512-etm@openssh.com
+    set ssh-enc-algo chacha20-poly1305@openssh.com aes256-gcm@openssh.com aes256-ctr
+    set ssh-kex-algo curve25519-sha256 curve25519-sha256@libssh.org ecdh-sha2-nistp521 ecdh-sha2-nistp384 ecdh-sha2-nistp256 diffie-hellman-group-exchange-sha256
+    set ssh-mac-algo hmac-sha2-512-etm@openssh.com hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-256
 end
 ```
+
+- Encryption: `aes256-gcm@openssh.com` moved before `aes256-ctr` — AEAD preferred over non-AEAD
+- KEX: `curve25519-sha256` (IETF form, RFC 8731) added alongside `curve25519-sha256@libssh.org` —
+  OpenSSH 7.3+ advertises the IETF name first; both included for full client range. Order updated:
+  curve25519 variants first, ECDH NIST descending, DH-GEX last (fallback only)
+- MAC: ETM variants moved first — preferred by all current client versions in CTR-mode sessions
 
 ---
 

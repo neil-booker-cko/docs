@@ -72,41 +72,55 @@ logging source-interface GigabitEthernet0/0
 
 ### FortiGate Syslog (Multiple Servers)
 
-Configure all three syslog servers using syslogd, syslogd2, and syslogd3:
+Configure three syslog servers for operational logging (syslogd–syslogd3) and an optional fourth
+(syslogd4) in CEF format for InfoSec/SIEM ingestion:
 
 ```fortios
 config log syslogd setting
     set status enable
-    set server "10.13.1.147"
+    set server "<SYSLOG_SERVER_1>"
+    set mode reliable
     set port 601
-    set reliable enable
-    set certificate "Fortinet_Factory"
-    set facility local0
-    set source-ip 10.0.2.1
-next
+    set source-ip "<FORTIOS_IP>"
 end
 
 config log syslogd2 setting
     set status enable
-    set server "10.13.2.116"
+    set server "<SYSLOG_SERVER_2>"
+    set mode reliable
     set port 601
-    set reliable enable
-    set certificate "Fortinet_Factory"
-    set facility local0
-    set source-ip 10.0.2.1
-next
+    set source-ip "<FORTIOS_IP>"
 end
 
 config log syslogd3 setting
     set status enable
-    set server "10.13.2.116"
+    set server "<SYSLOG_SERVER_3>"
+    set mode reliable
     set port 601
-    set reliable enable
-    set certificate "Fortinet_Factory"
-    set facility local0
-    set source-ip 10.0.2.1
-next
+    set source-ip "<FORTIOS_IP>"
 end
+
+config log syslogd4 setting
+    set status enable
+    set server "<INFOSEC_SIEM_SERVER>"
+    set mode reliable
+    set port 601
+    set source-ip "<FORTIOS_IP>"
+    set format cef
+end
+```
+
+**syslogd4 (CEF):** Common Event Format for InfoSec SIEM ingestion. Only configure when a
+dedicated InfoSec log destination is required.
+
+### Perle Console Server Syslog
+
+```text
+add host <SYSLOG_HOSTNAME> <SYSLOG_IP>
+
+set syslog level informational
+set syslog primary-host <SYSLOG_HOSTNAME>
+set syslog secondary-host <SYSLOG_HOSTNAME>
 ```
 
 ### Meraki Cloud Logging
@@ -186,61 +200,72 @@ end
 facility (LOCAL0 or device default). Filtering and organization is based on source IP address,
 not facility codes.
 
-### rsyslog File Logging (Device Name Organization)
+### rsyslog File Logging
 
-Logs are written to local files on syslog servers using device hostname as the identifier.
-This allows easy tracking of which specific device sent each log message.
+Logs are written to per-platform directories, each file named by source IP. Config files live
+in `/etc/rsyslog.d/`. Key files:
 
-**Example rsyslog configuration:**
+| File | Platform | Directory |
+| --- | --- | --- |
+| `10-cisco.conf` | Cisco IOS-XE | `/var/log/cisco-iosxe/` |
+| `20-fortios.conf` | FortiOS | `/var/log/fortios/` |
+| `22-perle.conf` | Perle | `/var/log/perle/` |
+
+**Example — FortiOS (`20-fortios.conf`):**
 
 ```text
-# Log all incoming messages to files organized by device hostname
-# Format: /var/log/network-devices/<device-hostname>.log
-$template DeviceHostname,"/var/log/network-devices/%HOSTNAME%.log"
-:msg,contains,"" ?DeviceHostname
-
-# Ensure proper permissions and rotation
-$FileOwner syslog
-$FileGroup syslog
-$FileCreateMode 0640
-$DirCreateMode 0755
-$Umask 0022
-$ActionFileDefaultTemplate DeviceHostname
+if $fromhost-ip=='<FORTIOS_IP>' then /var/log/fortios/<DEVICE_NAME>.log
+& stop
 ```
+
+**Example — Cisco IOS-XE (`10-cisco.conf`):**
+
+```text
+if $fromhost-ip=='<CISCO_IP>' then /var/log/cisco-iosxe/<DEVICE_NAME>.log
+& stop
+```
+
+**rsyslog.conf** — enable TCP and UDP reception:
+
+```text
+module(load="imudp")
+input(type="imudp" port="514")
+
+module(load="imtcp")
+input(type="imtcp" port="514")
+```
+
+After editing: `systemctl restart rsyslog && systemctl enable rsyslog`
+
+**File permissions:** `644 syslog:adm` — 644 (not 600) so the Datadog agent can read log files.
 
 ### Log File Organization
 
-Log files are organized by device hostname for easy device identification and matching with
-DNS records (e.g., `eld7-csw-01.eld7.checkout.corp`):
-
 ```text
-/var/log/network-devices/
-  ├── eld7-csw-01.log       (Dublin datacenter - core switch)
-  ├── eld7-csw-02.log       (Dublin datacenter - core switch)
-  ├── lon1-pfw-01a.log      (London office - firewall primary)
-  ├── lon1-pfw-01b.log      (London office - firewall secondary)
-  └── edc4-con-01.log       (Ashburn datacenter - console server)
+/var/log/
+  ├── cisco-iosxe/          Cisco IOS-XE devices (per-device file by IP or hostname)
+  ├── fortios/              FortiOS firewalls
+  └── perle/                Perle console servers
 ```
 
 ### Log Rotation
 
-Configure logrotate to manage log files:
+Logrotate config files in `/etc/logrotate.d/`. Retain 7 days locally — Datadog provides
+longer-term storage.
 
 ```text
-/var/log/network-devices/*.log {
+/var/log/fortios/*.log {
     daily
-    rotate 30
+    missingok
+    rotate 7
     compress
     delaycompress
-    missingok
     notifempty
-    create 0640 syslog syslog
-    sharedscripts
-    postrotate
-        /lib/systemd/systemd-logind-systemctl restart rsyslog > /dev/null 2>&1 || true
-    endscript
+    create 0644 syslog adm
 }
 ```
+
+Apply the same pattern for `cisco-iosxe` and `perle` directories.
 
 ---
 
@@ -251,79 +276,55 @@ Configure logrotate to manage log files:
 Datadog agent monitors rsyslog log files and uploads to Datadog cloud for centralized analysis,
 alerting, and long-term retention beyond local syslog retention (30 days).
 
-**Install Datadog Agent:**
-
-```bash
-DD_AGENT_MAJOR_VERSION=7 DD_API_KEY=<your-api-key> DD_SITE="datadoghq.com" bash -c "$(curl -L https://s3.amazonaws.com/dd-agent-releases/scripts/install_script.sh)"
-```
-
-**Configure Datadog for syslog log files:**
+Config file: `/etc/datadog-agent/conf.d/custom_log_collection.d/conf.yaml`
 
 ```yaml
-# /etc/datadog-agent/conf.d/syslog.d/conf.yaml
 logs:
   - type: file
-    path: /var/log/network-devices/*.log
-    service: network-devices
-    source: syslog
-    sourcecategory: network
+    path: /var/log/fortios/*.log
+    source: fortigate
     tags:
-      - env:production
-      - team:network
-    log_processing_rules:
-      - type: exclude_at_match
-        pattern: "DEBUG"
-
-  # Cisco IOS-XE devices (datacenter)
+      - "env:datacenter:<SITE>"
   - type: file
-    path: /var/log/network-devices/eld*.log
-    service: network-devices
+    path: /var/log/cisco-iosxe/*.log
     source: cisco-iosxe
-    sourcecategory: network
     tags:
-      - env:datacenter
-      - site:eld7
-      - vendor:cisco
+      - "env:datacenter:<SITE>"
   - type: file
-    path: /var/log/network-devices/edc*.log
-    service: network-devices
-    source: cisco-iosxe
-    sourcecategory: network
+    path: /var/log/perle/*.log
+    source: perle
     tags:
-      - env:datacenter
-      - site:edc4
-      - vendor:cisco
-
-  # Cisco IOS-XE devices (enterprise/office)
-  - type: file
-    path: /var/log/network-devices/lon*.log
-    service: network-devices
-    source: cisco-iosxe
-    sourcecategory: network
-    tags:
-      - env:enterprise
-      - site:lon1
-      - vendor:cisco
-  - type: file
-    path: /var/log/network-devices/sfo*.log
-    service: network-devices
-    source: cisco-iosxe
-    sourcecategory: network
-    tags:
-      - env:enterprise
-      - site:sfo1
-      - vendor:cisco
-
-  # FortiGate firewalls (datacenter)
-  - type: file
-    path: /var/log/network-devices/*pfw*.log
-    service: network-devices
-    source: fortios
-    sourcecategory: network
-    tags:
-      - env:datacenter
-      - vendor:fortinet
+      - "env:datacenter:<SITE>"
 ```
+
+Restart after changes: `systemctl restart datadog-agent`
+
+### Datadog Grok Parsing Patterns
+
+Pipelines in Datadog parse incoming log messages by source. The Grok patterns below are used
+for the `cisco-iosxe` and `fortigate` sources. Processors also rename variables and normalise
+severity levels.
+
+**Cisco IOS-XE:**
+
+```text
+ManualRule1 %{date("MMM dd HH:mm:ss"):syslog_timestamp}\s+%{ip:client}\s+%{integer:seqnum}\:(\s+%{ipOrHost:client}:)?\s+%{date("MMM dd YYYY HH:mm:ss.SSS z"):eventtime}:\s+.%{word:facility}-%{integer:severity}-%{word:mnemonic}:\s+%{data:message}
+ManualRule2 %{date("MMM  d HH:mm:ss"):syslog_timestamp}\s+%{ip:client}\s+%{integer:seqnum}\:(\s+%{ipOrHost:client}:)?\s+%{date("MMM dd YYYY HH:mm:ss.SSS z"):eventtime}:\s+.%{word:facility}-%{integer:severity}-%{word:mnemonic}:\s+%{data:message}
+```
+
+**FortiGate:**
+
+```text
+manualRule1 %{date("MMM dd HH:mm:ss"):syslog_timestamp}\s+_gateway\s+%{data::keyvalue("=", " \"():*\[\]")}
+manualRule2 %{date("MMM dd HH:mm:ss"):syslog_timestamp}\s+_gateway\s+%{data::keyvalue("=", " \":*\[\]")}
+manualRule3 %{date("MMM dd HH:mm:ss"):syslog_timestamp}\s+_gateway\s+%{data::keyvalue("=", "\":*\[\]")}
+manualRule4 %{date("MMM  d HH:mm:ss"):syslog_timestamp}\s+_gateway\s+%{data::keyvalue("=", " \"():*\[\]")}
+manualRule5 %{date("MMM  d HH:mm:ss"):syslog_timestamp}\s+_gateway\s+%{data::keyvalue("=", " \":*\[\]")}
+manualRule6 %{date("MMM  d HH:mm:ss"):syslog_timestamp}\s+_gateway\s+%{data::keyvalue("=", "\":*\[\]")}
+```
+
+Multiple rules cover single-digit day padding (`MMM dd` vs `MMM  d`) and FortiOS key=value
+quoting variants.
 
 ### Datadog Tags
 
