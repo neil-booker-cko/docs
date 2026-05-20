@@ -228,6 +228,74 @@ interface GigabitEthernet0/1
 
 ---
 
+## IGMP Snooping
+
+No multicast routing (PIM) is deployed. Multicast traffic is contained at Layer 2 using IGMP
+snooping with the core switch acting as the IGMP querier per VLAN.
+
+### Design
+
+- **IGMP snooping** — enabled on all switches; constrains multicast frames to ports with active
+  group members rather than flooding the entire VLAN
+- **IGMP querier** — configured on the core switch only (one querier per VLAN); sends periodic
+  membership queries so snooping tables stay current
+- **No PIM** — no multicast routing between VLANs or to upstream networks
+
+Access switches run snooping but are not configured as queriers. If multiple switches compete
+to be querier, the one with the lowest IP wins the election — configuring the querier explicitly
+on the core switch prevents an access switch from winning.
+
+### Cisco IOS-XE — Core Switch
+
+Enable snooping globally and configure a querier per VLAN. The querier address should be the
+SVI IP for that VLAN on the core switch.
+
+```ios
+ip igmp snooping
+
+ip igmp snooping vlan <VLAN_ID> querier
+ip igmp snooping vlan <VLAN_ID> querier address <SVI_IP>
+```
+
+**Example — multiple VLANs:**
+
+```ios
+ip igmp snooping
+
+ip igmp snooping vlan 10 querier
+ip igmp snooping vlan 10 querier address 172.16.10.1
+ip igmp snooping vlan 20 querier
+ip igmp snooping vlan 20 querier address 172.16.20.1
+ip igmp snooping vlan 40 querier
+ip igmp snooping vlan 40 querier address 172.16.40.1
+!
+```
+
+### Cisco IOS-XE — Access Switch
+
+Enable snooping globally. Do not configure a querier — the core switch handles this.
+
+```ios
+ip igmp snooping
+```
+
+### Verification
+
+```ios
+show ip igmp snooping
+show ip igmp snooping querier
+show ip igmp snooping groups
+show ip igmp snooping mrouter
+```
+
+### Meraki (MS Switches)
+
+IGMP snooping is enabled per the [Meraki Standards](meraki-standards.md) switch settings.
+Meraki does not expose querier configuration — it participates in querier election automatically.
+Ensure the core Cisco switch has the lower IP for the VLAN so it wins the election.
+
+---
+
 ## VLAN Access Control
 
 ### Access Port Configuration

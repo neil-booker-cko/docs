@@ -190,7 +190,7 @@ Format: `[peer-type]-[purpose]-[AS]-[region]` or `[peer-type]-[REGION]-[purpose]
 | `AZURE-MSEE-12076-primary` | Cloud | Azure ExpressRoute MSEE primary, AS 12076 |
 | `GCP-CloudRouter-64514-primary` | Cloud | GCP Cloud Interconnect, AS 64514 |
 | `FG-LON-AWS-65001` | Internal | FortiGate London WAN peer for AWS, AS 65001 |
-| `CORE-EU-iBGP-65000` | Internal | EU core iBGP peer, AS 65000 |
+| `CORE-EU-iBGP-<DC_ASN>` | Internal | EU core iBGP peer |
 
 ### Access Control List Naming
 

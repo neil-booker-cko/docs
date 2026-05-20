@@ -82,7 +82,7 @@ update automatically. No need to edit each interface individually.
 **Per-neighbor BFD enablement:**
 
 ```ios
-router bgp 65000
+router bgp <DC_ASN>
  neighbor 169.254.1.2 remote-as 65300
  neighbor 169.254.1.2 timers 60 180
  neighbor 169.254.1.2 fall-over bfd
@@ -195,7 +195,7 @@ end
 
 ```fortios
 config router bgp
-    set as 65000
+    set as <DC_ASN>
     set router-id 10.0.0.1
     config neighbor
         edit "169.254.1.2"

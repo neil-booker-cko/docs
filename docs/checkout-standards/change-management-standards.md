@@ -264,12 +264,12 @@ execute ping 10.10.1.1
 
 ```ios
 ! Method 1: Copy previous running config from startup
-no router bgp 65000
+no router bgp <DC_ASN>
 copy startup-config running-config
 
 ! Method 2: Manual removal of added commands
 configure terminal
-router bgp 65000
+router bgp <DC_ASN>
   no route-map RM_AWS_IN in
 exit
 

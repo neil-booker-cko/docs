@@ -9,10 +9,11 @@ address families.
 
 ## BGP Process Configuration
 
-**Standard:** Single BGP process (AS 65000) for all VRFs.
+**Standard:** Single BGP process for all VRFs. AS number drawn from the datacenter range
+(65100–65199) — see [Routing Design](routing-design.md) for allocation.
 
 ```ios
-router bgp 65000
+router bgp <DC_ASN>
  bgp router-id 10.0.0.1
  bgp log-neighbor-changes
  bgp graceful-restart
@@ -55,7 +56,7 @@ interface GigabitEthernet0/1
  ip address 169.254.1.1 255.255.255.252
  bfd template BFD_STANDARD
 !
-router bgp 65000
+router bgp <DC_ASN>
  neighbor 169.254.1.2 timers 60 180
  neighbor 169.254.1.2 fall-over bfd
 !
@@ -75,7 +76,7 @@ neighbor 169.254.1.2 timers 10 30
 injection and session hijacking. Use `neighbor password` command per-neighbor or globally.
 
 ```ios
-router bgp 65000
+router bgp <DC_ASN>
  neighbor 169.254.1.2 password MyBGPAuth123!
  neighbor 172.16.0.2 password MyBGPAuth456!
 !
@@ -104,7 +105,7 @@ all new BGP configurations.
 - Do NOT use network statements; use redistribute or explicit neighbor advertisement
 
 ```ios
-router bgp 65000
+router bgp <DC_ASN>
  address-family ipv4 vrf AWS
   neighbor 169.254.1.2 activate
   neighbor 169.254.1.2 prefix-list PL_AWS_INTERNAL in
@@ -146,7 +147,7 @@ and policy application.
 
 ```fortios
 config router bgp
-    set as 65000
+    set as <DC_ASN>
     set router-id 10.0.0.1
     set graceful-restart enable
     set graceful-restart-time 120
@@ -215,7 +216,7 @@ without waiting for BFD timeout.
 BFD provides sub-second detection when enabled on BGP neighbors:
 
 ```ios
-router bgp 65000
+router bgp <DC_ASN>
  neighbor 169.254.1.2 fall-over bfd
 !
 ```
@@ -232,7 +233,7 @@ route-map RM_AWS_FAILOVER permit 10
  match track 1
  set local-preference 200
 !
-router bgp 65000
+router bgp <DC_ASN>
  address-family ipv4 vrf AWS
   neighbor 169.254.1.2 route-map RM_AWS_FAILOVER in
  exit-address-family

@@ -6,9 +6,9 @@ Checkout's routing architecture standards and design patterns.
 
 ## BGP Autonomous System (AS) Numbers
 
-| ASN Range | Purpose | Network |
+| ASN Range | Purpose | Notes |
 | --- | --- | --- |
-| `65100–65199` | Data Center | On-premises datacenters |
+| `65100–65199` | Data Center | On-premises datacenters; one AS per site |
 | `65200–65299` | AWS CNE (Customer Network Edge) | AWS customer-managed routers |
 | `65300–65399` | AWS TGW (Transit Gateway) | AWS TGW BGP adjacency |
 
@@ -20,10 +20,10 @@ Checkout's routing architecture standards and design patterns.
 
 | VRF | Purpose | RT (Export/Import) | RD |
 | --- | --- | --- | --- |
-| Mgmt-vrf | Management plane isolation | `1` | `65000:1` |
-| AWS | Amazon Web Services | `100` | `65000:100` |
-| Azure | Microsoft Azure | `110` | `65000:110` |
-| GCP | Google Cloud Platform | `120` | `65000:120` |
+| Mgmt-vrf | Management plane isolation | `1` | `<DC_ASN>:1` |
+| AWS | Amazon Web Services | `100` | `<DC_ASN>:100` |
+| Azure | Microsoft Azure | `110` | `<DC_ASN>:110` |
+| GCP | Google Cloud Platform | `120` | `<DC_ASN>:120` |
 
 **Rationale:**
 
@@ -41,11 +41,16 @@ Checkout's routing architecture standards and design patterns.
 
 ### Peer Timers
 
-| Setting | Value | Notes |
+BFD is the recommended approach for all BGP neighbors — it provides sub-second failure detection
+and allows longer BGP timers that reduce unnecessary session resets.
+
+| Setting | With BFD (recommended) | Without BFD (fallback) |
 | --- | --- | --- |
-| Keepalive | 10 seconds | Fast failure detection |
-| Hold time | 30 seconds | 3x keepalive |
-| BFD interval | 300ms tx/rx, multiplier 3 | Sub-second failover |
+| Keepalive | 60 seconds | 10 seconds |
+| Hold time | 180 seconds | 30 seconds |
+| BFD interval | 300ms tx/rx, multiplier 3 | — |
+
+See [BGP Standards](bgp-standards.md) and [BFD Standards](bfd-standards.md) for full configuration.
 
 ### Route Filtering
 
@@ -60,7 +65,7 @@ editing. Apply to BGP neighbors or within route-maps for granular control.
 ip prefix-list PL_AWS_INTERNAL seq 10 permit 10.0.0.0/8 ge 16 le 24
 ip prefix-list PL_AWS_INTERNAL seq 20 permit 172.16.0.0/12 ge 20 le 24
 !
-router bgp 65000
+router bgp <DC_ASN>
  address-family ipv4
   neighbor 169.254.1.2 prefix-list PL_AWS_INTERNAL in
  exit-address-family
@@ -86,7 +91,7 @@ route-map RM_AWS_IN permit 10
  match ip address prefix-list PL_AWS_INTERNAL
  set local-preference 200
 !
-router bgp 65000
+router bgp <DC_ASN>
  address-family ipv4
   neighbor 169.254.1.2 route-map RM_AWS_IN in
  exit-address-family
@@ -113,18 +118,38 @@ See [Naming Standards](naming-conventions.md) for route-map naming conventions.
 
 ---
 
-## MPLS and Label Distribution
+## OSPF
 
-TODO: Add MPLS standards if applicable (LDP, segment routing)
+OSPF is used for internal routing within datacenters and offices. BGP handles all cloud
+provider and inter-site connectivity.
+
+See [OSPF Standards](ospf-standards.md) for configuration and area design.
 
 ---
 
 ## Multi-Cloud Failover Design
 
-TODO: Add active-active vs active-passive patterns
+Active-passive failover using Local Preference (inbound) and AS Path Prepending (outbound).
+BFD provides sub-second detection on all cloud provider links.
+
+| Cloud | Primary Path | Secondary Path | Failover Mechanism |
+| --- | --- | --- | --- |
+| AWS Direct Connect | Local Pref 200 | Local Pref 150 | BFD + BGP fall-over |
+| Azure ExpressRoute | Local Pref 200 | Local Pref 150 | BFD + BGP fall-over |
+| GCP Interconnect | Local Pref 200 | Local Pref 150 | BFD + BGP fall-over |
+
+Detailed design per provider:
+
+- [AWS BGP Stack](../aws/bgp_stack_vpn_over_dx.md)
+- [Azure BGP Stack](../azure/bgp_stack_vpn_over_expressroute.md)
+- [GCP BGP Stack](../gcp/bgp_stack_vpn_over_interconnect.md)
 
 ---
 
-## Security Standards
+## Related Standards
 
-See [Security Hardening](security-hardening.md) for CIS/STIG/PCI-DSS requirements.
+- [BGP Standards](bgp-standards.md) — BGP process, timers, communities, address families
+- [OSPF Standards](ospf-standards.md) — Internal routing
+- [BFD Standards](bfd-standards.md) — Failure detection
+- [VPN Standards](vpn-standards.md) — IPsec overlay design
+- [Security Hardening](security-hardening.md) — Routing security (BGP auth, prefix limits)
