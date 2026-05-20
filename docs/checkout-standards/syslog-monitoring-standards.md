@@ -81,7 +81,7 @@ config log syslogd setting
     set server "<SYSLOG_SERVER_1>"
     set mode reliable
     set port 601
-    set source-ip "<FORTIOS_IP>"
+    set source-ip "<CLUSTER_MGMT_IP>"
 end
 
 config log syslogd2 setting
@@ -89,7 +89,7 @@ config log syslogd2 setting
     set server "<SYSLOG_SERVER_2>"
     set mode reliable
     set port 601
-    set source-ip "<FORTIOS_IP>"
+    set source-ip "<CLUSTER_MGMT_IP>"
 end
 
 config log syslogd3 setting
@@ -97,7 +97,7 @@ config log syslogd3 setting
     set server "<SYSLOG_SERVER_3>"
     set mode reliable
     set port 601
-    set source-ip "<FORTIOS_IP>"
+    set source-ip "<CLUSTER_MGMT_IP>"
 end
 
 config log syslogd4 setting
@@ -105,7 +105,7 @@ config log syslogd4 setting
     set server "<INFOSEC_SIEM_SERVER>"
     set mode reliable
     set port 601
-    set source-ip "<FORTIOS_IP>"
+    set source-ip "<CLUSTER_MGMT_IP>"
     set format cef
 end
 ```
@@ -214,7 +214,7 @@ in `/etc/rsyslog.d/`. Key files:
 **Example — FortiOS (`20-fortios.conf`):**
 
 ```text
-if $fromhost-ip=='<FORTIOS_IP>' then /var/log/fortios/<DEVICE_NAME>.log
+if $fromhost-ip=='<CLUSTER_MGMT_IP>' then /var/log/fortios/<DEVICE_NAME>.log
 & stop
 ```
 

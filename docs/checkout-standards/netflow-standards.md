@@ -135,7 +135,7 @@ config system netflow
     config collectors
         edit 1
             set collector-ip "<COLLECTOR_IP>"
-            set source-ip "<MGMT_INTERFACE_IP>"
+            set source-ip "<CLUSTER_MGMT_IP>"
         next
     end
 end
@@ -156,11 +156,10 @@ end
 
 ### HA Clusters
 
-In an active-passive HA cluster, only the active device exports NetFlow. After failover, the
-newly active device sends flows from its own management IP. The `source-ip` is not synced by
-HA config sync — it must be set individually on each node to that node's own management IP.
-
-Configure the LogicMonitor NetFlow collector to accept flows from both node management IPs.
+In an active-passive HA cluster, only the active device exports NetFlow. Set `source-ip` to
+the cluster's shared management VLAN interface IP — this IP is synced across both nodes via HA
+config sync and follows the active device on failover, so the collector always sees the same
+source address.
 
 See [High Availability Standards — NetFlow](ha-standards.md#netflow) for full details.
 

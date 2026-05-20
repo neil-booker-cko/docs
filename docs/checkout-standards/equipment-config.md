@@ -336,9 +336,37 @@ config log syslogd setting
     set server <SYSLOG_SERVER_IP>
     set mode reliable
     set port 601
-    set source-ip <FORTIOS_IP>
+    set source-ip <CLUSTER_MGMT_IP>
 end
 ```
+
+**TACACS+ Client:**
+
+```fortios
+config system tacacs+
+    edit "<TACACS_SERVER_NAME>"
+        set server "<TACACS_SERVER_IP>"
+        set key ENC <TACACS_KEY>
+        set source-ip <CLUSTER_MGMT_IP>
+    next
+end
+```
+
+**RADIUS Client (Okta VPN Authentication):**
+
+```fortios
+config user radius
+    edit "<RADIUS_SERVER_NAME>"
+        set server "<RADIUS_SERVER_IP>"
+        set secret ENC <RADIUS_SECRET>
+        set source-ip <CLUSTER_MGMT_IP>
+    next
+end
+```
+
+**Note:** `source-ip` on syslog, NetFlow, TACACS+, and RADIUS is always the cluster management
+VLAN interface IP. This IP is shared between both HA nodes and follows the active device on
+failover. See [High Availability Standards](ha-standards.md#source-ip-principle) for details.
 
 **Global Interface Security:**
 
