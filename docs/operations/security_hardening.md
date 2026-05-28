@@ -108,7 +108,7 @@ FortiGate enforces password complexity by default. Requirements vary by version:
 config system admin
   edit "admin"
     set password MyP@ssw0rd123!
-    ! Password must meet complexity: min 8 chars, uppercase + lowercase + digits + symbols
+    ! Password must meet complexity: min 12 chars, uppercase + lowercase + digits + symbols
     set force-password-change disable
     set password-expire 2026-12-31
     set wanip 0.0.0.0
@@ -122,7 +122,7 @@ show system admin
 
 **Minimum Requirements (FortiOS 7.x):**
 
-- Minimum 8 characters (configurable to 14+)
+- Minimum 12 characters (matches Checkout password standard; FortiOS default is 8 — must be raised)
 - At least 1 uppercase letter
 - At least 1 lowercase letter
 - At least 1 digit

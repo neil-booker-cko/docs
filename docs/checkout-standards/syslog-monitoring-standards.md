@@ -20,7 +20,8 @@ queries.
 | Utility Server 3 (Tertiary) | 10.13.2.147:601 | Syslog + SNMP management |
 | Protocol | TCP/601 (RFC 5426 Reliable Syslog) | Preferred; guarantees message delivery |
 | Facility | LOCAL0-LOCAL7 | Per-device facility for filtering |
-| Retention | 30 days (rolling) | Purge logs older than 30 days |
+| Retention (local) | 30 days (rolling) | Purge logs older than 30 days; Datadog provides long-term retention |
+| Retention (long-term) | Unlimited (Datadog Enterprise) | PCI DSS 10.5.1 12-month requirement satisfied by Datadog |
 | Storage | 500 GB per syslog server | ~100 devices × 5MB/day = 15GB/month |
 
 ### Syslog Message Format
@@ -130,6 +131,11 @@ Meraki does **not** support external syslog. Instead:
 - **Dashboard native:** 30-day retention (Meraki cloud)
 - **Webhooks:** Send events to external systems (PagerDuty, Slack)
 
+**Scope note:** Meraki devices (wireless access points) are not in the Cardholder Data Environment
+(CDE). The 30-day Meraki cloud retention is acceptable for operational purposes; PCI DSS 12-month
+log retention applies only to CDE-scoped devices forwarding to the centralized syslog/Datadog
+pipeline.
+
 ---
 
 ## SNMP Monitoring Standards
@@ -153,39 +159,41 @@ Meraki does **not** support external syslog. Instead:
 | Parameter | Standard | Notes |
 | --- | --- | --- |
 | Version | SNMPv3 | Authentication & encryption required |
-| Authentication | HMAC-SHA | Strong hash algorithm |
-| Encryption | AES-128 | Minimum 128-bit encryption |
+| Authentication | HMAC-SHA-256 | SHA-1 for Tier 2 legacy platforms — see [SNMP Standards](snmp-standards.md) |
+| Encryption | AES-256 | AES-128 minimum for Tier 2 legacy platforms |
 | Read Community | Disabled (v1/v2c) | v3 only; no plain-text community strings |
 | Trap Destination | Disabled | Pull-based monitoring via NMS servers |
 
 ### SNMP v3 User Configuration
 
-**Cisco IOS-XE:**
+**Cisco IOS-XE (Tier 1 — SHA-256 + AES-256):**
 
 ```ios
-snmp-server group netmon v3 auth
-snmp-server user nms_monitor netmon v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
-snmp-server host 10.0.1.50 traps version 3 auth nms_monitor
-snmp-server source-interface all 10.0.1.10
+snmp-server group netmon v3 priv
+snmp-server user nms_monitor netmon v3 auth sha256 MyAuthPass123 priv aes 256 MyPrivPass456
+snmp-server source-interface all Loopback0
 !
 ```
 
-**FortiGate:**
+**Cisco IOS-XE (Tier 2 legacy — SHA-1 + AES-128, for IOS 15.2 and older platforms):**
+
+```ios
+snmp-server group netmon v3 priv
+snmp-server user nms_monitor netmon v3 auth sha MyAuthPass123 priv aes 128 MyPrivPass456
+snmp-server source-interface all Loopback0
+!
+```
+
+**FortiGate (Tier 1 — SHA-256 + AES-256):**
 
 ```fortios
 config system snmp user
     edit "nms_monitor"
         set security-level auth-priv
-        set auth-proto sha
+        set auth-proto sha256
         set auth-pwd MyAuthPass123
-        set priv-proto aes
+        set priv-proto aes256
         set priv-pwd MyPrivPass456
-    next
-end
-config system snmp community
-    edit 1
-        set name "netmon"
-        set status enable
     next
 end
 ```
@@ -391,7 +399,7 @@ This finds all ERROR-level events from Cisco IOS-XE devices in the ELD7 datacent
 
 ```bash
 # Test SNMPv3 connectivity (from NMS)
-snmpwalk -v3 -u nms_monitor -l authPriv -a SHA -A MyAuthPass123 -x AES -X MyPrivPass456 10.0.1.10 .1.3.6.1.2.1.1
+snmpwalk -v3 -u nms_monitor -l authPriv -a SHA-256 -A MyAuthPass123 -x AES-256 -X MyPrivPass456 10.0.1.10 .1.3.6.1.2.1.1
 
 # Expected output (sysDescr):
 SNMPv3-User: nms_monitor

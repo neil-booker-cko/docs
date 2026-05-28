@@ -155,9 +155,9 @@ Standards for Cisco-based site-to-site VPN tunnels.
 
 ## Pre-Shared Key Management
 
-- Store PSKs in secure credential management system (e.g., LastPass, HashiCorp Vault)
+- Store PSKs in LastPass
 - Minimum 32 characters: mixed case, numbers, special characters
-- Rotate PSKs annually and after any suspected compromise
+- Rotate PSKs after any suspected compromise or significant personnel change
 - Never commit PSKs to version control or documentation
 
 ---

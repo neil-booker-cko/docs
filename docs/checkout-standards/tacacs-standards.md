@@ -196,6 +196,34 @@ group = network_rw {
 
 ---
 
+## Security Considerations
+
+### Encryption Limitation
+
+TACACS+ encrypts the packet body using an MD5-based XOR mechanism. RFC 8907 (the 2021 TACACS+
+standard) explicitly classifies this as obfuscation rather than encryption:
+
+> The obfuscation mechanism is not encryption and provides minimal confidentiality. It is
+> vulnerable to known-plaintext attacks.
+
+This is a protocol-level limitation with no in-protocol remediation. TACACS+ is retained over
+alternatives (RADIUS, LDAP) because it is the only protocol that supports per-command
+authorization — a core operational requirement for Checkout network device access control.
+
+**Accepted risk:** MD5 obfuscation documented as a known limitation.
+
+**Mitigations in place:**
+
+- TACACS+ traffic isolated to the management network (VLAN 701); does not traverse the data plane
+- Strong, unique shared keys per device group
+- Full session and command accounting to centralized syslog (Datadog for long-term retention)
+
+**Future path:** TACACS+ over TLS (RFC 9325, published 2022) wraps TACACS+ in TLS 1.3,
+preserving per-command authorization while replacing MD5 obfuscation with proper encryption.
+Monitor IOS-XE and `tac_plus-ng` for production-ready support before re-evaluating.
+
+---
+
 ## Related Standards
 
 - [Equipment Configuration](equipment-config.md) — Device-side AAA (TACACS+ client config)

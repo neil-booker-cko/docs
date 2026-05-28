@@ -23,16 +23,17 @@ All changes follow this workflow:
 
 **Must complete before change window:**
 
-- [ ] **Configuration backup** — Full device backup taken today
+- [ ] **Configuration backup** — Verify latest config collected in LogicMonitor
+    (Devices → [Device] → Config tab)
 - [ ] **Test in lab** — Change tested on identical lab device (if available)
 - [ ] **Peer review** — Another engineer reviewed change (critical changes)
-- [ ] **Change ticket** — Created with description, expected impact, rollback plan
+- [ ] **Jira ticket** — Created with description, expected impact, rollback plan
 - [ ] **Maintenance window** — Scheduled during low-traffic time (off-hours if critical)
 - [ ] **Notifications** — Informed stakeholders of maintenance window
 - [ ] **Rollback plan** — Documented exact commands to revert change
 - [ ] **Verification commands** — Listed commands to validate success
 
-### Change Ticket Template
+### Jira Ticket Template
 
 **Ticket title:** Device name, change type, change date
 
@@ -375,7 +376,7 @@ Rollback: Not required
 
 **Frequency:** Before every change; daily backup of all devices
 
-**Storage:** Version control (Git) + Encrypted backup (Vault)
+**Storage:** LogicMonitor (automated config collection and version history)
 
 **Retention:** 90 days rolling
 

@@ -82,7 +82,7 @@ aaa authentication login REMOTE-AUTH tacacs+ local
 
 line console 0
   login authentication CONSOLE-AUTH
-  exec-timeout 0 0
+  exec-timeout 10 0
 
 line vty 0 4
   login authentication REMOTE-AUTH

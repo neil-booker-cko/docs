@@ -42,8 +42,7 @@ provides granular control, clearer intent, and easier troubleshooting.
 interface Vlan100
  ip address 10.0.100.1 255.255.255.0
  ip ospf 1 area 0
- ip ospf authentication message-digest
- ip ospf message-digest-key 1 md5 MyAuthKey123
+ ip ospf authentication key-chain OSPF-SHA256
  ip ospf hello-interval 10
  ip ospf dead-interval 40
 !
@@ -55,8 +54,7 @@ interface Vlan100
 interface GigabitEthernet0/0
  ip address 10.0.0.1 255.255.255.252
  ip ospf 1 area 0
- ip ospf authentication message-digest
- ip ospf message-digest-key 1 md5 MyAuthKey123
+ ip ospf authentication key-chain OSPF-SHA256
  ip ospf hello-interval 10
  ip ospf dead-interval 40
 !
@@ -120,29 +118,63 @@ interface GigabitEthernet0/0
 
 ---
 
-## OSPF Authentication (Recommended)
+## OSPF Authentication
 
-**Standard:** Enable MD5 authentication on all OSPF-enabled interfaces to prevent unauthorized
-LSA injection and rogue router attacks. Authentication is required for all production deployments.
+**Standard:** HMAC-SHA-256 (RFC 5709) on all OSPF-enabled interfaces. OSPF runs exclusively
+between Cisco IOS-XE and FortiOS; both platforms support HMAC-SHA-256 from IOS-XE 15.4(3)S+
+and FortiOS 7.0.1+. MD5 is deprecated for new deployments.
+
+Authentication uses key chains on both platforms — the algorithm is defined in the key chain,
+not the interface command.
+
+**Cisco IOS-XE:**
 
 ```ios
+key chain OSPF-SHA256
+ key 1
+  key-string <OSPF_AUTH_KEY>
+  cryptographic-algorithm hmac-sha-256
+!
 interface Vlan100
- ip ospf authentication message-digest
- ip ospf message-digest-key 1 md5 MyAuthKey123
+ ip ospf authentication key-chain OSPF-SHA256
 !
-
 interface GigabitEthernet0/0
- ip ospf authentication message-digest
- ip ospf message-digest-key 1 md5 MyAuthKey456
+ ip ospf authentication key-chain OSPF-SHA256
 !
+```
+
+**FortiOS:**
+
+```fortios
+config router key-chain
+    edit "OSPF-SHA256"
+        config key
+            edit 1
+                set key-string <OSPF_AUTH_KEY>
+                set algorithm hmac-sha256
+                set accept-lifetime 00:00:00 01 01 2024 2147483646
+                set send-lifetime 00:00:00 01 01 2024 2147483646
+            next
+        end
+    next
+end
+config router ospf
+    config ospf-interface
+        edit "to-cisco"
+            set authentication message-digest
+            set keychain "OSPF-SHA256"
+        next
+    end
+end
 ```
 
 **Key Management:**
 
-- Rotate keys annually
-- Use strong, unique key per area or per router pair
-- Document key changes in change log
-- Coordinate key rotation with peer networks during maintenance windows
+- Store keys in LastPass
+- Use a strong, unique key per OSPF area or router pair
+- Rotate after any suspected compromise or significant personnel change
+- Verify adjacency with `show ip ospf neighbor` (IOS-XE) or `get router info ospf neighbor`
+    (FortiOS) after any key change
 
 ---
 

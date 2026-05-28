@@ -3,9 +3,8 @@
 Approved network devices with lifecycle status and end-of-life dates for capacity planning and
 procurement.
 
-**Data Verification:** May 2026. Cisco and Meraki lifecycle dates verified against official vendor
-documentation. Fortinet dates require verification (see notes below). MTBF values sourced from
-official datasheets.
+**Data Verification:** May 2026. Cisco, Meraki, and Fortinet lifecycle dates verified against
+official vendor documentation. MTBF values sourced from official datasheets.
 
 ---
 
@@ -63,22 +62,19 @@ Support dates. Standard FortiGate support lifecycle is typically 7-10 years from
 | FortiGate 70G | Active | — | — | — |
 | FortiGate 101F | Active | — | — | — |
 | FortiGate 201F | Active | — | — | — |
-| FortiGate 601F | Active | — | — | — |
+| FortiGate 601F | Active | — | — | 2031-05-01 |
 | FortiGate 601E | Maintained | — | — | — |
 
 ### Checkout Firewall Deployment
 
-**⚠️ ACTION REQUIRED:** Support expiration dates for FortiGate 601F units (LD8, SG3, DB3) are TBD.
-Contact Fortinet support to verify exact End of Support dates for capacity planning.
-
-| Site | Model | Purchase | Support Expires |
+| Site | Model | Purchase | LDOS |
 | --- | --- | --- | --- |
 | LD7 | 2× FortiGate 601E | 2020 | 2027-09-27 |
 | LD7 Test Kit | 2× FortiGate 601E | 2021 | 2027-09-27 |
 | DC4 | 2× FortiGate 601E | 2021 | 2027-09-27 |
-| LD8 | 2× FortiGate 601F | 2023 | **VERIFY** |
-| SG3 | 2× FortiGate 601F | 2022 | **VERIFY** |
-| DB3 | 2× FortiGate 601F | 2025 | **VERIFY** |
+| LD8 | 2× FortiGate 601F | 2023 | 2031-05-01 |
+| SG3 | 2× FortiGate 601F | 2022 | 2031-05-01 |
+| DB3 | 2× FortiGate 601F | 2025 | 2031-05-01 |
 
 ---
 
@@ -86,9 +82,9 @@ Contact Fortinet support to verify exact End of Support dates for capacity plann
 
 **[Vertiv Product Information](https://www.vertiv.com/en-us/)**
 
-| Model | Status | Support Expires | Notes |
+| Model | Status | LDOS | Notes |
 | --- | --- | --- | --- |
-| Avocent ACS 8016DAC | Active | TBD | Serial console server; requires verification of support dates |
+| Avocent ACS 8016DAC | Active | — | Current model; no announced end-of-life date |
 
 ---
 

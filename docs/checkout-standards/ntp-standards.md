@@ -70,7 +70,7 @@ config system ntp
     set source-ip 10.0.1.1
     set log-sync-interval 1
     set authentication enable
-    set key-type md5
+    set key-type SHA256
     set key-id 1
     set authentication-key "MyNTPKey123"
 next
@@ -110,6 +110,16 @@ config system interface
 end
 ```
 
+**Why `allow-insecure-ntp enable`:** Some DC equipment cannot perform authenticated NTP and must
+sync unauthenticated. This setting is required for:
+
+- **Avocent ACS8000 console servers** — no NTP authentication support in any firmware version
+    (confirmed against v2.32.1, December 2025). NTP server address is the only configurable
+    parameter.
+- **Perle IOLAN console servers** — implement SNTP (not full NTP). NTP authentication is supported
+    on firmware 6.2 (latest for Checkout's platform) but MD5 only; SHA-256 is not available.
+    MD5 does not meet the SHA-256 minimum standard, so Perle devices sync unauthenticated.
+
 **Listening Interfaces (Internal Only):**
 
 - Management VLAN interface (e.g., `vlan10` on port1)
@@ -135,7 +145,7 @@ All network devices point to the local FortiGate firewall as their primary NTP s
 ntp server 10.0.1.1 prefer
 ntp server 1.1.1.1
 ntp source GigabitEthernet0/0
-ntp authentication-key 1 md5 MyNTPKey123
+ntp authentication-key 1 hmac-sha2-256 MyNTPKey123
 ntp trusted-key 1
 ntp authenticate
 ```
@@ -262,28 +272,34 @@ The passive unit synchronizes to the primary's NTP source during standby.
 
 ---
 
-## NTP Security (Optional)
+## NTP Security
 
-### NTP Authentication (MD5)
+### NTP Authentication (SHA-256)
 
-Optional: Enable authentication on critical devices to prevent NTP spoofing.
+**Required** on all devices. MD5 is deprecated per RFC 8573; SHA-256 is the minimum standard.
+
+**Platform requirements:**
+
+- **FortiOS:** SHA-256 requires FortiOS 7.4.4 or later. DC fleet is on 7.6.6 — compliant.
+- **Cisco IOS-XE:** `hmac-sha2-256` requires IOS-XE 17.2 or later. DC fleet is on 17.12.6 —
+    compliant.
 
 **FortiGate:**
 
 ```fortios
 config system ntp
     set authentication enable
-    set key-type md5
+    set key-type SHA256
     set key-id 1
     set authentication-key "MySecureNTPKey123"
 next
 end
 ```
 
-**Cisco:**
+**Cisco IOS-XE:**
 
 ```ios
-ntp authentication-key 1 md5 MySecureNTPKey123
+ntp authentication-key 1 hmac-sha2-256 MySecureNTPKey123
 ntp trusted-key 1
 ntp authenticate
 ```

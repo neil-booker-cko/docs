@@ -70,24 +70,79 @@ neighbor 169.254.1.2 timers 10 30
 
 ---
 
-## BGP Authentication (Recommended)
+## BGP Authentication
 
-**Standard:** Enable MD5 authentication on all BGP neighbors to prevent unauthorized route
-injection and session hijacking. Use `neighbor password` command per-neighbor or globally.
+Authentication requirements differ by session type. Internal sessions between Checkout-managed
+devices use TCP-AO; cloud provider sessions use MD5 (vendor constraint).
+
+### Internal Sessions (IOS-XE ↔ FortiGate)
+
+**Standard:** TCP-AO (RFC 5925) using HMAC-SHA-256 or AES-128-CMAC-96. Supported from
+IOS-XE 16.12.1+ and FortiOS 7.4.2+.
+
+**Cisco IOS-XE:**
 
 ```ios
+key chain BGP-AO-KEYS
+ key 1
+  key-string <BGP_AUTH_KEY>
+  cryptographic-algorithm hmac-sha-1-96
+  send-lifetime 00:00:00 Jan 1 2025 infinite
+  accept-lifetime 00:00:00 Jan 1 2025 infinite
+!
 router bgp <DC_ASN>
- neighbor 169.254.1.2 password MyBGPAuth123!
- neighbor 172.16.0.2 password MyBGPAuth456!
+ neighbor 169.254.1.2 ao BGP-AO-KEYS
 !
 ```
 
-**Key Management:**
+**FortiOS:**
 
-- Rotate authentication keys annually
-- Use strong, unique passwords per peer
-- Document changes in change log
-- Coordinate key rotation with peer networks (AWS, Azure, GCP)
+```fortios
+config router key-chain
+    edit "BGP-AO-CHAIN"
+        config key
+            edit "1"
+                set key-string <BGP_AUTH_KEY>
+                set algorithm hmac-sha256
+                set accept-lifetime 00:00:00 01 01 2025 2147483646
+                set send-lifetime 00:00:00 01 01 2025 2147483646
+            next
+        end
+    next
+end
+config router bgp
+    set as <DC_ASN>
+    config neighbor
+        edit "169.254.1.2"
+            set auth-options "BGP-AO-CHAIN"
+        next
+    end
+end
+```
+
+### Cloud Provider Sessions (AWS, Azure, GCP)
+
+**Standard:** MD5 (vendor constraint — AWS, Azure, and GCP do not support TCP-AO). This is an
+accepted risk; no alternative exists on the provider side.
+
+```ios
+router bgp <DC_ASN>
+ neighbor 169.254.1.2 password <BGP_MD5_KEY>
+!
+```
+
+**Key Management (all session types):**
+
+- Rotate keys after any suspected compromise or significant personnel change; coordinate with
+    cloud providers during maintenance windows
+- Use strong, unique keys per peer (32+ characters recommended)
+- Document key changes in the change log
+
+### RPKI (Route Origin Validation)
+
+RPKI validates Route Origin Authorizations (ROAs) for **public** prefixes in the global internet
+routing table. It does not apply to Checkout BGP sessions, which use RFC1918 private address space
+and private ASNs throughout. No ROAs exist for RFC1918 prefixes.
 
 ---
 

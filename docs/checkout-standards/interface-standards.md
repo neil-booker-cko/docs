@@ -178,34 +178,37 @@ interface GigabitEthernet0/1
 
 ### CDP vs LLDP Policy
 
-**Standard:** Use protocol based on connected device:
+**Standard:** CDP and LLDP are only enabled on interfaces connected to CKO-owned equipment.
+Neither protocol should run on external uplinks or provider-facing interfaces — both leak device
+hostname, platform, software version, and interface details to the connected peer.
 
-- **CDP:** Enabled on Cisco-facing interfaces (internal Cisco-to-Cisco links only)
-- **LLDP:** Enabled on other device-facing interfaces (Cisco-to-FortiGate, Cisco-to-Meraki, etc.)
+- **CDP:** Cisco-to-Cisco internal links only; disabled globally, enabled per-interface
+- **LLDP:** All CKO-owned internal links (cross-vendor); enabled globally, explicitly disabled on
+    external/WAN interfaces
 
-| Link Type | Protocol | Enabled | Purpose |
+| Link Type | CDP | LLDP | Rationale |
 | --- | --- | --- | --- |
-| Cisco-to-Cisco (internal) | CDP | Yes | Device discovery, neighbor info |
-| Cisco-to-FortiGate | LLDP | Yes | Cross-vendor discovery |
-| Cisco-to-Meraki | LLDP | Yes | Cross-vendor discovery |
-| External uplinks | LLDP | Yes | Provider equipment discovery |
-| All other | Both | Yes | Redundancy for discovery |
+| Cisco-to-Cisco (internal) | Yes | Yes | Full discovery; all CKO-owned |
+| Cisco-to-FortiGate | No | Yes | Cross-vendor; CKO-owned both sides |
+| Cisco-to-Meraki | No | Yes | Cross-vendor; CKO-owned both sides |
+| External uplinks (ISP, co-lo, provider) | No | **No** | Non-CKO equipment; device info must not leak |
+| Unknown / untrusted | No | No | Default deny |
 
 ### Global Configuration
 
-**Enable LLDP globally (runs on all interfaces by default):**
+**LLDP runs globally; disable explicitly on external interfaces:**
 
 ```ios
 lldp run
 !
 ```
 
-**Enable CDP on specific Cisco-facing interfaces:**
+**Per-interface configuration:**
 
 ```ios
 interface GigabitEthernet0/1
  description CORE-SWITCH_GI0/1
- ! Cisco-facing interface: enable CDP
+ ! Internal Cisco-to-Cisco: CDP + LLDP
  cdp enable
  lldp transmit
  lldp receive
@@ -213,10 +216,18 @@ interface GigabitEthernet0/1
 
 interface GigabitEthernet0/2
  description FIREWALL-FORTIGATE_GI0/1
- ! FortiGate-facing interface: LLDP only
+ ! Internal cross-vendor: LLDP only, no CDP
  no cdp enable
  lldp transmit
  lldp receive
+!
+
+interface GigabitEthernet0/3
+ description ISP-UPLINK
+ ! External: disable both — device info must not leak to provider equipment
+ no cdp enable
+ no lldp transmit
+ no lldp receive
 !
 ```
 

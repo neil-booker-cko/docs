@@ -66,7 +66,7 @@ login on-success log
 
 ```ios
 ntp authenticate
-ntp authentication-key 1 md5 <NTP_KEY>
+ntp authentication-key 1 hmac-sha2-256 <NTP_KEY>
 ntp trusted-key 1
 ntp server <NTP_SERVER_1> source <INTERFACE>
 ntp server <NTP_SERVER_2> source <INTERFACE>
@@ -137,7 +137,6 @@ no ip bootp server
 service tcp-keepalives-in
 service tcp-keepalives-out
 service call-home
-no cdp run
 no ip source-route
 ```
 

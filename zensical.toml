@@ -229,6 +229,9 @@ nav = [
       ]},
       {"VPN & Tunneling" = [
         {"Third-Party VPN" = "fortigate/fortigate_third_party_vpn.md"}
+      ]},
+      {"Monitoring & Logging" = [
+        {"Logging Reference" = "fortigate/fortigate_logging.md"}
       ]}
     ]}
   ]},

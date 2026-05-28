@@ -29,74 +29,44 @@ Backup procedures, recovery objectives, and testing schedules for network equipm
 
 | Device | Frequency | Trigger | Storage |
 | --- | --- | --- | --- |
-| Cisco core routers | Daily (02:00 UTC) + after any change | Automated script | Vault + Git |
-| Cisco switches | Weekly (Sunday 02:00 UTC) + after any change | Automated script | Vault + Git |
-| FortiGate firewalls | Daily (02:00 UTC) + after any change | Automated script + manual | Vault + Git |
+| Cisco core routers | Daily (02:00 UTC) + after any change | LogicMonitor automated | LogicMonitor |
+| Cisco switches | Weekly (Sunday 02:00 UTC) + after any change | LogicMonitor automated | LogicMonitor |
+| FortiGate firewalls | Daily (02:00 UTC) + after any change | LogicMonitor automated | LogicMonitor |
 | Meraki cloud devices | Real-time | Cloud-automatic | Meraki dashboard (30-day default) |
 
-### Backup Storage Locations
+### Backup Storage
 
-**Primary:** Encrypted vault (HashiCorp Vault) at 10.0.1.200
+**Primary:** LogicMonitor Configuration Management — automated config collection, version history,
+and diff comparison. Configs are retrieved by LogicMonitor on schedule and after detected changes.
 
-**Secondary:** Git repository (version control) at [GitHub checkout/network-configs](https://github.com/checkout/network-configs)
-
-**Tertiary:** Cold storage (AWS S3 Glacier) for annual backups
+Access: LogicMonitor portal → Devices → [Device] → Config tab
 
 ### Cisco IOS-XE Backup Process
 
-```bash
-#!/bin/bash
-# Daily backup script for Cisco devices
+LogicMonitor collects the running configuration automatically via SSH. No manual script required.
+Ensure the LogicMonitor collector has SSH access to all devices using the monitoring credentials
+stored in LastPass.
 
-DEVICES=("10.0.0.1" "10.0.0.2" "10.0.0.3")
-BACKUP_DIR="/mnt/backups/cisco"
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+**Manual backup (pre-change):**
 
-for device in "${DEVICES[@]}"; do
-    hostname=$(getent hosts $device | awk '{print $2}')
-
-    # Backup running config via SFTP
-    expect <<EOF
-    spawn sftp admin@$device
-    expect "password:"
-    send "MyPassword123\n"
-    expect "sftp>"
-    send "get running-config $BACKUP_DIR/$hostname-$TIMESTAMP.txt\n"
-    expect "sftp>"
-    send "quit\n"
-EOF
-
-    # Encrypt and upload to vault
-    gpg --encrypt $BACKUP_DIR/$hostname-$TIMESTAMP.txt
-    vault kv put secret/network/cisco/$hostname config=@$BACKUP_DIR/$hostname-$TIMESTAMP.txt.gpg
-
-    # Commit to Git
-    cd /mnt/git-configs
-    cp $BACKUP_DIR/$hostname-$TIMESTAMP.txt cisco/$hostname/config-$TIMESTAMP.txt
-    git add cisco/$hostname/config-$TIMESTAMP.txt
-    git commit -m "Backup: $hostname - $TIMESTAMP"
-    git push origin main
-done
+```ios
+show running-config
 ```
+
+Copy output to the Jira change ticket as a pre-change snapshot before applying any changes.
 
 ### FortiGate Backup Process
 
-```fortios
-! Manual backup command
-execute backup config ftp network-backup-210526 10.0.1.200 admin password
+LogicMonitor collects FortiGate configs automatically via SSH. Verify collection is working:
+LogicMonitor portal → Devices → [FortiGate] → Config tab → confirm latest collection timestamp.
 
-! Automated (via script)
-config system scheduled-script
-    edit "daily-backup"
-        set interval 1440  # Every 24 hours
-        set start-time 02:00
-        set repeat-days every-day
-        set script "
-            execute backup config ftp fortigate-daily 10.0.1.200 admin password
-        "
-    next
-end
+**Manual backup (pre-change):**
+
+```fortios
+execute backup config tftp <filename> <TFTP_SERVER_IP>
 ```
+
+Or download via GUI: System → Dashboard → System Information → Backup.
 
 ### Meraki Cloud Backup
 
@@ -124,10 +94,8 @@ Dashboard → Organization → Settings → Backup & Restore
 
 | Backup Type | Retention Period | Frequency | Storage |
 | --- | --- | --- | --- |
-| Daily backup (encrypted) | 14 days | Daily | Vault + Git |
-| Weekly snapshot | 12 weeks (3 months) | Weekly (Sunday) | Vault + S3 |
-| Monthly backup | 12 months | Monthly | Cold storage (Glacier) |
-| Annual backup | 7 years | Yearly | Offline (archive) |
+| Automated config collection | Per LogicMonitor plan | Daily + on change | LogicMonitor |
+| Meraki snapshots | 30 days | Real-time | Meraki cloud |
 
 ### Backup Size Planning
 

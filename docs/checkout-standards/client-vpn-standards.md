@@ -16,6 +16,11 @@ credentials are used as a fallback for offices without agent connectivity.
 Split tunneling is enabled on all sites — only traffic destined for internal Checkout networks
 routes through the VPN. All other traffic exits the client's local internet connection.
 
+**Rationale:** These VPNs are support tools, not corporate internet gateways. Engineers connect to
+a site VPN to access that site's infrastructure during support or maintenance. Forcing all client
+traffic through the site would degrade the engineer's internet connectivity and add unnecessary
+load to the site firewall. Full-tunnel VPN is not appropriate for this use case.
+
 ---
 
 ## IPsec Parameters

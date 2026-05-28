@@ -521,16 +521,15 @@ Monitoring relies on:
 
 ### Key Management
 
-- Rotate SNMP credentials annually
 - Use strong, unique passwords (minimum 12 characters, mixed case/numbers/special)
-- Store credentials securely (not in config files, use encrypted vaults)
-- Document credential rotation in change log
+- Store credentials in LastPass (not in config files or documentation)
+- Rotate credentials after any suspected compromise or significant personnel change
+- Document credential changes in the change log
 
 ### Authentication & Encryption
 
-- Always use SHA (not MD5) for authentication
-- Always use AES (not DES) for encryption
-- Use AES-256 for additional security if performance permits
+- Use SHA-256 minimum for authentication (SHA-1 only where platform cannot support SHA-256 — Tier 2)
+- Always use AES (not DES) for encryption; AES-256 preferred, AES-128 minimum for Tier 2 platforms
 - Never use SNMPv1 or SNMPv2c plaintext community strings
 
 ### Access Control

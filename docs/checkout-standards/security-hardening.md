@@ -45,14 +45,14 @@ Based on CIS Cisco IOS-XE 17.x Benchmark v2.2.1, the standards below cover three
 | Remove default SNMP community strings | 2.3.1 Disable SNMP v1/v2c | V-224305 | 2.2.4 | **Adopted** | Public/private strings removed from all devices |
 | SNMPv3 with authentication (SHA) & privacy (AES) | 2.3.2 Configure SNMPv3 | V-224306 | 8.2 | **Adopted** | Auth: SHA, Privacy: AES-128 minimum |
 | SNMP source address ACL restriction | 2.3.3 Restrict SNMP sources | V-224307 | 8.1 | **Adopted** | Only NMS hosts permitted to query |
-| SNMP traps for critical events | 2.3.4 Enable SNMP traps | V-224308 | 6.2 | **Adopted** | Trap destination: centralized syslog server |
+| SNMP traps for critical events | 2.3.4 Enable SNMP traps | V-224308 | 6.2 | **Not Adopted** | Pull-based NMS (LogicMonitor); trap ingestion not supported — alerting handled via polling and Datadog |
 
 ### Management Plane: NTP
 
 | Configuration | CIS Control | STIG ID | PCI-DSS | Adoption Status | Notes |
 | --- | --- | --- | --- | --- | --- |
 | Minimum 3 NTP servers with redundancy | 2.4.1 Configure NTP | V-224309 | 8.4 | **Adopted** | Primary + 2 secondary; geographically diverse |
-| NTP authentication with MD5 keys | 2.4.2 Enable NTP authentication | V-224310 | 6.2 | **Adopted** | MD5 keys for all NTP peers; annual rotation |
+| NTP authentication with SHA-256 | 2.4.2 Enable NTP authentication | V-224310 | 6.2 | **Adopted** | hmac-sha2-256 (IOS-XE 17.2+); SHA256 key-type (FortiOS 7.4.4+); MD5 deprecated per RFC 8573 |
 | NTP source from loopback/mgmt interface | 2.4.3 NTP source interface | V-224311 | 8.4.1 | **Adopted** | Uses mgmt loopback; prevents traffic from data plane |
 | NTP access-groups restrict NTP operations | 2.4.4 NTP access control | V-224311 | 8.4.1 | **Adopted** | peer/serve/serve-only/query-only restricted via ACLs |
 
@@ -118,7 +118,7 @@ ntp access-group query-only ACL_DENY_ALL
 **NTP Synchronization:**
 
 - Configure minimum 3 NTP servers (with redundancy)
-- Enable NTP authentication with MD5 keys
+- Enable NTP authentication with SHA-256 (hmac-sha2-256 on IOS-XE; SHA256 key-type on FortiOS)
 - Use loopback interface or dedicated management interface as NTP source
 
 **Banners:**
@@ -423,7 +423,7 @@ All Checkout standards documented above are marked with adoption status:
 | --- | --- | --- |
 | Management Plane (AAA, SSH, SNMP, NTP, Banners) | **Fully Adopted** | All controls per CIS v2.2.1 |
 | Control Plane (SSH hardening, Logging, Services) | **Fully Adopted** | SSH v2, debug logging, legacy disabled |
-| Data Plane (BGP auth, route filtering) | **Fully Adopted** | BGP MD5 + prefix-lists on all peers |
+| Data Plane (BGP auth, route filtering) | **Fully Adopted** | BGP TCP-AO (internal peers) + MD5 (cloud providers, vendor constraint) + prefix-lists |
 
 ### FortiOS Adoption
 
@@ -464,6 +464,26 @@ All Checkout standards documented above are marked with adoption status:
 - [x] Logging and monitoring (10.2, 10.5, 10.7): Syslog, timestamps, event logging
 - [x] Network segmentation (2.2.2, 2.3): Unused services disabled, SNMP hardened
 - [x] Encryption (2.2.4): TLS 1.3, SSH v2, AES-256 encryption
+
+---
+
+## Known Accepted Risks
+
+Controls not adopted or where a weaker-than-ideal standard is in use, with documented rationale.
+
+| Risk | Affected Area | Rationale | Mitigations |
+| --- | --- | --- | --- |
+| **TACACS+ MD5 obfuscation** | AAA | TACACS+ encrypts packet body using MD5-based XOR (RFC 8907 documents this as obfuscation, not encryption). No upgrade path exists within the protocol; RADIUS cannot replace TACACS+ as it does not support per-command authorization. TACACS+ over TLS (RFC 9325) is not yet available on IOS-XE at production scale. | Management traffic isolated to VLAN 701 (not on data plane); strong per-device shared keys; 3-server redundancy with full accounting logs. Revisit when IOS-XE adds RFC 9325 support. |
+| **BGP MD5 — cloud provider sessions** | BGP | AWS, Azure, and GCP BGP sessions require MD5 authentication (RFC 2385). These providers do not support TCP-AO (RFC 5925). TCP-AO is used for all Checkout-managed internal BGP sessions. | Strong, unique MD5 keys per peer; annual rotation coordinated during maintenance windows. |
+| **SNMP traps not configured** | SNMP monitoring | Pull-based NMS (LogicMonitor) does not support SNMP trap ingestion. Trap-based alerting is therefore not available. | 5-minute polling intervals; Datadog alerting on log patterns; PagerDuty for incident escalation. |
+| **NTP unauthenticated clients (allow-insecure-ntp)** | NTP | Avocent ACS8000 console servers have no NTP authentication capability (confirmed v2.32.1, December 2025). Perle IOLAN console servers support NTP authentication on firmware 6.2 (latest for Checkout's platform) but MD5 only — SHA-256 is not available, so Perle devices do not meet the SHA-256 minimum and sync unauthenticated. Both populations require `allow-insecure-ntp enable` on the FortiGate NTP server. | NTP service enabled on internal management interfaces only; not exposed on WAN or untrusted interfaces. |
+| **SNMP SHA-1 + AES-128 — legacy platforms** | SNMP | Perle IOLAN, Meraki, and Cisco IOS 15.2 platforms cannot use SHA-256; SHA-1 is their maximum supported authentication algorithm. | Isolated to `SNMP_COMPAT` credential profile in LogicMonitor; source-restricted to utility server ACL. Upgrade or replace platforms over time. |
+| **CDP/LLDP on internal links** | Discovery protocols | CDP and LLDP advertise device hostname, platform, software version, and interface details. Enabled on internal CKO-owned links for operational visibility; disabled on all external/provider-facing interfaces. | Per-interface `no lldp transmit` / `no lldp receive` / `no cdp enable` on all external uplinks. Policy: neither protocol runs on any non-CKO-owned link. |
+| **VPN split tunneling** | Client VPN | Only internal Checkout network traffic routes through site VPNs; engineer internet traffic exits locally. Engineers' non-Checkout traffic is not inspected by Checkout security controls while connected. | VPNs are support tools only, not corporate internet gateways. Forcing full-tunnel would add unnecessary load to site firewalls and degrade engineer connectivity for an access model that does not require it. |
+| **OSPF MD5 — existing deployments** | Routing | Production OSPF sessions between IOS-XE and FortiOS currently use MD5. Standard updated to HMAC-SHA-256 (RFC 5709); both platforms confirmed capable (IOS-XE 17.12.6, FortiOS 7.6.6). Migration requires a coordinated key chain rollout per site. | No new MD5 OSPF deployments; migrate existing sessions to HMAC-SHA-256 during next maintenance window per site. |
+| **IKEv1 — legacy office sites** | Client VPN | Sites not yet migrated to IKEv2 run IKEv1 in aggressive mode with XAuth PAP. IKEv1 is deprecated. DH Group capped at 18 due to macOS FortiClient limitation. | Migration to IKEv2 in progress; no new IKEv1 deployments permitted. |
+| **SSH algorithms — IOS-XE platform gaps** | SSH | IOS-XE does not support `curve25519-sha256` (KEX) or `chacha20-poly1305` (encryption). These are preferred in current SSH hardening guidance. | Next-strongest supported algorithms configured: ECDH NIST curves (KEX), AES-256-GCM / AES-256-CTR (encryption), HMAC-SHA2-512-ETM (MAC). |
+| **VPN CBC cipher — Tier 3 fallback** | VPN | AES-256-CBC is permitted as a Tier 3 fallback for IPsec Phase 1/2 when a legacy peer does not support AES-256-GCM. CBC mode lacks the built-in authentication of GCM (AEAD) and requires a separate HMAC. | AES-256-GCM mandatory for all new tunnels; CBC only permitted for interop with legacy peers that cannot negotiate GCM. HMAC-SHA-256 required alongside CBC. |
 
 ---
 

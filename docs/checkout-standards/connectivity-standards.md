@@ -33,7 +33,7 @@ All datacenter-to-cloud and datacenter-to-internet connectivity follows these pr
 **Interface Configuration:**
 
 - Enable BFD with 200ms intervals
-- Disable CDP and LLDP for security
+- Disable CDP and LLDP on external/provider-facing interfaces (enabled on internal CKO-owned links only)
 - Apply bogon ACL to inbound traffic
 - Configure speed and load monitoring
 

@@ -256,7 +256,7 @@ Group Policies allow per-SSID or per-client firewall rules. Standard policy stru
 | --- | --- | --- |
 | Admin Password | 16+ chars, alphanumeric + symbols | Changed quarterly |
 | SSH Only | SSH enabled, HTTP disabled | SSH audit logs reviewed monthly |
-| SNMP v3 | Enabled; SNMP v1/v2c disabled | Credentials in vault |
+| SNMP v3 | Enabled; SNMP v1/v2c disabled | Credentials in LastPass |
 | NTP Sync | Primary: internal NTP; Secondary: public | Time sync verified daily |
 | Syslog | Enable to centralized syslog server | 30-day retention minimum |
 

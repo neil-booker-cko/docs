@@ -251,6 +251,8 @@ nav:
               - SD-WAN: fortigate/fortigate_sdwan.md
           - VPN & Tunneling:
               - Third-Party VPN: fortigate/fortigate_third_party_vpn.md
+          - Monitoring & Logging:
+              - Logging Reference: fortigate/fortigate_logging.md
   - Cloud Architecture:
       - AWS:
           - Direct Connect Setup: aws/aws_direct_connect_setup.md
