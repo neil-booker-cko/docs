@@ -98,10 +98,10 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Notes |
 | --- | --- | --- | --- | --- |
-| MR44 | wireless-32-1-7| (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR46 | wireless-31-1-8| (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR76 | wireless-31-1-8| (auto-update) | Active | Latest model; no announced EOL |
-| CW9164I | wireless-32-1-7| (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
+| MR44 | 32.1.7| (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR46 | 31.1.8| (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR76 | 31.1.8| (auto-update) | Active | Latest model; no announced EOL |
+| CW9164I | 32.1.7| (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
 
 **Notes:**
 
@@ -116,9 +116,9 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Support Expires | Notes |
 | --- | --- | --- | --- | --- | --- |
-| MS120-48LP | switch-18-1-3| (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
-| MS250-48LP | switch-17-2-2| (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
-| MS250-24P | switch-17-2-2| (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
+| MS120-48LP | 18.1.3| (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
+| MS250-48LP | 17.2.2| (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
+| MS250-24P | 17.2.2| (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
 
 **Notes:**
 
@@ -182,6 +182,18 @@ Every second Tuesday of the month (14:00 UTC):
 ---
 
 ## Change History
+
+### 2026-06-02 (Version Update)
+
+| Category | Change | Reason |
+| --- | --- | --- |
+| **Meraki MR44** | 32.1.7 (was wireless-32-1-7) | Cloud |
+| **Meraki MR46** | 31.1.8 (was wireless-31-1-8) | Cloud |
+| **Meraki MR76** | 31.1.8 (was wireless-31-1-8) | Cloud |
+| **Meraki CW9164I** | 32.1.7 (was wireless-32-1-7) | Cloud |
+| **Meraki MS120-48LP** | 18.1.3 (was switch-18-1-3) | Cloud |
+| **Meraki MS250-48LP** | 17.2.2 (was switch-17-2-2) | Cloud |
+| **Meraki MS250-24P** | 17.2.2 (was switch-17-2-2) | Cloud |
 
 ### 2026-06-02 (Version Update)
 
