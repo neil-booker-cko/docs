@@ -466,7 +466,64 @@ corresponding subinterface, ensuring traffic stays within its VRF on the Cisco s
 
 ---
 
-## 11. Verification Commands
+## 11. Route Leaking (Anti-Pattern)
+
+Route leaking allows routes from one VRF to be imported into another by adding a
+cross-VRF Route Target import statement. It looks simple and sometimes feels like the
+path of least resistance — resist it.
+
+### Why Route Leaking Is a Bad Idea
+
+**Hard to understand** — Once RTs cross-import, routes appear in VRFs they did not
+originate from with no visual marker in the routing table. An engineer reading
+`show ip route vrf AWS` cannot tell which routes are native and which leaked in from
+another VRF without also reading the RT configuration on every VRF involved.
+
+**Hard to troubleshoot** — When a routing problem occurs, you must trace RT import
+policies across every VRF involved, not just the one where the symptom appears. The
+forwarding path may cross VRF boundaries on the Cisco router before reaching any other
+device, making the end-to-end path non-obvious.
+
+**Breaks segregation** — The VRFs in this design exist specifically to prevent cloud
+providers from reaching each other and to force all inter-cloud traffic through the
+FortiGate for inspection. A leaked route creates direct reachability between VRFs on
+the Cisco router — traffic matching that route never touches the FortiGate.
+
+### What It Looks Like (So You Can Recognise It)
+
+The mechanism is a cross-import in the RT:
+
+```ios
+! DO NOT DO THIS in the cloud separation design
+vrf definition AWS
+ rd 65000:100
+ route-target export 65000:100
+ route-target import 65000:100
+ route-target import 65000:200   ! leaks Azure routes into AWS VRF
+ route-target import 65000:300   ! leaks GCP routes into AWS VRF
+```
+
+Once this is in place, any route exported from the Azure or GCP VRFs will appear in
+VRF AWS's routing table. Traffic to those destinations will be forwarded directly by
+the Cisco router, never touching the FortiGate.
+
+### The Right Alternatives
+
+| Need | Correct Approach |
+| --- | --- |
+| AWS → Azure path | Route via FortiGate overlay BGP (encrypted, inspected) |
+| Shared management access | Use IOS-XE's built-in `Mgmt-vrf` on the management interface |
+| Shared DNS / NTP | Reach the service via the FortiGate; advertise it as a summary inside each cloud VRF |
+| Out-of-band monitoring | Dedicated physical or VLAN interface in `Mgmt-vrf`; never share with cloud VRFs |
+
+If you find yourself reaching for route leaking, the question to ask is: *why is this
+traffic not going through the FortiGate?* The answer is almost always that the overlay
+BGP session or the FortiGate policy needs to be fixed — not that the Cisco VRF boundary
+needs to be dissolved.
+
+---
+
+## 12. Verification Commands
 
 ### VRF Status
 

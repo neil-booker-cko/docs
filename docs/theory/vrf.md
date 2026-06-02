@@ -196,6 +196,35 @@ Reserve a special VRF-ID for the hub:
 
 This pattern scales: adding a new spoke is just a new VRF-ID + RT pair.
 
+### Route Leaking Cautions
+
+Route leaking is technically straightforward but has three costs that make it a pattern
+to avoid unless the design explicitly calls for it:
+
+**Hard to understand** — Once RTs cross-import, routes can appear in VRFs they did not
+originate from with no visual marker in the routing table. An engineer reading a routing
+table cannot tell which routes are native to that VRF and which leaked in without also
+reading the RT configuration on every VRF involved.
+
+**Hard to troubleshoot** — When a routing problem occurs, you must trace RT import
+policies across every VRF involved, not just the one where the symptom appears. The
+forwarding path may cross VRF boundaries invisibly, making end-to-end path analysis
+non-obvious.
+
+**Breaks segregation** — VRFs exist to create isolated routing domains. A leaked route
+creates reachability between those domains. If the isolation existed for a security,
+operational, or compliance reason, the leak undermines it — even when the cross-import
+was intentional.
+
+RT-based leaking is a legitimate tool in carrier MPLS PE designs where the architecture
+is explicitly built around sharing routes between tenants. In designs where VRFs
+separate traffic intended to flow through an inspection point (firewall, IDS), the right
+answer is almost always to fix the upstream policy rather than dissolve the VRF
+boundary.
+
+See [Cisco IOS-XE: VRF-Lite — Route Leaking (Anti-Pattern)](../cisco/cisco_vrf_config.md#11-route-leaking-anti-pattern)
+for the cloud separation context specifically.
+
 ---
 
 ## FortiGate Equivalent: VDOMs

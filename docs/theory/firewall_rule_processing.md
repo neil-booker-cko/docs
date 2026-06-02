@@ -526,8 +526,8 @@ Solution: Put more specific rule (Rule 2) before general rule (Rule 1)
 
 ## See Also
 
+- [Firewall Rule Design Principles](firewall_rule_design.md) — how to write good rules
 - [Access Control Lists (ACLs) Reference](../reference/acl_reference.md)
 - [Cisco ACL Configuration](../cisco/cisco_acl_config.md)
 - [Fortinet FortiGate Policies](../fortigate/fortigate_firewall_policies.md)
-- [Stateful Firewall Concepts](../theory/stateful_inspection.md)
 - [NAT & Port Translation](../theory/nat.md)

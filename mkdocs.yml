@@ -111,10 +111,12 @@ nav:
           - Policy-Based Routing: theory/policy_based_routing.md
           - Quality of Service: theory/qos.md
           - Route Redistribution: theory/route_redistribution.md
+          - VRF & MPLS VPN: theory/vrf.md
       - Architecture & Design:
           - Cloud Connectivity Comparison: theory/cloud_connectivity_comparison.md
           - Cloud Network Design: theory/cloud_network_design.md
           - Data Centre Topologies: theory/dc_topologies.md
+          - Firewall Rule Design Principles: theory/firewall_rule_design.md
           - Firewall Rule Processing: theory/firewall_rule_processing.md
           - Spanning Tree Design: theory/spanning_tree.md
           - STP/RSTP Configuration: theory/stp_rstp_configuration.md
