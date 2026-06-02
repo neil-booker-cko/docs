@@ -3,8 +3,8 @@
 Recommended firmware versions for network equipment based on [Software Standards](software-standards.md)
 criteria: vendor-recommended, LTS, free of critical CVEs, and supported for the planned deployment period.
 
-**Last Reviewed:** 2026-05-13
-**Next Review:** 2026-06-12 (monthly, second Tuesday of each month at 14:00 UTC)
+**Last Reviewed:** 2026-06-02
+**Next Review:** 2026-07-02 (monthly, second Tuesday of each month at 14:00 UTC)
 
 ---
 
@@ -98,10 +98,10 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Notes |
 | --- | --- | --- | --- | --- |
-| MR44 | Current/N-1 | (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR46 | Current/N-1 | (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR76 | Current | (auto-update) | Active | Latest model; no announced EOL |
-| CW9164I | Current/N-1 | (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
+| MR44 | Current/N-1| (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR46 | Current/N-1| (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR76 | Current| (auto-update) | Active | Latest model; no announced EOL |
+| CW9164I | Current/N-1| (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
 
 **Notes:**
 
@@ -116,9 +116,9 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Support Expires | Notes |
 | --- | --- | --- | --- | --- | --- |
-| MS120-48LP | Current/N-1 | (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
-| MS250-48LP | Current/N-1 | (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
-| MS250-24P | Current | (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
+| MS120-48LP | Current/N-1| (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
+| MS250-48LP | Current/N-1| (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
+| MS250-24P | Current| (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
 
 **Notes:**
 
@@ -182,6 +182,18 @@ Every second Tuesday of the month (14:00 UTC):
 ---
 
 ## Change History
+
+### 2026-06-02 (Version Update)
+
+| Category | Change | Reason |
+| --- | --- | --- |
+| **Meraki MR44** | Current/N-1 (was Current/N-1 ) | Cloud |
+| **Meraki MR46** | Current/N-1 (was Current/N-1 ) | Cloud |
+| **Meraki MR76** | Current (was Current ) | Cloud |
+| **Meraki CW9164I** | Current/N-1 (was Current/N-1 ) | Cloud |
+| **Meraki MS120-48LP** | Current/N-1 (was Current/N-1 ) | Cloud |
+| **Meraki MS250-48LP** | Current/N-1 (was Current/N-1 ) | Cloud |
+| **Meraki MS250-24P** | Current (was Current ) | Cloud |
 
 ### 2026-05-13 (Version Update)
 
