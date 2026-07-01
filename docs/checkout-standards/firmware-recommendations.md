@@ -3,12 +3,12 @@
 Recommended firmware versions for network equipment based on [Software Standards](software-standards.md)
 criteria: vendor-recommended, LTS, free of critical CVEs, and supported for the planned deployment period.
 
-**Last Reviewed:** 2026-06-02
-**Next Review:** 2026-07-01
+**Last Reviewed:** 2026-07-01
+**Next Review:** 2026-08-01
 
 ---
 
-## Current Recommendations (June 2026)
+## Current Recommendations (July 2026)
 
 ### Cisco Catalyst Switches — IOS-XE
 
@@ -134,7 +134,7 @@ version upgrades together for consistency.
 
 | Model | Recommended | Current | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Avocent ACS 8016DAC | 2.32.3 | 2.32.3 | Active | Serial console server |
+| Avocent ACS 8016DAC | 2.32.3 | 2.32.4 | Active | Serial console server |
 
 **Notes:**
 
@@ -182,6 +182,12 @@ Every second Tuesday of the month (14:00 UTC):
 ---
 
 ## Change History
+
+### 2026-07-01 (Version Update)
+
+| Category | Change | Reason |
+| --- | --- | --- |
+| **Vertiv Avocent ACS 8016DAC** | 2.32.4 (was 2.32.3) | Firmware |
 
 ### 2026-06-02 (Version Update)
 
