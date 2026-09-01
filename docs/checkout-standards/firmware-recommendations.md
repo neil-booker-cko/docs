@@ -3,12 +3,12 @@
 Recommended firmware versions for network equipment based on [Software Standards](software-standards.md)
 criteria: vendor-recommended, LTS, free of critical CVEs, and supported for the planned deployment period.
 
-**Last Reviewed:** 2026-07-01
-**Next Review:** 2026-08-01
+**Last Reviewed:** 2026-09-01
+**Next Review:** 2026-10-01
 
 ---
 
-## Current Recommendations (July 2026)
+## Current Recommendations (September 2026)
 
 ### Cisco Catalyst Switches — IOS-XE
 
@@ -98,8 +98,8 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Notes |
 | --- | --- | --- | --- | --- |
-| MR44 | 32.1.7| (auto-update) | Maintained | Cloud-managed; automatic updates |
-| MR46 | 31.1.8| (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR44 | 32.2.4 | (auto-update) | Maintained | Cloud-managed; automatic updates |
+| MR46 | 32.2.4 | (auto-update) | Maintained | Cloud-managed; automatic updates |
 | MR76 | 31.1.8| (auto-update) | Active | Latest model; no announced EOL |
 | CW9164I | 32.1.7| (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
 
@@ -134,7 +134,7 @@ version upgrades together for consistency.
 
 | Model | Recommended | Current | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Avocent ACS 8016DAC | 2.32.3 | 2.32.4 | Active | Serial console server |
+| Avocent ACS 8016DAC | 2.32.3 | 2.32.5 | Active | Serial console server |
 
 **Notes:**
 
@@ -182,6 +182,14 @@ Every second Tuesday of the month (14:00 UTC):
 ---
 
 ## Change History
+
+### 2026-09-01 (Version Update)
+
+| Category | Change | Reason |
+| --- | --- | --- |
+| **Meraki MR44** | 32.2.4 (was 32.1.7) | Cloud |
+| **Meraki MR46** | 32.2.4 (was 31.1.8) | Cloud |
+| **Vertiv Avocent ACS 8016DAC** | 2.32.5 (was 2.32.4) | Firmware |
 
 ### 2026-07-01 (Version Update)
 
