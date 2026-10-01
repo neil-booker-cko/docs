@@ -3,12 +3,12 @@
 Recommended firmware versions for network equipment based on [Software Standards](software-standards.md)
 criteria: vendor-recommended, LTS, free of critical CVEs, and supported for the planned deployment period.
 
-**Last Reviewed:** 2026-09-01
-**Next Review:** 2026-10-01
+**Last Reviewed:** 2026-10-01
+**Next Review:** 2026-11-01
 
 ---
 
-## Current Recommendations (September 2026)
+## Current Recommendations (October 2026)
 
 ### Cisco Catalyst Switches — IOS-XE
 
@@ -101,7 +101,7 @@ version upgrades together for consistency.
 | MR44 | 32.2.4 | (auto-update) | Maintained | Cloud-managed; automatic updates |
 | MR46 | 32.2.4 | (auto-update) | Maintained | Cloud-managed; automatic updates |
 | MR76 | 31.1.8| (auto-update) | Active | Latest model; no announced EOL |
-| CW9164I | 32.1.7| (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
+| CW9164I | 32.2.4 | (auto-update) | Active | Cisco Catalyst WiFi; cloud-native |
 
 **Notes:**
 
@@ -116,8 +116,8 @@ version upgrades together for consistency.
 
 | Model | Recommended | Previous | Status | Support Expires | Notes |
 | --- | --- | --- | --- | --- | --- |
-| MS120-48LP | 18.1.3| (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
-| MS250-48LP | 17.2.2| (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
+| MS120-48LP | 18.1.8 | (auto-update) | Maintained | 2030-03-28 | Cloud-managed; scheduled updates |
+| MS250-48LP | 18.1.8 | (auto-update) | Maintained | 2030-03-08 | Managed; 48-port option |
 | MS250-24P | 17.2.2| (auto-update) | Maintained | 2030-03-08 | Managed; compact form factor |
 
 **Notes:**
@@ -134,7 +134,7 @@ version upgrades together for consistency.
 
 | Model | Recommended | Current | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Avocent ACS 8016DAC | 2.32.3 | 2.32.5 | Active | Serial console server |
+| Avocent ACS 8016DAC | 2.32.3 | 2.32.6 | Active | Serial console server |
 
 **Notes:**
 
@@ -182,6 +182,15 @@ Every second Tuesday of the month (14:00 UTC):
 ---
 
 ## Change History
+
+### 2026-10-01 (Version Update)
+
+| Category | Change | Reason |
+| --- | --- | --- |
+| **Meraki CW9164I** | 32.2.4 (was 32.1.7) | Cloud |
+| **Meraki MS120-48LP** | 18.1.8 (was 18.1.3) | Cloud |
+| **Meraki MS250-48LP** | 18.1.8 (was 17.2.2) | Cloud |
+| **Vertiv Avocent ACS 8016DAC** | 2.32.6 (was 2.32.5) | Firmware |
 
 ### 2026-09-01 (Version Update)
 
